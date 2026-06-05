@@ -1,14 +1,44 @@
-node_modules
-.pnpm-store
+# Dependencies
+node_modules/
+.pnpm-store/
 
+# Build and cache output
+dist/
+build/
+coverage/
+.turbo/
+.vite/
+
+# OS files
 .DS_Store
 Thumbs.db
 
+# Logs
 *.log
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
 pnpm-debug.log*
 
+# Generated declarations
 auto-imports.d.ts
 components.d.ts
+
+# OpenSpec docs are intentionally versioned under openspec/.
+# Ignore only local/generated helper output below.
+openspec/**/.cache/
+openspec/**/.tmp/
+openspec/**/tmp/
+openspec/**/dist/
+openspec/**/build/
+
+# OpenSpec editor integration files generated for multiple agents.
+# Keep the tracked rules/mcp files, but avoid committing duplicated command/skill packs.
+.augment/commands/
+.augment/skills/
+.cursor/commands/
+.cursor/skills/
+.kilocode/skills/
+.kilocode/workflows/
+.roo/commands/
+.roo/skills/
