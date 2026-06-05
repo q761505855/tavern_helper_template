@@ -8,6 +8,7 @@ build/
 coverage/
 .turbo/
 .vite/
+.superpowers/
 
 # OS files
 .DS_Store
