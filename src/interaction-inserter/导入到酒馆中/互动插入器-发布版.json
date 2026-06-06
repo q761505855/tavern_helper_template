@@ -1,0 +1,12 @@
+{
+  "id": "interaction-inserter-script",
+  "name": "互动插入器-发布版",
+  "content": "import 'https://testingcf.jsdelivr.net/gh/q761505855/tavern_helper_template@main/dist/%E4%BA%92%E5%8A%A8%E6%8F%92%E5%85%A5%E5%99%A8/index.js'",
+  "info": "故事生成主流程之间的临时互动工作台。发布版通过 jsDelivr 国内镜像加载已构建脚本。",
+  "buttons": [
+    {
+      "name": "打开互动工作台",
+      "visible": true
+    }
+  ]
+}
