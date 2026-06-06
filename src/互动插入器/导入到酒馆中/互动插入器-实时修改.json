@@ -1,0 +1,12 @@
+{
+  "id": "interaction-inserter-script",
+  "name": "互动插入器-实时修改",
+  "content": "import 'http://localhost:5500/dist/互动插入器/index.js'",
+  "info": "故事生成主流程之间的临时互动工作台。第一版通过脚本按钮打开。",
+  "buttons": [
+    {
+      "name": "打开互动工作台",
+      "visible": true
+    }
+  ]
+}
