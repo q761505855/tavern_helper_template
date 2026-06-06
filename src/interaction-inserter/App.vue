@@ -134,7 +134,6 @@
 
           <section class="ii-setting-section">
             <h3>模式提示词</h3>
-            <label><span>通用互动约束</span><textarea v-model="store.settings.prompts.common" /></label>
             <div class="ii-grid-3">
               <label><span>当下场景</span><textarea v-model="store.settings.prompts.scene" /></label>
               <label><span>一对一</span><textarea v-model="store.settings.prompts.private" /></label>
@@ -143,8 +142,29 @@
           </section>
 
           <section class="ii-setting-section">
+            <h3>互动预设 JSON</h3>
+            <label><span>当前酒馆 Preset JSON 预览</span><textarea v-model="store.presetJsonDraft" class="ii-preset-json" readonly spellcheck="false" /></label>
+            <div class="ii-setting-actions">
+              <button class="ii-btn" type="button" @click="store.importPresetJsonFile">从 JSON 文件导入</button>
+              <button class="ii-btn" type="button" @click="store.exportPresetJson">导出为 JSON 文件</button>
+              <button class="ii-btn" type="button" @click="store.resetInteractionPreset">恢复默认预设</button>
+            </div>
+          </section>
+
+          <section class="ii-setting-section">
             <h3>世界书插入模板</h3>
             <label><span>插入模板</span><textarea v-model="store.settings.worldbookTemplate" /></label>
+          </section>
+
+          <section class="ii-setting-section">
+            <h3>可用宏变量</h3>
+            <div class="ii-macro-table">
+              <div v-for="macro in macroDocs" :key="macro.name" class="ii-macro-row">
+                <code v-text="macro.name"></code>
+                <span>{{ macro.description }}</span>
+                <small>{{ macro.scope }}</small>
+              </div>
+            </div>
           </section>
 
           <section class="ii-setting-section">
@@ -176,4 +196,12 @@
 import { useInteractionStore } from './store';
 
 const store = useInteractionStore();
+
+const macroDocs = [
+  { name: '{{ii_scene_prompt}}', description: '当下场景模式提示词；其他模式为空。', scope: '互动预设 JSON' },
+  { name: '{{ii_private_prompt}}', description: '一对一模式提示词；其他模式为空。', scope: '互动预设 JSON' },
+  { name: '{{ii_remote_prompt}}', description: '远程通信模式提示词；其他模式为空。', scope: '互动预设 JSON' },
+  { name: '{{ii_context_prompt}}', description: '当前互动模式、角色标识等脚本上下文。', scope: '互动预设 JSON' },
+  { name: '{{ii_interaction_records}}', description: '待合并到世界书的互动记录。', scope: '世界书插入模板' },
+];
 </script>

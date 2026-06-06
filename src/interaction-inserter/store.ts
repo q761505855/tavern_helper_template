@@ -1,4 +1,14 @@
-type InteractionMode = 'scene' | 'private' | 'remote';
+import {
+  buildWorldbookContent,
+  convertPresetToOrderedPrompts,
+  createDefaultInteractionPreset,
+  normalizePresetLike,
+  parseInteractionPresetJson,
+  stringifyInteractionPreset,
+  type InteractionMode,
+  type PresetLike,
+} from './preset';
+
 type MessageRole = 'user' | 'assistant' | 'system';
 
 const FIXED_ENTRY_NAME = '本轮互动内容';
@@ -6,11 +16,12 @@ const SCRIPT_VARIABLE_KEY = 'interactionInserterSettings';
 const CHAT_VARIABLE_KEY = 'interactionInserter';
 
 const DEFAULT_PROMPTS = {
-  common: `所有模式都应把当前交互视为主剧情之间的临时夹层。目标是补足玩家与角色/场景的细节互动，而不是生成一整段新的主线剧情。允许自然语言动作输入，AI 应以可继续互动的方式回应。`,
   scene: `延续当前主剧情场景。不要要求玩家额外说明场景。AI 不需要选定单一对象，应扮演场景中相关 NPC 与环境反馈。减少宏大剧情推进，优先回应玩家的台词、动作、追问和局部观察。`,
   private: `聚焦玩家指定的角色标识。AI 必须根据当前剧情上下文匹配该人物，保持角色口吻、关系和现场限制。优先生成即时对话与小动作，不替玩家推进主剧情，不让无关角色突然插入。`,
   remote: `聚焦玩家指定的角色标识，以远程消息、通话或其他通讯形式互动。回复应受到距离、时延、信息不完整的限制；不应直接描写远端角色无法得知的现场细节。`,
-  worldbookTemplate: `以下是玩家在上一轮主剧情后进行的临时互动内容。这些互动已经发生，后续主剧情必须承认其结果。请吸收其中的事实、关系变化、承诺、线索与情绪余波，但不要机械复述完整互动记录，除非玩家明确要求回顾。`,
+  worldbookTemplate: `以下是玩家在上一轮主剧情后进行的临时互动内容。这些互动已经发生，后续主剧情必须承认其结果。请吸收其中的事实、关系变化、承诺、线索与情绪余波，但不要机械复述完整互动记录，除非玩家明确要求回顾。
+
+{{ii_interaction_records}}`,
 };
 
 const ApiSettingsSchema = z
@@ -27,9 +38,12 @@ const ApiSettingsSchema = z
 const SettingsSchema = z
   .object({
     api: ApiSettingsSchema.prefault({}),
+    preset: z
+      .custom<PresetLike>()
+      .transform(value => normalizePresetLike(value))
+      .prefault(createDefaultInteractionPreset()),
     prompts: z
       .object({
-        common: z.string().prefault(DEFAULT_PROMPTS.common),
         scene: z.string().prefault(DEFAULT_PROMPTS.scene),
         private: z.string().prefault(DEFAULT_PROMPTS.private),
         remote: z.string().prefault(DEFAULT_PROMPTS.remote),
@@ -169,6 +183,7 @@ export const useInteractionStore = defineStore('interaction-inserter', () => {
   const activeGenerationId = ref<string | null>(null);
   const generationBuffer = ref('');
   const currentTavernModel = ref(readCurrentTavernModel());
+  const presetJsonDraft = ref(stringifyInteractionPreset(settings.value.preset));
 
   const activeSession = computed(() => state.value.sessions.find(session => session.id === state.value.activeSessionId));
   const activeCharacter = computed(() =>
@@ -201,9 +216,16 @@ export const useInteractionStore = defineStore('interaction-inserter', () => {
     { deep: true },
   );
 
+  watch(view, currentView => {
+    if (currentView === 'settings') {
+      syncPresetJsonDraft();
+    }
+  });
+
   eventOn('interaction-inserter:open', () => {
     state.value = ensureActiveSession(getChatState());
     settings.value = getScriptSettings();
+    syncPresetJsonDraft();
     refreshCurrentTavernModel();
     isOpen.value = true;
     view.value = 'workbench';
@@ -234,8 +256,64 @@ export const useInteractionStore = defineStore('interaction-inserter', () => {
 
   function resetSettings() {
     settings.value = SettingsSchema.parse({});
+    syncPresetJsonDraft();
     persistSettings();
     toastr.success('已恢复默认设置');
+  }
+
+  function syncPresetJsonDraft() {
+    presetJsonDraft.value = stringifyInteractionPreset(settings.value.preset);
+  }
+
+  function applyPresetJsonText(content: string) {
+    try {
+      settings.value.preset = parseInteractionPresetJson(content);
+      syncPresetJsonDraft();
+      persistSettings();
+      toastr.success('已导入互动预设 JSON');
+    } catch (error) {
+      toastr.error(`互动预设 JSON 导入失败：${error instanceof Error ? error.message : String(error)}`);
+    }
+  }
+
+  function importPresetJsonFile() {
+    const input = document.createElement('input');
+    input.type = 'file';
+    input.accept = '.json,application/json';
+    input.addEventListener(
+      'change',
+      () => {
+        const file = input.files?.[0];
+        if (!file) return;
+        file
+          .text()
+          .then(applyPresetJsonText)
+          .catch(error => {
+            toastr.error(`读取互动预设 JSON 失败：${error instanceof Error ? error.message : String(error)}`);
+          });
+      },
+      { once: true },
+    );
+    input.click();
+  }
+
+  function exportPresetJson() {
+    syncPresetJsonDraft();
+    const blob = new Blob([presetJsonDraft.value], { type: 'application/json;charset=utf-8' });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = '互动插入器预设.json';
+    link.click();
+    URL.revokeObjectURL(url);
+    toastr.success('已导出互动预设 JSON');
+  }
+
+  function resetInteractionPreset() {
+    settings.value.preset = createDefaultInteractionPreset();
+    syncPresetJsonDraft();
+    persistSettings();
+    toastr.success('已恢复默认互动预设');
   }
 
   function addCharacter() {
@@ -371,22 +449,12 @@ export const useInteractionStore = defineStore('interaction-inserter', () => {
   }
 
   function buildOrderedPrompts(session: InteractionSession): (PlaceholderPrompt | RolePrompt)[] {
-    const modePrompt = settings.value.prompts[session.mode];
-    return [
-      'world_info_before',
-      'persona_description',
-      'char_description',
-      'char_personality',
-      'scenario',
-      'world_info_after',
-      'dialogue_examples',
-      'chat_history',
-      { role: 'system', content: settings.value.prompts.common },
-      { role: 'system', content: modePrompt },
-      { role: 'system', content: buildContextPrompt(session) },
-      ...recentInteractionPrompts(session),
-      'user_input',
-    ];
+    return convertPresetToOrderedPrompts(settings.value.preset, {
+      mode: session.mode,
+      prompts: settings.value.prompts,
+      contextPrompt: buildContextPrompt(session),
+      interactionHistory: recentInteractionPrompts(session),
+    }) as (PlaceholderPrompt | RolePrompt)[];
   }
 
   async function sendMessage() {
@@ -471,7 +539,7 @@ export const useInteractionStore = defineStore('interaction-inserter', () => {
   }
 
   function makeWorldbookContent(rawInteraction: string): string {
-    return `${settings.value.worldbookTemplate.trim()}\n\n${rawInteraction.trim()}`.trim();
+    return buildWorldbookContent(settings.value.worldbookTemplate, rawInteraction.trim());
   }
 
   async function upsertInteractionEntry(content: string): Promise<boolean> {
@@ -585,6 +653,7 @@ export const useInteractionStore = defineStore('interaction-inserter', () => {
     selectedMode,
     isGenerating,
     currentTavernModel,
+    presetJsonDraft,
     activeSession,
     activeCharacter,
     canSend,
@@ -594,6 +663,10 @@ export const useInteractionStore = defineStore('interaction-inserter', () => {
     closeSidebar,
     toggleSidebar,
     resetSettings,
+    syncPresetJsonDraft,
+    importPresetJsonFile,
+    exportPresetJson,
+    resetInteractionPreset,
     addCharacter,
     deleteCharacter,
     createSession,

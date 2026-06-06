@@ -387,6 +387,64 @@
   resize: vertical;
 }
 
+.ii-macro-table {
+  display: grid;
+  overflow: hidden;
+  border: 1px solid #d8dee8;
+  border-radius: 8px;
+  background: #fbfcfe;
+}
+
+.ii-macro-row {
+  display: grid;
+  grid-template-columns: minmax(190px, 260px) minmax(0, 1fr) minmax(120px, auto);
+  gap: 12px;
+  align-items: center;
+  min-height: 38px;
+  padding: 8px 10px;
+}
+
+.ii-macro-row + .ii-macro-row {
+  border-top: 1px solid #e6ebf2;
+}
+
+.ii-macro-row code {
+  overflow-wrap: anywhere;
+  border: 0;
+  background: transparent;
+  color: #263246;
+  font-family: ui-monospace, SFMono-Regular, Consolas, "Liberation Mono", monospace;
+  font-size: 12px;
+  font-weight: 700;
+  padding: 0;
+}
+
+.ii-macro-row span {
+  color: #647286;
+  font-size: 13px;
+  line-height: 1.45;
+}
+
+.ii-macro-row small {
+  justify-self: end;
+  color: #647286;
+  font-size: 12px;
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+.ii-preset-json {
+  min-height: 220px !important;
+  font-family: ui-monospace, SFMono-Regular, Consolas, "Liberation Mono", monospace;
+}
+
+.ii-setting-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 10px;
+}
+
 .ii-grid-3,
 .ii-grid-4 {
   display: grid;
@@ -415,6 +473,15 @@
   .ii-grid-3,
   .ii-grid-4 {
     grid-template-columns: 1fr;
+  }
+
+  .ii-macro-row {
+    grid-template-columns: 1fr;
+    gap: 4px;
+  }
+
+  .ii-macro-row small {
+    justify-self: start;
   }
 }
 
