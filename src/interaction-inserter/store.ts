@@ -8,6 +8,7 @@ import {
   type InteractionMode,
   type PresetLike,
 } from './preset';
+import { makeInteractionSessionTitle, readTavernUserName, roleDisplayName } from './labels';
 
 type MessageRole = 'user' | 'assistant' | 'system';
 
@@ -16,28 +17,33 @@ const SCRIPT_VARIABLE_KEY = 'interactionInserterSettings';
 const CHAT_VARIABLE_KEY = 'interactionInserter';
 
 const DEFAULT_PROMPTS = {
-  scene: `延续当前主剧情场景。不要要求玩家额外说明场景。AI 不需要选定单一对象，应扮演场景中相关 NPC 与环境反馈。减少宏大剧情推进，优先回应玩家的台词、动作、追问和局部观察。`,
-  private: `聚焦玩家指定的角色标识。AI 必须根据当前剧情上下文匹配该人物，保持角色口吻、关系和现场限制。优先生成即时对话与小动作，不替玩家推进主剧情，不让无关角色突然插入。`,
-  remote: `聚焦玩家指定的角色标识，以远程消息、通话或其他通讯形式互动。回复应受到距离、时延、信息不完整的限制；不应直接描写远端角色无法得知的现场细节。`,
-  worldbookTemplate: `以下是玩家在上一轮主剧情后进行的临时互动内容。这些互动已经发生，后续主剧情必须承认其结果。请吸收其中的事实、关系变化、承诺、线索与情绪余波，但不要机械复述完整互动记录，除非玩家明确要求回顾。
+  scene: `当前模式：当下场景。
+你可以扮演当前场景里合理存在的角色、环境反馈或即时后果。重点回应玩家刚刚输入的动作、台词、追问和观察。不要主动跳到新地点、新时间或新的主线事件。`,
+  private: `当前模式：一对一。
+请聚焦玩家指定的角色标识，并从已有剧情里匹配最合理的人物。保持该角色的口吻、关系、情绪和现场限制。回复应像近距离私下互动，不让无关角色突然插入。`,
+  remote: `当前模式：远程通信。
+请把互动写成消息、通话、通讯器、传音或其他远程交流。远端角色只能知道通讯中能获知的信息；保留距离、延迟、误解、信号或信息不完整带来的限制。`,
+  worldbookTemplate: `以下内容来自互动插入器，发生在上一轮主剧情之后、下一轮主剧情之前。它们不是新的主剧情楼层，但其中已经发生的事实、承诺、关系变化、线索、伤势、物品变化和情绪余波都应被后续主剧情承认。
+
+吸收这些内容时，请优先提炼可延续的结果，不要机械复述完整对话；除非玩家要求回顾，否则只在相关时自然引用。
 
 {{ii_interaction_records}}`,
 };
 
 const ApiSettingsSchema = z
   .object({
-    mode: z.enum(['current', 'proxy', 'custom']).prefault('current'),
-    proxy_preset: z.string().prefault(''),
+    mode: z.enum(['current', 'custom']).catch('current').prefault('current'),
     apiurl: z.string().prefault(''),
     key: z.string().prefault(''),
     model: z.string().prefault('same_as_preset'),
-    source: z.string().prefault('openai'),
   })
   .prefault({});
 
 const SettingsSchema = z
   .object({
     api: ApiSettingsSchema.prefault({}),
+    presetSource: z.enum(['custom', 'tavern']).prefault('custom'),
+    tavernPresetName: z.string().prefault(''),
     preset: z
       .custom<PresetLike>()
       .transform(value => normalizePresetLike(value))
@@ -50,6 +56,7 @@ const SettingsSchema = z
       })
       .prefault({}),
     worldbookTemplate: z.string().prefault(DEFAULT_PROMPTS.worldbookTemplate),
+    insertTarget: z.enum(['worldbook', 'message']).prefault('message'),
     historyLimit: z.coerce.number().transform(value => _.clamp(Math.trunc(value), 1, 50)).prefault(50),
     stream: z.boolean().prefault(true),
     clearAfterMerge: z.boolean().prefault(true),
@@ -130,8 +137,7 @@ function saveChatState(state: ChatState) {
 
 function makeSession(mode: InteractionMode, character?: CharacterRef): InteractionSession {
   const now = Date.now();
-  const title =
-    mode === 'scene' ? '当下场景' : `${mode === 'private' ? '一对一' : '远程通信'}：${character?.label ?? '未选择角色'}`;
+  const title = makeInteractionSessionTitle(mode, character?.label);
   return {
     id: makeId('session'),
     mode,
@@ -158,12 +164,6 @@ function ensureActiveSession(state: ChatState): ChatState {
   return state;
 }
 
-function roleLabel(role: MessageRole): string {
-  if (role === 'user') return '玩家';
-  if (role === 'assistant') return 'AI';
-  return '系统';
-}
-
 function sessionModeLabel(mode: InteractionMode): string {
   if (mode === 'scene') return '当下场景';
   if (mode === 'private') return '一对一';
@@ -183,13 +183,28 @@ export const useInteractionStore = defineStore('interaction-inserter', () => {
   const activeGenerationId = ref<string | null>(null);
   const generationBuffer = ref('');
   const currentTavernModel = ref(readCurrentTavernModel());
-  const presetJsonDraft = ref(stringifyInteractionPreset(settings.value.preset));
+  const customApiModels = ref<string[]>([]);
+  const customApiModelsLoading = ref(false);
+  const tavernPresetNames = ref<string[]>([]);
+  const editingMessageId = ref<string | null>(null);
+  const editingMessageDraft = ref('');
 
   const activeSession = computed(() => state.value.sessions.find(session => session.id === state.value.activeSessionId));
   const activeCharacter = computed(() =>
     state.value.characters.find(character => character.id === activeSession.value?.characterId),
   );
   const canSend = computed(() => draft.value.trim().length > 0 && !isGenerating.value);
+
+  function sessionCharacterName(session: InteractionSession): string | null {
+    return state.value.characters.find(character => character.id === session.characterId)?.label ?? null;
+  }
+
+  function roleLabel(role: MessageRole, session = activeSession.value): string {
+    return roleDisplayName(role, {
+      userName: readTavernUserName(),
+      characterName: session ? sessionCharacterName(session) : activeCharacter.value?.label,
+    });
+  }
 
   function persistSettings() {
     settings.value = SettingsSchema.parse(settings.value);
@@ -218,15 +233,21 @@ export const useInteractionStore = defineStore('interaction-inserter', () => {
 
   watch(view, currentView => {
     if (currentView === 'settings') {
-      syncPresetJsonDraft();
+      refreshTavernPresetNames();
+      if (settings.value.api.mode === 'custom') {
+        void refreshCustomApiModels();
+      }
     }
   });
 
   eventOn('interaction-inserter:open', () => {
     state.value = ensureActiveSession(getChatState());
     settings.value = getScriptSettings();
-    syncPresetJsonDraft();
+    refreshTavernPresetNames();
     refreshCurrentTavernModel();
+    if (settings.value.api.mode === 'custom') {
+      void refreshCustomApiModels();
+    }
     isOpen.value = true;
     view.value = 'workbench';
     isSidebarOpen.value = false;
@@ -256,19 +277,40 @@ export const useInteractionStore = defineStore('interaction-inserter', () => {
 
   function resetSettings() {
     settings.value = SettingsSchema.parse({});
-    syncPresetJsonDraft();
+    refreshTavernPresetNames();
     persistSettings();
     toastr.success('已恢复默认设置');
   }
 
-  function syncPresetJsonDraft() {
-    presetJsonDraft.value = stringifyInteractionPreset(settings.value.preset);
+  function refreshTavernPresetNames() {
+    try {
+      tavernPresetNames.value = getPresetNames();
+      if (settings.value.presetSource === 'tavern') {
+        ensureSelectedTavernPreset();
+      }
+    } catch {
+      tavernPresetNames.value = [];
+    }
+  }
+
+  function ensureSelectedTavernPreset() {
+    if (settings.value.tavernPresetName && tavernPresetNames.value.includes(settings.value.tavernPresetName)) {
+      return;
+    }
+    try {
+      const loadedPresetName = getLoadedPresetName();
+      settings.value.tavernPresetName = tavernPresetNames.value.includes(loadedPresetName)
+        ? loadedPresetName
+        : (tavernPresetNames.value[0] ?? '');
+    } catch {
+      settings.value.tavernPresetName = tavernPresetNames.value[0] ?? '';
+    }
   }
 
   function applyPresetJsonText(content: string) {
     try {
       settings.value.preset = parseInteractionPresetJson(content);
-      syncPresetJsonDraft();
+      settings.value.presetSource = 'custom';
       persistSettings();
       toastr.success('已导入互动预设 JSON');
     } catch (error) {
@@ -298,8 +340,14 @@ export const useInteractionStore = defineStore('interaction-inserter', () => {
   }
 
   function exportPresetJson() {
-    syncPresetJsonDraft();
-    const blob = new Blob([presetJsonDraft.value], { type: 'application/json;charset=utf-8' });
+    let preset: PresetLike;
+    try {
+      preset = resolveActiveInteractionPreset();
+    } catch (error) {
+      toastr.error(`互动预设读取失败：${error instanceof Error ? error.message : String(error)}`);
+      return;
+    }
+    const blob = new Blob([stringifyInteractionPreset(preset)], { type: 'application/json;charset=utf-8' });
     const url = URL.createObjectURL(blob);
     const link = document.createElement('a');
     link.href = url;
@@ -311,9 +359,21 @@ export const useInteractionStore = defineStore('interaction-inserter', () => {
 
   function resetInteractionPreset() {
     settings.value.preset = createDefaultInteractionPreset();
-    syncPresetJsonDraft();
+    settings.value.presetSource = 'custom';
     persistSettings();
     toastr.success('已恢复默认互动预设');
+  }
+
+  function resolveActiveInteractionPreset(): PresetLike {
+    if (settings.value.presetSource !== 'tavern') {
+      return settings.value.preset;
+    }
+    refreshTavernPresetNames();
+    const presetName = settings.value.tavernPresetName.trim();
+    if (!presetName) {
+      throw new Error('请先选择一个酒馆预设');
+    }
+    return normalizePresetLike(getPreset(presetName));
   }
 
   function addCharacter() {
@@ -394,6 +454,51 @@ export const useInteractionStore = defineStore('interaction-inserter', () => {
     return message;
   }
 
+  function findActiveMessage(messageId: string): InteractionMessage | null {
+    return activeSession.value?.messages.find(message => message.id === messageId) ?? null;
+  }
+
+  function startEditingMessage(messageId: string) {
+    const message = findActiveMessage(messageId);
+    if (!message) return;
+    editingMessageId.value = message.id;
+    editingMessageDraft.value = message.content;
+  }
+
+  function cancelEditingMessage() {
+    editingMessageId.value = null;
+    editingMessageDraft.value = '';
+  }
+
+  function saveEditingMessage() {
+    const messageId = editingMessageId.value;
+    const session = activeSession.value;
+    if (!messageId || !session) return;
+    const message = session.messages.find(item => item.id === messageId);
+    if (!message) {
+      cancelEditingMessage();
+      return;
+    }
+    message.content = editingMessageDraft.value;
+    session.updatedAt = Date.now();
+    session.merged = false;
+    cancelEditingMessage();
+    persistState();
+  }
+
+  function deleteMessage(messageId: string) {
+    const session = activeSession.value;
+    if (!session) return;
+    const removed = _.remove(session.messages, message => message.id === messageId).length > 0;
+    if (!removed) return;
+    if (editingMessageId.value === messageId) {
+      cancelEditingMessage();
+    }
+    session.updatedAt = Date.now();
+    session.merged = false;
+    persistState();
+  }
+
   function readCurrentTavernModel(): string {
     try {
       return getChatCompletionModel() || '跟随酒馆当前模型';
@@ -404,6 +509,66 @@ export const useInteractionStore = defineStore('interaction-inserter', () => {
 
   function refreshCurrentTavernModel() {
     currentTavernModel.value = readCurrentTavernModel();
+  }
+
+  function customApiModelsEndpoint(): string {
+    const apiurl = settings.value.api.apiurl.trim().replace(/\/+$/, '');
+    if (!apiurl) return '';
+    if (/\/models$/i.test(apiurl)) return apiurl;
+    return `${apiurl}/models`;
+  }
+
+  function normalizeModelNames(payload: unknown): string[] {
+    const data =
+      payload && typeof payload === 'object' && Array.isArray((payload as Record<string, any>).data)
+        ? (payload as Record<string, any>).data
+        : payload;
+    if (!Array.isArray(data)) return [];
+    return _.uniq(
+      data
+        .map(item => {
+          if (typeof item === 'string') return item;
+          if (item && typeof item === 'object' && typeof (item as Record<string, any>).id === 'string') {
+            return (item as Record<string, any>).id;
+          }
+          return '';
+        })
+        .filter(Boolean),
+    );
+  }
+
+  async function refreshCustomApiModels() {
+    if (settings.value.api.mode !== 'custom') return;
+    const endpoint = customApiModelsEndpoint();
+    if (!endpoint) {
+      customApiModels.value = [];
+      return;
+    }
+    customApiModelsLoading.value = true;
+    try {
+      const response = await fetch(endpoint, {
+        headers: {
+          ...(settings.value.api.key ? { Authorization: `Bearer ${settings.value.api.key}` } : {}),
+        },
+      });
+      if (!response.ok) {
+        throw new Error(`${response.status} ${response.statusText}`.trim());
+      }
+      customApiModels.value = normalizeModelNames(await response.json());
+      if (
+        settings.value.api.model &&
+        settings.value.api.model !== 'same_as_preset' &&
+        customApiModels.value.length > 0 &&
+        !customApiModels.value.includes(settings.value.api.model)
+      ) {
+        settings.value.api.model = customApiModels.value[0] ?? 'same_as_preset';
+      }
+    } catch (error) {
+      customApiModels.value = [];
+      toastr.error(`模型列表读取失败：${error instanceof Error ? error.message : String(error)}`);
+    } finally {
+      customApiModelsLoading.value = false;
+    }
   }
 
   function modelOverride(model: string): string | undefined {
@@ -417,17 +582,10 @@ export const useInteractionStore = defineStore('interaction-inserter', () => {
     if (api.mode === 'current') {
       return undefined;
     }
-    if (api.mode === 'proxy') {
-      return {
-        proxy_preset: api.proxy_preset.trim(),
-        model: modelOverride(api.model),
-      };
-    }
     return {
       apiurl: api.apiurl.trim(),
       key: api.key,
       model: modelOverride(api.model),
-      source: api.source.trim() || 'openai',
     };
   }
 
@@ -444,12 +602,12 @@ export const useInteractionStore = defineStore('interaction-inserter', () => {
     const messages = session.messages.slice(-settings.value.historyLimit);
     return messages.map(message => ({
       role: message.role === 'assistant' ? 'assistant' : message.role === 'system' ? 'system' : 'user',
-      content: `${roleLabel(message.role)}：${message.content}`,
+      content: `${roleLabel(message.role, session)}：${message.content}`,
     }));
   }
 
   function buildOrderedPrompts(session: InteractionSession): (PlaceholderPrompt | RolePrompt)[] {
-    return convertPresetToOrderedPrompts(settings.value.preset, {
+    return convertPresetToOrderedPrompts(resolveActiveInteractionPreset(), {
       mode: session.mode,
       prompts: settings.value.prompts,
       contextPrompt: buildContextPrompt(session),
@@ -466,7 +624,13 @@ export const useInteractionStore = defineStore('interaction-inserter', () => {
       return;
     }
 
-    const orderedPrompts = buildOrderedPrompts(session);
+    let orderedPrompts: (PlaceholderPrompt | RolePrompt)[];
+    try {
+      orderedPrompts = buildOrderedPrompts(session);
+    } catch (error) {
+      toastr.error(`互动预设读取失败：${error instanceof Error ? error.message : String(error)}`);
+      return;
+    }
     draft.value = '';
     appendMessage(session, 'user', input);
     const assistantMessage = appendMessage(session, 'assistant', '');
@@ -522,7 +686,7 @@ export const useInteractionStore = defineStore('interaction-inserter', () => {
           ? []
           : [
               `## ${session.title}`,
-              ...session.messages.map(message => `【${roleLabel(message.role)}】${message.content}`),
+              ...session.messages.map(message => `【${roleLabel(message.role, session)}】${message.content}`),
             ],
       )
       .join('\n\n')
@@ -573,6 +737,25 @@ export const useInteractionStore = defineStore('interaction-inserter', () => {
     return true;
   }
 
+  async function appendInteractionToCurrentMessage(content: string): Promise<boolean> {
+    const currentMessage = getChatMessages(-1)[0];
+    if (!currentMessage) {
+      toastr.warning('当前没有可插入的楼层消息');
+      return false;
+    }
+    const nextMessage = [currentMessage.message.trimEnd(), content.trim()].filter(Boolean).join('\n\n');
+    await setChatMessages(
+      [
+        {
+          message_id: currentMessage.message_id,
+          message: nextMessage,
+        },
+      ],
+      { refresh: 'affected' },
+    );
+    return true;
+  }
+
   async function clearWorldbookEntry() {
     const worldbookName = getCharacterWorldbookName();
     if (!worldbookName) return;
@@ -609,7 +792,11 @@ export const useInteractionStore = defineStore('interaction-inserter', () => {
       toastr.warning('没有可合并的互动内容');
       return;
     }
-    const merged = await upsertInteractionEntry(makeWorldbookContent(rawInteraction));
+    const content = makeWorldbookContent(rawInteraction);
+    const merged =
+      settings.value.insertTarget === 'message'
+        ? await appendInteractionToCurrentMessage(content)
+        : await upsertInteractionEntry(content);
     if (!merged) return;
     for (const session of state.value.sessions) {
       if (session.messages.length > 0) {
@@ -618,7 +805,7 @@ export const useInteractionStore = defineStore('interaction-inserter', () => {
     }
     persistState();
     closeWorkbench();
-    toastr.success('已合并到世界书');
+    toastr.success(settings.value.insertTarget === 'message' ? '已插入当前楼层正文' : '已合并到世界书');
   }
 
   async function copyInteractionRecords() {
@@ -626,18 +813,8 @@ export const useInteractionStore = defineStore('interaction-inserter', () => {
     toastr.success('已复制互动记录');
   }
 
-  eventOn(tavern_events.MESSAGE_RECEIVED, async () => {
-    if (settings.value.clearWorldbookOnNewMainMessage) {
-      await clearWorldbookEntry();
-    }
-  });
-  eventOn(tavern_events.MESSAGE_SWIPED, async () => {
-    if (settings.value.clearWorldbookOnNewMainMessage) {
-      await clearWorldbookEntry();
-    }
-  });
-  eventOn(tavern_events.MESSAGE_UPDATED, async () => {
-    if (settings.value.clearWorldbookOnNewMainMessage) {
+  eventOn(tavern_events.MESSAGE_SENT, async () => {
+    if (settings.value.insertTarget === 'worldbook' && settings.value.clearWorldbookOnNewMainMessage) {
       await clearWorldbookEntry();
     }
   });
@@ -653,7 +830,11 @@ export const useInteractionStore = defineStore('interaction-inserter', () => {
     selectedMode,
     isGenerating,
     currentTavernModel,
-    presetJsonDraft,
+    customApiModels,
+    customApiModelsLoading,
+    tavernPresetNames,
+    editingMessageId,
+    editingMessageDraft,
     activeSession,
     activeCharacter,
     canSend,
@@ -663,7 +844,8 @@ export const useInteractionStore = defineStore('interaction-inserter', () => {
     closeSidebar,
     toggleSidebar,
     resetSettings,
-    syncPresetJsonDraft,
+    refreshCustomApiModels,
+    refreshTavernPresetNames,
     importPresetJsonFile,
     exportPresetJson,
     resetInteractionPreset,
@@ -675,6 +857,10 @@ export const useInteractionStore = defineStore('interaction-inserter', () => {
     switchSession,
     deleteSession,
     toggleSessionMerged,
+    startEditingMessage,
+    cancelEditingMessage,
+    saveEditingMessage,
+    deleteMessage,
     sendMessage,
     stopGeneration,
     clearAll,

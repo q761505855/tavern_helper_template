@@ -80,6 +80,7 @@ const PLACEHOLDER_IDENTIFIER_MAP: Record<string, InteractionPlaceholderPrompt> =
 
 const DEFAULT_PROMPT_ORDER = [
   'main',
+  'iiCommonPrompt',
   'worldInfoBefore',
   'personaDescription',
   'charDescription',
@@ -113,50 +114,66 @@ export const DEFAULT_INTERACTION_PRESET: PresetLike = {
   names_behavior: 0,
   send_if_empty: '',
   impersonation_prompt:
-    "[Write your next reply from the point of view of {{user}}, using the chat history so far as a guideline for the writing style of {{user}}. Don't write as {{char}} or system. Don't describe actions of {{char}}.]",
-  new_chat_prompt: '[Start a new Chat]',
-  new_group_chat_prompt: '[Start a new group chat. Group members: {{group}}]',
-  new_example_chat_prompt: '[Example Chat]',
-  continue_nudge_prompt: '[Continue your last message without repeating its original content.]',
-  bias_preset_selected: 'Default (none)',
+    '[请从 {{user}} 的视角续写下一条回复，并参考目前聊天记录中的 {{user}} 写作风格。不要扮演 {{char}} 或系统，不要描写 {{char}} 的行动。]',
+  new_chat_prompt: '[开始新的聊天]',
+  new_group_chat_prompt: '[开始新的群聊。群成员：{{group}}]',
+  new_example_chat_prompt: '[示例对话]',
+  continue_nudge_prompt: '[继续上一条回复，不要重复已有内容。]',
+  bias_preset_selected: '默认（无）',
   wi_format: '{0}',
   scenario_format: '{{scenario}}',
   personality_format: '{{personality}}',
-  group_nudge_prompt: '[Write the next reply only as {{char}}.]',
+  group_nudge_prompt: '[只以 {{char}} 的身份写下一条回复。]',
   stream_openai: true,
   prompts: [
-    normalPrompt('main', 'Main Prompt', 'system', "Write {{char}}'s next reply in a fictional chat between {{char}} and {{user}}."),
-    normalPrompt('nsfw', 'Auxiliary Prompt', 'system', ''),
-    placeholderPrompt('dialogueExamples', 'Chat Examples'),
-    normalPrompt('jailbreak', 'Post-History Instructions', 'system', ''),
-    placeholderPrompt('chatHistory', 'Chat History'),
-    placeholderPrompt('worldInfoAfter', 'World Info (after)'),
-    placeholderPrompt('worldInfoBefore', 'World Info (before)'),
+    normalPrompt(
+      'main',
+      '互动插入器主提示词',
+      'system',
+      '你正在为互动插入器生成一次临时互动回复。互动发生在主剧情楼层之间，需要承接当前角色卡、世界信息、聊天记录和玩家刚刚输入的内容，但不要把它写成新的主剧情楼层。',
+    ),
+    normalPrompt('nsfw', '辅助提示词', 'system', ''),
+    placeholderPrompt('dialogueExamples', '示例对话'),
+    normalPrompt(
+      'jailbreak',
+      '后置约束',
+      'system',
+      '只输出本轮互动中 AI 应给出的回复内容。不要总结提示词，不要解释你的写作策略，不要替玩家决定下一步行动。',
+    ),
+    placeholderPrompt('chatHistory', '聊天记录'),
+    placeholderPrompt('worldInfoAfter', '世界信息（后）'),
+    placeholderPrompt('worldInfoBefore', '世界信息（前）'),
     normalPrompt(
       'enhanceDefinitions',
-      'Enhance Definitions',
+      '增强角色定义',
       'system',
-      "If you have more knowledge of {{char}}, add to the character's lore and personality to enhance them but keep the Character Sheet's definitions absolute.",
+      '如需补充角色表现，只能从已有角色卡、世界信息和聊天记录中合理推断。不要为了互动方便而新增会改变主剧情事实的设定。',
     ),
-    placeholderPrompt('charDescription', 'Char Description'),
-    placeholderPrompt('charPersonality', 'Char Personality'),
-    placeholderPrompt('scenario', 'Scenario'),
-    placeholderPrompt('personaDescription', 'Persona Description'),
+    placeholderPrompt('charDescription', '角色描述'),
+    placeholderPrompt('charPersonality', '角色性格'),
+    placeholderPrompt('scenario', '场景'),
+    placeholderPrompt('personaDescription', '用户人格'),
     normalPrompt(
       'iiCommonPrompt',
-      'Interaction Inserter: Common Prompt',
+      '互动插入器：通用提示词',
       'system',
-      'Treat the current interaction as a temporary layer between main story turns. Focus on local, continuable interaction details instead of generating a full new main-plot segment.',
+      [
+        '这是一次楼层间的临时互动，不是主剧情续写。',
+        '只回应本轮玩家输入，并自然承接已有互动记录。',
+        '不要直接推进主剧情，不要制造大跨度时间跳转、场景切换或无法回收的新事件。',
+        '不要替玩家说话、行动、思考或做决定。',
+        '优先写即时台词、细小动作、表情、语气和局部反馈，让结果可以被之后的主剧情吸收。',
+      ].join('\n'),
     ),
     normalPrompt(
       'iiModePrompt',
-      'Interaction Inserter: Current Mode Prompt',
+      '互动插入器：当前模式提示词',
       'system',
       '{{ii_scene_prompt}}{{ii_private_prompt}}{{ii_remote_prompt}}',
     ),
-    normalPrompt('iiContextPrompt', 'Interaction Inserter: Context Prompt', 'system', '{{ii_context_prompt}}'),
-    extensionPrompt('iiInteractionHistory', 'Interaction Inserter: Interaction History', 'interaction_history'),
-    extensionPrompt('iiUserInput', 'Interaction Inserter: User Input', 'user_input'),
+    normalPrompt('iiContextPrompt', '互动插入器：上下文提示词', 'system', '{{ii_context_prompt}}'),
+    extensionPrompt('iiInteractionHistory', '互动插入器：互动记录', 'interaction_history'),
+    extensionPrompt('iiUserInput', '互动插入器：用户输入', 'user_input'),
   ],
   prompt_order: [
     {
@@ -275,7 +292,7 @@ export function normalizePresetLike(input: unknown): PresetLike {
 }
 
 export function stringifyInteractionPreset(preset: PresetLike): string {
-  return JSON.stringify(normalizePresetLike(preset), null, 2);
+  return JSON.stringify(toSillyTavernPresetJson(preset), null, 2);
 }
 
 function placeholderPrompt(identifier: string, name: string): TavernPresetPrompt {
@@ -352,6 +369,39 @@ function normalizePresetPrompt(prompt: unknown): TavernPresetPrompt | null {
     identifier,
     name: value.name,
     role: normalizeRole(value.role),
+  };
+}
+
+function toSillyTavernPresetJson(input: unknown): PresetLike {
+  const normalizedPreset = normalizePresetLike(input);
+  const { settings: _settings, prompts_unused: _promptsUnused, ...preset } = normalizedPreset;
+  const prompts = normalizedPreset.prompts.map(prompt => {
+    const { id: _id, ...value } = prompt;
+    return value;
+  });
+  const prompt_order =
+    normalizedPreset.prompt_order.length > 0
+      ? normalizedPreset.prompt_order.map(order => ({
+          ...order,
+          order: order.order.map(entry => {
+            const { id: _id, ...value } = entry;
+            return value;
+          }),
+        }))
+      : [
+          {
+            character_id: 100001,
+            order: normalizedPreset.prompts.map(prompt => ({
+              identifier: prompt.identifier,
+              enabled: prompt.enabled !== false,
+            })),
+          },
+        ];
+
+  return {
+    ...preset,
+    prompts,
+    prompt_order,
   };
 }
 

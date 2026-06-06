@@ -8,6 +8,7 @@ const {
   buildInteractionMacros,
   convertPresetToOrderedPrompts,
   parseInteractionPresetJson,
+  stringifyInteractionPreset,
 } = require('../src/interaction-inserter/preset.ts');
 
 const prompts = {
@@ -122,6 +123,58 @@ test('falls back to prompts array order when prompt_order is missing', () => {
   assert.deepEqual(ordered.slice(0, 3), [{ role: 'system', content: 'Main prompt' }, 'world_info_before', 'persona_description']);
 });
 
+test('converts Tavern Helper preset objects returned by getPreset', () => {
+  const ordered = convertPresetToOrderedPrompts(
+    {
+      prompts: [
+        { id: 'main', name: 'Main Prompt', enabled: true, role: 'system', content: 'Main prompt' },
+        { id: 'disabled', name: 'Disabled Prompt', enabled: false, role: 'system', content: 'must not appear' },
+        { id: 'iiModePrompt', name: 'Mode Prompt', enabled: true, role: 'system', content: '{{ii_remote_prompt}}' },
+        { id: 'iiInteractionHistory', name: 'Interaction history', enabled: true, role: 'user', content: '' },
+        { id: 'iiUserInput', name: 'User input', enabled: true, role: 'user', content: '' },
+      ],
+      prompts_unused: [],
+      extensions: {},
+    },
+    {
+      mode: 'remote',
+      prompts,
+      contextPrompt: 'context rules',
+      interactionHistory: [{ role: 'user', content: 'Alice: ping' }],
+    },
+  );
+
+  assert.deepEqual(ordered, [
+    { role: 'system', content: 'Main prompt' },
+    { role: 'system', content: 'remote rules' },
+    { role: 'user', content: 'Alice: ping' },
+    'user_input',
+  ]);
+});
+
+test('exports Tavern Helper preset objects as SillyTavern preset JSON', () => {
+  const exported = JSON.parse(
+    stringifyInteractionPreset({
+      settings: { source: 'tavern-helper-internal' },
+      prompts: [
+        { id: 'main', name: 'Main Prompt', enabled: true, role: 'system', content: 'Main prompt' },
+        { id: 'disabled', name: 'Disabled Prompt', enabled: false, role: 'system', content: 'must not appear' },
+      ],
+      prompts_unused: [{ id: 'unused', name: 'Unused Prompt', role: 'system', content: 'unused' }],
+      extensions: {},
+    }),
+  );
+
+  assert.equal('settings' in exported, false);
+  assert.equal('prompts_unused' in exported, false);
+  assert.equal(exported.prompts[0].identifier, 'main');
+  assert.equal('id' in exported.prompts[0], false);
+  assert.deepEqual(exported.prompt_order[0].order, [
+    { identifier: 'main', enabled: true },
+    { identifier: 'disabled', enabled: false },
+  ]);
+});
+
 test('appends user_input when imported SillyTavern preset does not include interaction user input node', () => {
   const ordered = convertPresetToOrderedPrompts(
     tavernPreset({
@@ -178,4 +231,48 @@ test('default interaction preset is exportable as SillyTavern preset JSON', () =
   assert.ok(DEFAULT_INTERACTION_PRESET.prompts.some(prompt => prompt.identifier === 'iiUserInput'));
   assert.equal('settings' in DEFAULT_INTERACTION_PRESET, false);
   assert.equal('prompts_unused' in DEFAULT_INTERACTION_PRESET, false);
+});
+
+test('default interaction preset uses Chinese prompt text and names', () => {
+  const serialized = JSON.stringify(DEFAULT_INTERACTION_PRESET);
+  const englishDefaults = [
+    'Main Prompt',
+    'Auxiliary Prompt',
+    'Post-History Instructions',
+    'Chat History',
+    'World Info',
+    'Char Description',
+    'Char Personality',
+    'Scenario',
+    'Persona Description',
+    'Chat Examples',
+    'Interaction Inserter',
+    'Write your next reply',
+    'Start a new Chat',
+    'Continue your last message',
+    'Enhance Definitions',
+    'Default (none)',
+  ];
+
+  for (const text of englishDefaults) {
+    assert.equal(serialized.includes(text), false, `${text} should not appear in the default preset`);
+  }
+});
+
+test('default interaction preset is tailored to interaction inserter generation', () => {
+  const preset = DEFAULT_INTERACTION_PRESET;
+  const order = preset.prompt_order[0].order.filter(entry => entry.enabled !== false).map(entry => entry.identifier);
+  const mainPrompt = preset.prompts.find(prompt => prompt.identifier === 'main');
+  const commonPrompt = preset.prompts.find(prompt => prompt.identifier === 'iiCommonPrompt');
+  const modePrompt = preset.prompts.find(prompt => prompt.identifier === 'iiModePrompt');
+  const inputIndex = order.indexOf('iiUserInput');
+
+  assert.ok(order.includes('iiCommonPrompt'));
+  assert.ok(order.includes('iiModePrompt'));
+  assert.ok(order.includes('iiContextPrompt'));
+  assert.ok(inputIndex > order.indexOf('iiInteractionHistory'));
+  assert.ok(inputIndex > order.indexOf('iiCommonPrompt'));
+  assert.match(mainPrompt.content, /互动插入器|临时互动|主剧情/);
+  assert.match(commonPrompt.content, /只回应本轮|不要替玩家|不要直接推进主剧情/);
+  assert.equal(modePrompt.content, '{{ii_scene_prompt}}{{ii_private_prompt}}{{ii_remote_prompt}}');
 });

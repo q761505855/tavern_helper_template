@@ -85,12 +85,29 @@
                 :class="[`role-${message.role}`]"
               >
                 <div class="ii-role">{{ store.roleLabel(message.role) }}</div>
-                <div class="ii-content">{{ message.content || '...' }}</div>
+                <template v-if="store.editingMessageId === message.id">
+                  <textarea v-model="store.editingMessageDraft" class="ii-message-edit" />
+                  <div class="ii-message-actions">
+                    <button class="ii-mini ii-primary" type="button" @click="store.saveEditingMessage">保存</button>
+                    <button class="ii-mini" type="button" @click="store.cancelEditingMessage">取消</button>
+                  </div>
+                </template>
+                <template v-else>
+                  <div class="ii-content">{{ message.content || '...' }}</div>
+                  <div class="ii-message-actions">
+                    <button class="ii-mini" type="button" @click="store.startEditingMessage(message.id)">改</button>
+                    <button class="ii-mini ii-danger-text" type="button" @click="store.deleteMessage(message.id)">删</button>
+                  </div>
+                </template>
               </div>
             </div>
 
             <form class="ii-composer" @submit.prevent="store.sendMessage">
-              <textarea v-model="store.draft" placeholder="输入台词、动作或追问。这里是互动模式，不需要推进整段主剧情。" />
+              <textarea
+                v-model="store.draft"
+                placeholder="输入台词、动作或追问。这里是互动模式，不需要推进整段主剧情。"
+                @keydown="handleComposerKeydown"
+              />
               <button
                 class="ii-btn ii-primary"
                 :type="store.isGenerating ? 'button' : 'submit'"
@@ -107,28 +124,48 @@
           <section class="ii-setting-section">
             <h3>聊天 API</h3>
             <div class="ii-grid-3">
-              <label><span>模式</span><select v-model="store.settings.api.mode"><option value="current">当前酒馆 API</option><option value="proxy">代理预设</option><option value="custom">自定义 API</option></select></label>
               <label>
-                <span>Proxy preset</span>
-                <input v-model="store.settings.api.proxy_preset" :disabled="store.settings.api.mode !== 'proxy'" placeholder="仅代理预设模式使用" />
+                <span>模式</span>
+                <select v-model="store.settings.api.mode" @change="store.refreshCustomApiModels">
+                  <option value="current">当前酒馆 API</option>
+                  <option value="custom">自定义 API</option>
+                </select>
               </label>
               <label>
                 <span>模型</span>
                 <input v-if="store.settings.api.mode === 'current'" :value="store.currentTavernModel" disabled />
-                <input v-else v-model="store.settings.api.model" placeholder="留空或 same_as_preset 则跟随预设" />
+                <select v-else v-model="store.settings.api.model" :disabled="store.customApiModelsLoading">
+                  <option value="same_as_preset">跟随预设</option>
+                  <option v-for="model in store.customApiModels" :key="model" :value="model">{{ model }}</option>
+                </select>
               </label>
               <label>
                 <span>API URL</span>
-                <input v-model="store.settings.api.apiurl" :disabled="store.settings.api.mode !== 'custom'" placeholder="仅自定义 API 模式使用" />
+                <input
+                  v-model="store.settings.api.apiurl"
+                  :disabled="store.settings.api.mode !== 'custom'"
+                  placeholder="OpenAI 兼容地址，例如 https://api.example.com/v1"
+                  @change="store.refreshCustomApiModels"
+                />
               </label>
               <label>
                 <span>API Key</span>
-                <input v-model="store.settings.api.key" :disabled="store.settings.api.mode !== 'custom'" type="password" />
+                <input
+                  v-model="store.settings.api.key"
+                  :disabled="store.settings.api.mode !== 'custom'"
+                  type="password"
+                  @change="store.refreshCustomApiModels"
+                />
               </label>
-              <label>
-                <span>Source</span>
-                <input v-model="store.settings.api.source" :disabled="store.settings.api.mode !== 'custom'" placeholder="openai" />
-              </label>
+              <button
+                v-if="store.settings.api.mode === 'custom'"
+                class="ii-btn ii-grid-action"
+                type="button"
+                :disabled="store.customApiModelsLoading"
+                @click="store.refreshCustomApiModels"
+              >
+                {{ store.customApiModelsLoading ? '读取中' : '刷新模型' }}
+              </button>
             </div>
           </section>
 
@@ -143,16 +180,51 @@
 
           <section class="ii-setting-section">
             <h3>互动预设 JSON</h3>
-            <label><span>当前酒馆 Preset JSON 预览</span><textarea v-model="store.presetJsonDraft" class="ii-preset-json" readonly spellcheck="false" /></label>
+            <div class="ii-grid-2">
+              <label>
+                <span>预设来源</span>
+                <select v-model="store.settings.presetSource" @change="store.refreshTavernPresetNames">
+                  <option value="custom">自定义预设 JSON</option>
+                  <option value="tavern">酒馆内预设</option>
+                </select>
+              </label>
+              <label>
+                <span>酒馆预设</span>
+                <select
+                  v-model="store.settings.tavernPresetName"
+                  :disabled="store.settings.presetSource !== 'tavern' || store.tavernPresetNames.length === 0"
+                >
+                  <option v-for="presetName in store.tavernPresetNames" :key="presetName" :value="presetName">{{ presetName }}</option>
+                </select>
+              </label>
+            </div>
             <div class="ii-setting-actions">
-              <button class="ii-btn" type="button" @click="store.importPresetJsonFile">从 JSON 文件导入</button>
-              <button class="ii-btn" type="button" @click="store.exportPresetJson">导出为 JSON 文件</button>
-              <button class="ii-btn" type="button" @click="store.resetInteractionPreset">恢复默认预设</button>
+              <button v-if="store.settings.presetSource === 'tavern'" class="ii-btn" type="button" @click="store.refreshTavernPresetNames">
+                刷新酒馆预设
+              </button>
+              <button v-if="store.settings.presetSource === 'custom'" class="ii-btn" type="button" @click="store.importPresetJsonFile">
+                从 JSON 文件导入
+              </button>
+              <button v-if="store.settings.presetSource === 'custom'" class="ii-btn" type="button" @click="store.exportPresetJson">
+                导出当前预设为 JSON
+              </button>
+              <button v-if="store.settings.presetSource === 'custom'" class="ii-btn" type="button" @click="store.resetInteractionPreset">
+                恢复默认自定义预设
+              </button>
             </div>
           </section>
 
           <section class="ii-setting-section">
-            <h3>世界书插入模板</h3>
+            <h3>插入模板</h3>
+            <div class="ii-grid-2">
+              <label>
+                <span>插入方式</span>
+                <select v-model="store.settings.insertTarget">
+                  <option value="worldbook">世界书</option>
+                  <option value="message">当前楼层正文</option>
+                </select>
+              </label>
+            </div>
             <label><span>插入模板</span><textarea v-model="store.settings.worldbookTemplate" /></label>
           </section>
 
@@ -172,13 +244,16 @@
             <div class="ii-grid-4">
               <label><span>互动历史条数</span><input v-model.number="store.settings.historyLimit" type="number" min="1" max="50" /></label>
               <label class="ii-check"><input v-model="store.settings.stream" type="checkbox" />流式显示</label>
-              <label class="ii-check"><input v-model="store.settings.clearWorldbookOnNewMainMessage" type="checkbox" />新楼层/重 roll 后清空</label>
+              <label v-if="store.settings.insertTarget === 'worldbook'" class="ii-check">
+                <input v-model="store.settings.clearWorldbookOnNewMainMessage" type="checkbox" />下一轮主聊天前清空
+              </label>
             </div>
           </section>
         </main>
 
         <footer class="ii-footer">
-          <span v-if="store.view === 'workbench'">未合并内容会全量写入当前角色世界书条目“{{ store.FIXED_ENTRY_NAME }}”。</span>
+          <span v-if="store.view === 'workbench' && store.settings.insertTarget === 'message'">未合并内容会按插入模板追加到当前楼层正文末尾。</span>
+          <span v-else-if="store.view === 'workbench'">未合并内容会全量写入当前角色世界书条目“{{ store.FIXED_ENTRY_NAME }}”。</span>
           <span v-else>设置保存到脚本变量；互动记录保存到聊天变量。</span>
           <div class="ii-footer-actions">
             <button v-if="store.view === 'settings'" class="ii-btn" @click="store.resetSettings">恢复默认</button>
@@ -196,6 +271,12 @@
 import { useInteractionStore } from './store';
 
 const store = useInteractionStore();
+
+function handleComposerKeydown(event: KeyboardEvent) {
+  if (event.key !== 'Enter' || event.shiftKey || event.isComposing) return;
+  event.preventDefault();
+  void store.sendMessage();
+}
 
 const macroDocs = [
   { name: '{{ii_scene_prompt}}', description: '当下场景模式提示词；其他模式为空。', scope: '互动预设 JSON' },
