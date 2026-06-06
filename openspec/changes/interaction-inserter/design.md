@@ -62,7 +62,7 @@
 
 ### 分离实时修改导入 JSON 和发布导入 JSON
 
-开发用导入 JSON 继续指向 `http://localhost:5500/dist/互动插入器/index.js`，用于本地 watch 和实时更新。发布用导入 JSON 独立保存，指向 jsDelivr 国内镜像 `https://testingcf.jsdelivr.net/gh/q761505855/tavern_helper_template@main/dist/%E4%BA%92%E5%8A%A8%E6%8F%92%E5%85%A5%E5%99%A8/index.js`，用于把已构建脚本导入酒馆。
+开发用导入 JSON 继续指向 `http://localhost:5500/dist/interaction-inserter/index.js`，用于本地 watch 和实时更新。发布用导入 JSON 独立保存，指向 jsDelivr 国内镜像 `https://testingcf.jsdelivr.net/gh/q761505855/tavern_helper_template@main/publish/interaction-inserter/index.js`，用于把已构建脚本导入酒馆。
 
 替代方案是在同一个 JSON 中按环境切换地址，但 Tavern Helper 导入文件本身没有运行时环境选择能力；拆成两个文件能避免发布时误引用 `localhost`。
 
