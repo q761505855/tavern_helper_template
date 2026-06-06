@@ -36,7 +36,7 @@ const SettingsSchema = z
       })
       .prefault({}),
     worldbookTemplate: z.string().prefault(DEFAULT_PROMPTS.worldbookTemplate),
-    historyLimit: z.coerce.number().transform(value => _.clamp(Math.trunc(value), 1, 50)).prefault(8),
+    historyLimit: z.coerce.number().transform(value => _.clamp(Math.trunc(value), 1, 50)).prefault(50),
     stream: z.boolean().prefault(true),
     clearAfterMerge: z.boolean().prefault(true),
     clearWorldbookOnNewMainMessage: z.boolean().prefault(true),

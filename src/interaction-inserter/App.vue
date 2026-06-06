@@ -91,8 +91,14 @@
 
             <form class="ii-composer" @submit.prevent="store.sendMessage">
               <textarea v-model="store.draft" placeholder="输入台词、动作或追问。这里是互动模式，不需要推进整段主剧情。" />
-              <button class="ii-btn" type="button" :disabled="!store.isGenerating" @click="store.stopGeneration">停止</button>
-              <button class="ii-btn ii-primary" type="submit" :disabled="!store.canSend">发送</button>
+              <button
+                class="ii-btn ii-primary"
+                :type="store.isGenerating ? 'button' : 'submit'"
+                :disabled="!store.isGenerating && !store.canSend"
+                @click="store.isGenerating && store.stopGeneration()"
+              >
+                {{ store.isGenerating ? '停止' : '发送' }}
+              </button>
             </form>
           </section>
         </main>
