@@ -1,7 +1,6 @@
 import {
   buildWorldbookContent,
   convertPresetToOrderedPrompts,
-  createDefaultInteractionPreset,
   normalizePresetLike,
   parseInteractionPresetJson,
   stringifyInteractionPreset,
@@ -9,6 +8,8 @@ import {
   type PresetLike,
 } from './preset';
 import { makeInteractionSessionTitle, readTavernUserName, roleDisplayName } from './labels';
+import defaultInteractionPreset from '../../tavern_sync/互动插入器预设/互动插入器预设.json';
+import defaultPromptConfig from '../../tavern_sync/互动插入器预设/默认提示词配置.json';
 
 type MessageRole = 'user' | 'assistant' | 'system';
 
@@ -18,19 +19,15 @@ const CHAT_VARIABLE_KEY = 'interactionInserter';
 const DEFAULT_PRESET_CONFIG_ID = 'default-preset';
 const DEFAULT_PROMPT_CONFIG_ID = 'default-prompt-config';
 
+const DEFAULT_PROMPT_CONFIG_NAME = defaultPromptConfig.name;
 const DEFAULT_PROMPTS = {
-  scene: `当前模式：当下场景。
-你可以扮演当前场景里合理存在的角色、环境反馈或即时后果。重点回应玩家刚刚输入的动作、台词、追问和观察。不要主动跳到新地点、新时间或新的主线事件。`,
-  private: `当前模式：一对一。
-请聚焦玩家指定的角色标识，并从已有剧情里匹配最合理的人物。保持该角色的口吻、关系、情绪和现场限制。回复应像近距离私下互动，不让无关角色突然插入。`,
-  remote: `当前模式：远程通信。
-请把互动写成消息、通话、通讯器、传音或其他远程交流。远端角色只能知道通讯中能获知的信息；保留距离、延迟、误解、信号或信息不完整带来的限制。`,
-  worldbookTemplate: `以下内容来自互动插入器，发生在上一轮主剧情之后、下一轮主剧情之前。它们不是新的主剧情楼层，但其中已经发生的事实、承诺、关系变化、线索、伤势、物品变化和情绪余波都应被后续主剧情承认。
-
-吸收这些内容时，请优先提炼可延续的结果，不要机械复述完整对话；除非玩家要求回顾，否则只在相关时自然引用。
-
-{{ii_interaction_records}}`,
+  ...defaultPromptConfig.prompts,
+  worldbookTemplate: defaultPromptConfig.worldbookTemplate,
 };
+
+function createDefaultInteractionPreset(): PresetLike {
+  return normalizePresetLike(JSON.parse(JSON.stringify(defaultInteractionPreset)));
+}
 
 const ApiSettingsSchema = z
   .object({
@@ -63,7 +60,7 @@ const PresetConfigSchema = z
 const PromptConfigSchema = z
   .object({
     id: z.string().prefault(DEFAULT_PROMPT_CONFIG_ID),
-    name: z.string().prefault('默认提示词配置'),
+    name: z.string().prefault(DEFAULT_PROMPT_CONFIG_NAME),
     prompts: PromptValuesSchema.prefault({}),
     worldbookTemplate: z.string().prefault(DEFAULT_PROMPTS.worldbookTemplate),
   })
@@ -108,7 +105,7 @@ const SettingsSchema = z
         : [
             PromptConfigSchema.parse({
               id: DEFAULT_PROMPT_CONFIG_ID,
-              name: '默认提示词配置',
+              name: DEFAULT_PROMPT_CONFIG_NAME,
               prompts: settings.prompts ?? {},
               worldbookTemplate: settings.worldbookTemplate ?? DEFAULT_PROMPTS.worldbookTemplate,
             }),
@@ -310,7 +307,7 @@ export const useInteractionStore = defineStore('interaction-inserter', () => {
   function ensureActivePromptConfig(): PromptConfig {
     const existing = settings.value.promptConfigs.find(config => config.id === settings.value.activePromptConfigId);
     if (existing) return existing;
-    const fallback = settings.value.promptConfigs[0] ?? makePromptConfig('默认提示词配置');
+    const fallback = settings.value.promptConfigs[0] ?? makePromptConfig(DEFAULT_PROMPT_CONFIG_NAME);
     if (settings.value.promptConfigs.length === 0) {
       settings.value.promptConfigs.push(fallback);
     }
@@ -567,7 +564,7 @@ export const useInteractionStore = defineStore('interaction-inserter', () => {
   }
 
   function createPromptConfig() {
-    const name = uniqueConfigName(settings.value.promptConfigs, '默认提示词配置');
+    const name = uniqueConfigName(settings.value.promptConfigs, DEFAULT_PROMPT_CONFIG_NAME);
     const config = makePromptConfig(name);
     settings.value.promptConfigs.push(config);
     settings.value.activePromptConfigId = config.id;

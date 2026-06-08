@@ -1,15 +1,19 @@
 /* eslint-disable @typescript-eslint/no-require-imports, import-x/no-nodejs-modules */
 const assert = require('node:assert/strict');
+const { readFileSync } = require('node:fs');
 const { test } = require('node:test');
 
 const {
-  DEFAULT_INTERACTION_PRESET,
   buildWorldbookContent,
   buildInteractionMacros,
   convertPresetToOrderedPrompts,
+  normalizePresetLike,
   parseInteractionPresetJson,
   stringifyInteractionPreset,
 } = require('../src/interaction-inserter/preset.ts');
+
+const defaultPresetJson = JSON.parse(readFileSync('tavern_sync/互动插入器预设/互动插入器预设.json', 'utf8'));
+const DEFAULT_INTERACTION_PRESET = normalizePresetLike(defaultPresetJson);
 
 const prompts = {
   scene: 'scene rules',
@@ -227,8 +231,13 @@ test('parses and preserves real SillyTavern preset shape', () => {
 test('default interaction preset is exportable as SillyTavern preset JSON', () => {
   assert.ok(Array.isArray(DEFAULT_INTERACTION_PRESET.prompts));
   assert.ok(Array.isArray(DEFAULT_INTERACTION_PRESET.prompt_order));
-  assert.ok(DEFAULT_INTERACTION_PRESET.prompts.some(prompt => prompt.identifier === 'iiInteractionHistory'));
-  assert.ok(DEFAULT_INTERACTION_PRESET.prompts.some(prompt => prompt.identifier === 'iiUserInput'));
+  assert.deepEqual(DEFAULT_INTERACTION_PRESET.prompt_order, defaultPresetJson.prompt_order);
+  assert.ok(
+    DEFAULT_INTERACTION_PRESET.prompts.some(
+      prompt => prompt.extra?.interactionInserter?.type === 'interaction_history',
+    ),
+  );
+  assert.ok(DEFAULT_INTERACTION_PRESET.prompts.some(prompt => prompt.extra?.interactionInserter?.type === 'user_input'));
   assert.equal('settings' in DEFAULT_INTERACTION_PRESET, false);
   assert.equal('prompts_unused' in DEFAULT_INTERACTION_PRESET, false);
 });
@@ -239,13 +248,6 @@ test('default interaction preset uses Chinese prompt text and names', () => {
     'Main Prompt',
     'Auxiliary Prompt',
     'Post-History Instructions',
-    'Chat History',
-    'World Info',
-    'Char Description',
-    'Char Personality',
-    'Scenario',
-    'Persona Description',
-    'Chat Examples',
     'Interaction Inserter',
     'Write your next reply',
     'Start a new Chat',
@@ -263,16 +265,18 @@ test('default interaction preset is tailored to interaction inserter generation'
   const preset = DEFAULT_INTERACTION_PRESET;
   const order = preset.prompt_order[0].order.filter(entry => entry.enabled !== false).map(entry => entry.identifier);
   const mainPrompt = preset.prompts.find(prompt => prompt.identifier === 'main');
-  const commonPrompt = preset.prompts.find(prompt => prompt.identifier === 'iiCommonPrompt');
-  const modePrompt = preset.prompts.find(prompt => prompt.identifier === 'iiModePrompt');
-  const inputIndex = order.indexOf('iiUserInput');
+  const corePrompt = preset.prompts.find(prompt => prompt.name === '✅互动插入器核心规则');
+  const modePrompt = preset.prompts.find(prompt => prompt.name === '互动插入器：当前模式提示词');
+  const historyPrompt = preset.prompts.find(prompt => prompt.extra?.interactionInserter?.type === 'interaction_history');
+  const inputPrompt = preset.prompts.find(prompt => prompt.extra?.interactionInserter?.type === 'user_input');
+  const inputIndex = order.indexOf(inputPrompt.identifier);
 
-  assert.ok(order.includes('iiCommonPrompt'));
-  assert.ok(order.includes('iiModePrompt'));
-  assert.ok(order.includes('iiContextPrompt'));
-  assert.ok(inputIndex > order.indexOf('iiInteractionHistory'));
-  assert.ok(inputIndex > order.indexOf('iiCommonPrompt'));
-  assert.match(mainPrompt.content, /互动插入器|临时互动|主剧情/);
-  assert.match(commonPrompt.content, /只回应本轮|不要替玩家|不要直接推进主剧情/);
+  assert.ok(order.includes(modePrompt.identifier));
+  assert.ok(order.includes(historyPrompt.identifier));
+  assert.ok(order.includes(inputPrompt.identifier));
+  assert.ok(inputIndex > order.indexOf(historyPrompt.identifier));
+  assert.ok(inputIndex > order.indexOf(corePrompt.identifier));
+  assert.match(mainPrompt.content, /互动插入器|轻量互动|主剧情/);
+  assert.match(corePrompt.content, /只回应本轮|输出结果应像角色|不解释写作策略/);
   assert.equal(modePrompt.content, '{{ii_scene_prompt}}{{ii_private_prompt}}{{ii_remote_prompt}}');
 });

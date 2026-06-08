@@ -5,6 +5,7 @@ const { test } = require('node:test');
 
 const appVue = readFileSync('src/interaction-inserter/App.vue', 'utf8');
 const storeTs = readFileSync('src/interaction-inserter/store.ts', 'utf8');
+const defaultPromptConfig = JSON.parse(readFileSync('tavern_sync/互动插入器预设/默认提示词配置.json', 'utf8'));
 
 test('custom interaction presets use collection actions without reset default', () => {
   const customOnlyActions = [
@@ -55,12 +56,15 @@ test('interaction messages expose edit and delete actions', () => {
   assert.match(appVue, /v-if="store\.editingMessageId === message\.id"/);
 });
 
-test('default mode and worldbook prompts are written for interaction inserter flow', () => {
-  assert.match(storeTs, /当前模式：当下场景/);
-  assert.match(storeTs, /当前模式：一对一/);
-  assert.match(storeTs, /当前模式：远程通信/);
-  assert.match(storeTs, /来自互动插入器/);
-  assert.match(storeTs, /不是新的主剧情楼层/);
+test('default mode and worldbook prompts come from bundled prompt config JSON', () => {
+  assert.match(storeTs, /默认提示词配置\.json/);
+  assert.match(storeTs, /defaultPromptConfig\.prompts/);
+  assert.match(storeTs, /defaultPromptConfig\.worldbookTemplate/);
+  assert.match(defaultPromptConfig.prompts.scene, /<scene_mode>/);
+  assert.match(defaultPromptConfig.prompts.private, /<private_mode>/);
+  assert.match(defaultPromptConfig.prompts.remote, /<remote_mode>/);
+  assert.match(defaultPromptConfig.worldbookTemplate, /来自互动插入器/);
+  assert.match(defaultPromptConfig.worldbookTemplate, /不是新的主剧情楼层/);
 });
 
 test('interaction worldbook entry is cleared on next user message, not after received or reroll events', () => {
