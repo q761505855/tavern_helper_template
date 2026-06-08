@@ -4,8 +4,20 @@ const { readFileSync } = require('node:fs');
 const { test } = require('node:test');
 
 const appVue = readFileSync('src/interaction-inserter/App.vue', 'utf8');
+const indexTs = readFileSync('src/interaction-inserter/index.ts', 'utf8');
 const storeTs = readFileSync('src/interaction-inserter/store.ts', 'utf8');
 const defaultPromptConfig = JSON.parse(readFileSync('tavern_sync/互动插入器预设/默认提示词配置.json', 'utf8'));
+
+test('interaction inserter also registers an extensions menu entry', () => {
+  assert.match(indexTs, /MENU_ITEM_CONTAINER_ID = 'interaction-inserter-extensions-menu-container'/);
+  assert.match(indexTs, /MENU_ITEM_ID = 'interaction-inserter-menu-item'/);
+  assert.match(indexTs, /#extensionsMenu/);
+  assert.match(indexTs, /#extensionsMenuButton/);
+  assert.match(indexTs, /extension_container interactable/);
+  assert.match(indexTs, /list-group-item flex-container flexGap5 interactable/);
+  assert.match(indexTs, /fa-fw fa-solid fa-comments extensionsMenuExtensionButton/);
+  assert.match(indexTs, /eventEmit\('interaction-inserter:open'\)/);
+});
 
 test('custom interaction presets use collection actions without reset default', () => {
   const customOnlyActions = [
