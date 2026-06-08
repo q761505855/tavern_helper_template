@@ -15,6 +15,8 @@ type MessageRole = 'user' | 'assistant' | 'system';
 const FIXED_ENTRY_NAME = '本轮互动内容';
 const SCRIPT_VARIABLE_KEY = 'interactionInserterSettings';
 const CHAT_VARIABLE_KEY = 'interactionInserter';
+const DEFAULT_PRESET_CONFIG_ID = 'default-preset';
+const DEFAULT_PROMPT_CONFIG_ID = 'default-prompt-config';
 
 const DEFAULT_PROMPTS = {
   scene: `当前模式：当下场景。
@@ -39,28 +41,96 @@ const ApiSettingsSchema = z
   })
   .prefault({});
 
+const PromptValuesSchema = z
+  .object({
+    scene: z.string().prefault(DEFAULT_PROMPTS.scene),
+    private: z.string().prefault(DEFAULT_PROMPTS.private),
+    remote: z.string().prefault(DEFAULT_PROMPTS.remote),
+  })
+  .prefault({});
+
+const PresetConfigSchema = z
+  .object({
+    id: z.string().prefault(DEFAULT_PRESET_CONFIG_ID),
+    name: z.string().prefault('默认预设'),
+    preset: z
+      .custom<PresetLike>()
+      .transform(value => normalizePresetLike(value))
+      .prefault(createDefaultInteractionPreset()),
+  })
+  .prefault({});
+
+const PromptConfigSchema = z
+  .object({
+    id: z.string().prefault(DEFAULT_PROMPT_CONFIG_ID),
+    name: z.string().prefault('默认提示词配置'),
+    prompts: PromptValuesSchema.prefault({}),
+    worldbookTemplate: z.string().prefault(DEFAULT_PROMPTS.worldbookTemplate),
+  })
+  .prefault({});
+
 const SettingsSchema = z
   .object({
     api: ApiSettingsSchema.prefault({}),
     presetSource: z.enum(['custom', 'tavern']).prefault('custom'),
     tavernPresetName: z.string().prefault(''),
-    preset: z
-      .custom<PresetLike>()
-      .transform(value => normalizePresetLike(value))
-      .prefault(createDefaultInteractionPreset()),
-    prompts: z
-      .object({
-        scene: z.string().prefault(DEFAULT_PROMPTS.scene),
-        private: z.string().prefault(DEFAULT_PROMPTS.private),
-        remote: z.string().prefault(DEFAULT_PROMPTS.remote),
-      })
-      .prefault({}),
-    worldbookTemplate: z.string().prefault(DEFAULT_PROMPTS.worldbookTemplate),
+    preset: z.unknown().optional(),
+    presetConfigs: z.array(PresetConfigSchema).catch([]).prefault([]),
+    activePresetConfigId: z.string().prefault(''),
+    prompts: PromptValuesSchema.optional(),
+    worldbookTemplate: z.string().optional(),
+    promptConfigs: z.array(PromptConfigSchema).catch([]).prefault([]),
+    activePromptConfigId: z.string().prefault(''),
     insertTarget: z.enum(['worldbook', 'message']).prefault('message'),
     historyLimit: z.coerce.number().transform(value => _.clamp(Math.trunc(value), 1, 50)).prefault(50),
     stream: z.boolean().prefault(true),
     clearAfterMerge: z.boolean().prefault(true),
     clearWorldbookOnNewMainMessage: z.boolean().prefault(true),
+  })
+  .transform(settings => {
+    const presetConfigs =
+      settings.presetConfigs.length > 0
+        ? settings.presetConfigs
+        : [
+            PresetConfigSchema.parse({
+              id: DEFAULT_PRESET_CONFIG_ID,
+              name: '默认预设',
+              preset: settings.preset ?? createDefaultInteractionPreset(),
+            }),
+          ];
+    const activePresetConfigId = presetConfigs.some(config => config.id === settings.activePresetConfigId)
+      ? settings.activePresetConfigId
+      : presetConfigs[0].id;
+
+    const promptConfigs =
+      settings.promptConfigs.length > 0
+        ? settings.promptConfigs
+        : [
+            PromptConfigSchema.parse({
+              id: DEFAULT_PROMPT_CONFIG_ID,
+              name: '默认提示词配置',
+              prompts: settings.prompts ?? {},
+              worldbookTemplate: settings.worldbookTemplate ?? DEFAULT_PROMPTS.worldbookTemplate,
+            }),
+          ];
+    const activePromptConfigId = promptConfigs.some(config => config.id === settings.activePromptConfigId)
+      ? settings.activePromptConfigId
+      : promptConfigs[0].id;
+
+    return {
+      api: settings.api,
+      presetSource: settings.presetSource,
+      tavernPresetName: settings.tavernPresetName,
+      presetConfigs,
+      activePresetConfigId,
+      promptConfigs,
+      activePromptConfigId,
+      insertTarget: settings.insertTarget,
+      historyLimit: settings.historyLimit,
+      stream: settings.stream,
+      clearAfterMerge: settings.clearAfterMerge,
+      clearWorldbookOnNewMainMessage: settings.clearWorldbookOnNewMainMessage,
+    };
   })
   .prefault({});
 
@@ -96,6 +166,8 @@ const ChatStateSchema = z
   .prefault({});
 
 type InteractionSettings = z.infer<typeof SettingsSchema>;
+type PresetConfig = InteractionSettings['presetConfigs'][number];
+type PromptConfig = InteractionSettings['promptConfigs'][number];
 type ChatState = z.infer<typeof ChatStateSchema>;
 type CharacterRef = z.infer<typeof CharacterRefSchema>;
 type InteractionMessage = z.infer<typeof InteractionMessageSchema>;
@@ -189,10 +261,69 @@ export const useInteractionStore = defineStore('interaction-inserter', () => {
   const editingMessageId = ref<string | null>(null);
   const editingMessageDraft = ref('');
 
+  function uniqueConfigName(items: { name: string }[], baseName: string): string {
+    const normalizedBaseName = baseName.trim() || '未命名配置';
+    if (!items.some(item => item.name === normalizedBaseName)) {
+      return normalizedBaseName;
+    }
+    for (let index = 2; ; index += 1) {
+      const nextName = `${normalizedBaseName} ${index}`;
+      if (!items.some(item => item.name === nextName)) {
+        return nextName;
+      }
+    }
+  }
+
+  function promptConfigName(defaultName: string): string | null {
+    const name = window.prompt('请输入配置名称', defaultName)?.trim();
+    return name || null;
+  }
+
+  function makePresetConfig(name: string, preset: PresetLike): PresetConfig {
+    return PresetConfigSchema.parse({
+      id: makeId('preset-config'),
+      name,
+      preset,
+    });
+  }
+
+  function makePromptConfig(name: string, prompts = PromptValuesSchema.parse({}), worldbookTemplate = DEFAULT_PROMPTS.worldbookTemplate): PromptConfig {
+    return PromptConfigSchema.parse({
+      id: makeId('prompt-config'),
+      name,
+      prompts,
+      worldbookTemplate,
+    });
+  }
+
+  function ensureActivePresetConfig(): PresetConfig {
+    const existing = settings.value.presetConfigs.find(config => config.id === settings.value.activePresetConfigId);
+    if (existing) return existing;
+    const fallback = settings.value.presetConfigs[0] ?? makePresetConfig('默认预设', createDefaultInteractionPreset());
+    if (settings.value.presetConfigs.length === 0) {
+      settings.value.presetConfigs.push(fallback);
+    }
+    settings.value.activePresetConfigId = fallback.id;
+    return fallback;
+  }
+
+  function ensureActivePromptConfig(): PromptConfig {
+    const existing = settings.value.promptConfigs.find(config => config.id === settings.value.activePromptConfigId);
+    if (existing) return existing;
+    const fallback = settings.value.promptConfigs[0] ?? makePromptConfig('默认提示词配置');
+    if (settings.value.promptConfigs.length === 0) {
+      settings.value.promptConfigs.push(fallback);
+    }
+    settings.value.activePromptConfigId = fallback.id;
+    return fallback;
+  }
+
   const activeSession = computed(() => state.value.sessions.find(session => session.id === state.value.activeSessionId));
   const activeCharacter = computed(() =>
     state.value.characters.find(character => character.id === activeSession.value?.characterId),
   );
+  const activePresetConfig = computed(() => ensureActivePresetConfig());
+  const activePromptConfig = computed(() => ensureActivePromptConfig());
   const canSend = computed(() => draft.value.trim().length > 0 && !isGenerating.value);
 
   function sessionCharacterName(session: InteractionSession): string | null {
@@ -276,7 +407,14 @@ export const useInteractionStore = defineStore('interaction-inserter', () => {
   }
 
   function resetSettings() {
-    settings.value = SettingsSchema.parse({});
+    settings.value = SettingsSchema.parse({
+      presetSource: settings.value.presetSource,
+      tavernPresetName: settings.value.tavernPresetName,
+      presetConfigs: settings.value.presetConfigs,
+      activePresetConfigId: settings.value.activePresetConfigId,
+      promptConfigs: settings.value.promptConfigs,
+      activePromptConfigId: settings.value.activePromptConfigId,
+    });
     refreshTavernPresetNames();
     persistSettings();
     toastr.success('已恢复默认设置');
@@ -307,9 +445,22 @@ export const useInteractionStore = defineStore('interaction-inserter', () => {
     }
   }
 
-  function applyPresetJsonText(content: string) {
+  function createPresetConfig() {
+    const name = uniqueConfigName(settings.value.presetConfigs, '默认预设');
+    const config = makePresetConfig(name, createDefaultInteractionPreset());
+    settings.value.presetConfigs.push(config);
+    settings.value.activePresetConfigId = config.id;
+    settings.value.presetSource = 'custom';
+    persistSettings();
+    toastr.success('已新建互动预设配置');
+  }
+
+  function applyPresetJsonText(content: string, fallbackName = '导入预设') {
     try {
-      settings.value.preset = parseInteractionPresetJson(content);
+      const name = uniqueConfigName(settings.value.presetConfigs, fallbackName.replace(/\.json$/i, '') || '导入预设');
+      const config = makePresetConfig(name, parseInteractionPresetJson(content));
+      settings.value.presetConfigs.push(config);
+      settings.value.activePresetConfigId = config.id;
       settings.value.presetSource = 'custom';
       persistSettings();
       toastr.success('已导入互动预设 JSON');
@@ -329,7 +480,7 @@ export const useInteractionStore = defineStore('interaction-inserter', () => {
         if (!file) return;
         file
           .text()
-          .then(applyPresetJsonText)
+          .then(content => applyPresetJsonText(content, file.name))
           .catch(error => {
             toastr.error(`读取互动预设 JSON 失败：${error instanceof Error ? error.message : String(error)}`);
           });
@@ -351,22 +502,37 @@ export const useInteractionStore = defineStore('interaction-inserter', () => {
     const url = URL.createObjectURL(blob);
     const link = document.createElement('a');
     link.href = url;
-    link.download = '互动插入器预设.json';
+    link.download = `${activePresetConfig.value.name || '互动插入器预设'}.json`;
     link.click();
     URL.revokeObjectURL(url);
     toastr.success('已导出互动预设 JSON');
   }
 
-  function resetInteractionPreset() {
-    settings.value.preset = createDefaultInteractionPreset();
+  function savePresetConfigAs() {
+    const name = promptConfigName(`${activePresetConfig.value.name} 副本`);
+    if (!name) return;
+    const config = makePresetConfig(uniqueConfigName(settings.value.presetConfigs, name), klona(activePresetConfig.value.preset));
+    settings.value.presetConfigs.push(config);
+    settings.value.activePresetConfigId = config.id;
     settings.value.presetSource = 'custom';
     persistSettings();
-    toastr.success('已恢复默认互动预设');
+    toastr.success('已保存为新的互动预设配置');
+  }
+
+  function deletePresetConfig() {
+    if (settings.value.presetConfigs.length <= 1) {
+      toastr.warning('至少保留一个互动预设配置');
+      return;
+    }
+    _.remove(settings.value.presetConfigs, config => config.id === settings.value.activePresetConfigId);
+    settings.value.activePresetConfigId = settings.value.presetConfigs[0]?.id ?? '';
+    persistSettings();
+    toastr.success('已删除互动预设配置');
   }
 
   function resolveActiveInteractionPreset(): PresetLike {
     if (settings.value.presetSource !== 'tavern') {
-      return settings.value.preset;
+      return activePresetConfig.value.preset;
     }
     refreshTavernPresetNames();
     const presetName = settings.value.tavernPresetName.trim();
@@ -374,6 +540,114 @@ export const useInteractionStore = defineStore('interaction-inserter', () => {
       throw new Error('请先选择一个酒馆预设');
     }
     return normalizePresetLike(getPreset(presetName));
+  }
+
+  function parsePromptConfigJson(content: string): Omit<PromptConfig, 'id'> {
+    const parsed = JSON.parse(content);
+    const source = parsed && typeof parsed === 'object' ? (parsed as Record<string, unknown>) : {};
+    const promptsSource = source.prompts && typeof source.prompts === 'object' ? source.prompts : source;
+    return {
+      name: typeof source.name === 'string' && source.name.trim() ? source.name.trim() : '导入提示词配置',
+      prompts: PromptValuesSchema.parse(promptsSource),
+      worldbookTemplate:
+        typeof source.worldbookTemplate === 'string' ? source.worldbookTemplate : DEFAULT_PROMPTS.worldbookTemplate,
+    };
+  }
+
+  function stringifyPromptConfig(config: PromptConfig): string {
+    return JSON.stringify(
+      {
+        name: config.name,
+        prompts: config.prompts,
+        worldbookTemplate: config.worldbookTemplate,
+      },
+      null,
+      2,
+    );
+  }
+
+  function createPromptConfig() {
+    const name = uniqueConfigName(settings.value.promptConfigs, '默认提示词配置');
+    const config = makePromptConfig(name);
+    settings.value.promptConfigs.push(config);
+    settings.value.activePromptConfigId = config.id;
+    persistSettings();
+    toastr.success('已新建提示词配置');
+  }
+
+  function applyPromptConfigJsonText(content: string, fallbackName = '导入提示词配置') {
+    try {
+      const parsed = parsePromptConfigJson(content);
+      const name = uniqueConfigName(
+        settings.value.promptConfigs,
+        parsed.name === '导入提示词配置' ? fallbackName.replace(/\.json$/i, '') || parsed.name : parsed.name,
+      );
+      const config = makePromptConfig(name, parsed.prompts, parsed.worldbookTemplate);
+      settings.value.promptConfigs.push(config);
+      settings.value.activePromptConfigId = config.id;
+      persistSettings();
+      toastr.success('已导入提示词配置 JSON');
+    } catch (error) {
+      toastr.error(`提示词配置 JSON 导入失败：${error instanceof Error ? error.message : String(error)}`);
+    }
+  }
+
+  function importPromptConfigJsonFile() {
+    const input = document.createElement('input');
+    input.type = 'file';
+    input.accept = '.json,application/json';
+    input.addEventListener(
+      'change',
+      () => {
+        const file = input.files?.[0];
+        if (!file) return;
+        file
+          .text()
+          .then(content => applyPromptConfigJsonText(content, file.name))
+          .catch(error => {
+            toastr.error(`读取提示词配置 JSON 失败：${error instanceof Error ? error.message : String(error)}`);
+          });
+      },
+      { once: true },
+    );
+    input.click();
+  }
+
+  function exportPromptConfigJson() {
+    const config = activePromptConfig.value;
+    const blob = new Blob([stringifyPromptConfig(config)], { type: 'application/json;charset=utf-8' });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = `${config.name || '互动插入器提示词配置'}.json`;
+    link.click();
+    URL.revokeObjectURL(url);
+    toastr.success('已导出提示词配置 JSON');
+  }
+
+  function savePromptConfigAs() {
+    const name = promptConfigName(`${activePromptConfig.value.name} 副本`);
+    if (!name) return;
+    const config = makePromptConfig(
+      uniqueConfigName(settings.value.promptConfigs, name),
+      klona(activePromptConfig.value.prompts),
+      activePromptConfig.value.worldbookTemplate,
+    );
+    settings.value.promptConfigs.push(config);
+    settings.value.activePromptConfigId = config.id;
+    persistSettings();
+    toastr.success('已保存为新的提示词配置');
+  }
+
+  function deletePromptConfig() {
+    if (settings.value.promptConfigs.length <= 1) {
+      toastr.warning('至少保留一个提示词配置');
+      return;
+    }
+    _.remove(settings.value.promptConfigs, config => config.id === settings.value.activePromptConfigId);
+    settings.value.activePromptConfigId = settings.value.promptConfigs[0]?.id ?? '';
+    persistSettings();
+    toastr.success('已删除提示词配置');
   }
 
   function addCharacter() {
@@ -609,7 +883,7 @@ export const useInteractionStore = defineStore('interaction-inserter', () => {
   function buildOrderedPrompts(session: InteractionSession): (PlaceholderPrompt | RolePrompt)[] {
     return convertPresetToOrderedPrompts(resolveActiveInteractionPreset(), {
       mode: session.mode,
-      prompts: settings.value.prompts,
+      prompts: activePromptConfig.value.prompts,
       contextPrompt: buildContextPrompt(session),
       interactionHistory: recentInteractionPrompts(session),
     }) as (PlaceholderPrompt | RolePrompt)[];
@@ -703,7 +977,7 @@ export const useInteractionStore = defineStore('interaction-inserter', () => {
   }
 
   function makeWorldbookContent(rawInteraction: string): string {
-    return buildWorldbookContent(settings.value.worldbookTemplate, rawInteraction.trim());
+    return buildWorldbookContent(activePromptConfig.value.worldbookTemplate, rawInteraction.trim());
   }
 
   async function upsertInteractionEntry(content: string): Promise<boolean> {
@@ -837,6 +1111,8 @@ export const useInteractionStore = defineStore('interaction-inserter', () => {
     editingMessageDraft,
     activeSession,
     activeCharacter,
+    activePresetConfig,
+    activePromptConfig,
     canSend,
     FIXED_ENTRY_NAME,
     closeWorkbench,
@@ -846,9 +1122,16 @@ export const useInteractionStore = defineStore('interaction-inserter', () => {
     resetSettings,
     refreshCustomApiModels,
     refreshTavernPresetNames,
+    createPresetConfig,
     importPresetJsonFile,
     exportPresetJson,
-    resetInteractionPreset,
+    savePresetConfigAs,
+    deletePresetConfig,
+    createPromptConfig,
+    importPromptConfigJsonFile,
+    exportPromptConfigJson,
+    savePromptConfigAs,
+    deletePromptConfig,
     addCharacter,
     deleteCharacter,
     createSession,

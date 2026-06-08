@@ -6,11 +6,13 @@ const { test } = require('node:test');
 const appVue = readFileSync('src/interaction-inserter/App.vue', 'utf8');
 const storeTs = readFileSync('src/interaction-inserter/store.ts', 'utf8');
 
-test('shows JSON import/export actions only for custom interaction presets', () => {
+test('custom interaction presets use collection actions without reset default', () => {
   const customOnlyActions = [
+    '@click="store.createPresetConfig"',
     '@click="store.importPresetJsonFile"',
     '@click="store.exportPresetJson"',
-    '@click="store.resetInteractionPreset"',
+    '@click="store.savePresetConfigAs"',
+    '@click="store.deletePresetConfig"',
   ];
 
   for (const action of customOnlyActions) {
@@ -20,6 +22,22 @@ test('shows JSON import/export actions only for custom interaction presets', () 
     const buttonTag = appVue.slice(openingTag, index);
     assert.match(buttonTag, /v-if="store\.settings\.presetSource === 'custom'"/);
   }
+
+  assert.match(appVue, /v-model="store\.settings\.activePresetConfigId"/);
+  assert.equal(appVue.includes('@click="store.resetInteractionPreset"'), false);
+  assert.equal(storeTs.includes('function resetInteractionPreset()'), false);
+});
+
+test('mode prompts and insert template share prompt config collection actions', () => {
+  assert.match(appVue, /<h3>提示词配置 JSON<\/h3>/);
+  assert.match(appVue, /v-model="store\.settings\.activePromptConfigId"/);
+  assert.match(appVue, /@click="store\.createPromptConfig"/);
+  assert.match(appVue, /@click="store\.importPromptConfigJsonFile"/);
+  assert.match(appVue, /@click="store\.exportPromptConfigJson"/);
+  assert.match(appVue, /@click="store\.savePromptConfigAs"/);
+  assert.match(appVue, /@click="store\.deletePromptConfig"/);
+  assert.match(appVue, /v-model="store\.activePromptConfig\.prompts\.scene"/);
+  assert.match(appVue, /v-model="store\.activePromptConfig\.worldbookTemplate"/);
 });
 
 test('custom API settings use OpenAI model selector without proxy or source mode', () => {
@@ -60,5 +78,5 @@ test('interaction content can be inserted into worldbook or current message body
   assert.match(appVue, /插入方式/);
   assert.match(appVue, /世界书/);
   assert.match(appVue, /当前楼层正文/);
-  assert.match(appVue, /<h3>插入模板<\/h3>/);
+  assert.match(appVue, /插入模板/);
 });

@@ -170,15 +170,6 @@
           </section>
 
           <section class="ii-setting-section">
-            <h3>模式提示词</h3>
-            <div class="ii-grid-3">
-              <label><span>当下场景</span><textarea v-model="store.settings.prompts.scene" /></label>
-              <label><span>一对一</span><textarea v-model="store.settings.prompts.private" /></label>
-              <label><span>远程通信</span><textarea v-model="store.settings.prompts.remote" /></label>
-            </div>
-          </section>
-
-          <section class="ii-setting-section">
             <h3>互动预设 JSON</h3>
             <div class="ii-grid-2">
               <label>
@@ -186,6 +177,12 @@
                 <select v-model="store.settings.presetSource" @change="store.refreshTavernPresetNames">
                   <option value="custom">自定义预设 JSON</option>
                   <option value="tavern">酒馆内预设</option>
+                </select>
+              </label>
+              <label v-if="store.settings.presetSource === 'custom'">
+                <span>自定义配置</span>
+                <select v-model="store.settings.activePresetConfigId">
+                  <option v-for="config in store.settings.presetConfigs" :key="config.id" :value="config.id">{{ config.name }}</option>
                 </select>
               </label>
               <label>
@@ -202,20 +199,46 @@
               <button v-if="store.settings.presetSource === 'tavern'" class="ii-btn" type="button" @click="store.refreshTavernPresetNames">
                 刷新酒馆预设
               </button>
-              <button v-if="store.settings.presetSource === 'custom'" class="ii-btn" type="button" @click="store.importPresetJsonFile">
-                从 JSON 文件导入
+              <button v-if="store.settings.presetSource === 'custom'" class="ii-icon-btn" type="button" title="新建默认预设配置" @click="store.createPresetConfig">
+                +
               </button>
-              <button v-if="store.settings.presetSource === 'custom'" class="ii-btn" type="button" @click="store.exportPresetJson">
-                导出当前预设为 JSON
+              <button v-if="store.settings.presetSource === 'custom'" class="ii-icon-btn" type="button" title="导入预设 JSON" @click="store.importPresetJsonFile">
+                ↓
               </button>
-              <button v-if="store.settings.presetSource === 'custom'" class="ii-btn" type="button" @click="store.resetInteractionPreset">
-                恢复默认自定义预设
+              <button v-if="store.settings.presetSource === 'custom'" class="ii-icon-btn" type="button" title="导出当前预设 JSON" @click="store.exportPresetJson">
+                ↑
+              </button>
+              <button v-if="store.settings.presetSource === 'custom'" class="ii-icon-btn" type="button" title="保存为新预设配置" @click="store.savePresetConfigAs">
+                S
+              </button>
+              <button v-if="store.settings.presetSource === 'custom'" class="ii-icon-btn ii-danger-text" type="button" title="删除当前预设配置" @click="store.deletePresetConfig">
+                ×
               </button>
             </div>
           </section>
 
           <section class="ii-setting-section">
-            <h3>插入模板</h3>
+            <h3>提示词配置 JSON</h3>
+            <div class="ii-config-bar">
+              <label>
+                <span>当前配置</span>
+                <select v-model="store.settings.activePromptConfigId">
+                  <option v-for="config in store.settings.promptConfigs" :key="config.id" :value="config.id">{{ config.name }}</option>
+                </select>
+              </label>
+              <div class="ii-setting-actions">
+                <button class="ii-icon-btn" type="button" title="新建默认提示词配置" @click="store.createPromptConfig">+</button>
+                <button class="ii-icon-btn" type="button" title="导入提示词配置 JSON" @click="store.importPromptConfigJsonFile">↓</button>
+                <button class="ii-icon-btn" type="button" title="导出当前提示词配置 JSON" @click="store.exportPromptConfigJson">↑</button>
+                <button class="ii-icon-btn" type="button" title="保存为新提示词配置" @click="store.savePromptConfigAs">S</button>
+                <button class="ii-icon-btn ii-danger-text" type="button" title="删除当前提示词配置" @click="store.deletePromptConfig">×</button>
+              </div>
+            </div>
+            <div class="ii-grid-3">
+              <label><span>当下场景</span><textarea v-model="store.activePromptConfig.prompts.scene" /></label>
+              <label><span>一对一</span><textarea v-model="store.activePromptConfig.prompts.private" /></label>
+              <label><span>远程通信</span><textarea v-model="store.activePromptConfig.prompts.remote" /></label>
+            </div>
             <div class="ii-grid-2">
               <label>
                 <span>插入方式</span>
@@ -225,7 +248,7 @@
                 </select>
               </label>
             </div>
-            <label><span>插入模板</span><textarea v-model="store.settings.worldbookTemplate" /></label>
+            <label><span>插入模板</span><textarea v-model="store.activePromptConfig.worldbookTemplate" /></label>
           </section>
 
           <section class="ii-setting-section">
