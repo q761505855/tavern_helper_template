@@ -62178,6 +62178,7 @@ class Preset_syncer extends Syncer_interface {
             .map(prompt => __WEBPACK_EXTERNAL_MODULE_node_path_02319fef_resolve__(this.dir, prompt.file))
             .value())
             .map(path => __WEBPACK_EXTERNAL_MODULE_node_path_02319fef_dirname__(path))
+            .concat(this.file)
             .value();
     }
     do_bundle(local_data) {
@@ -62772,4 +62773,3 @@ program
     .showHelpAfterError(true)
     .showSuggestionAfterError(true)
     .parse();
-

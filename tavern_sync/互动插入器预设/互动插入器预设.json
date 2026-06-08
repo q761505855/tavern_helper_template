@@ -1,0 +1,321 @@
+{
+  "max_context_unlocked": true,
+  "openai_max_context": 2000000,
+  "openai_max_tokens": 30000,
+  "n": 1,
+  "stream_openai": true,
+  "temperature": 1,
+  "frequency_penalty": 0,
+  "presence_penalty": 0,
+  "top_p": 1,
+  "repetition_penalty": 1,
+  "min_p": 0,
+  "top_k": 0,
+  "top_a": 0,
+  "seed": -1,
+  "squash_system_messages": false,
+  "reasoning_effort": "auto",
+  "show_thoughts": true,
+  "request_images": false,
+  "function_calling": false,
+  "enable_web_search": false,
+  "image_inlining": false,
+  "inline_image_quality": "auto",
+  "video_inlining": false,
+  "names_behavior": 0,
+  "wrap_in_quotes": false,
+  "prompts": [
+    {
+      "identifier": "main",
+      "name": "主提示词",
+      "enabled": true,
+      "role": "system",
+      "content": "请在 {{char}} 与 {{user}} 的虚构聊天中，续写 {{char}} 的下一条回复。",
+      "system_prompt": true,
+      "marker": false,
+      "forbid_overrides": false
+    },
+    {
+      "identifier": "worldInfoBefore",
+      "name": "World Info (before) - 角色定义之前",
+      "enabled": true,
+      "injection_position": 0,
+      "injection_depth": 4,
+      "injection_order": 100,
+      "role": "system",
+      "system_prompt": true,
+      "marker": true,
+      "forbid_overrides": false
+    },
+    {
+      "identifier": "personaDescription",
+      "name": "Persona Description - 玩家描述",
+      "enabled": true,
+      "injection_position": 0,
+      "injection_depth": 4,
+      "injection_order": 100,
+      "role": "system",
+      "system_prompt": true,
+      "marker": true,
+      "forbid_overrides": false
+    },
+    {
+      "identifier": "charDescription",
+      "name": "Char Description - 角色描述",
+      "enabled": true,
+      "injection_position": 0,
+      "injection_depth": 4,
+      "injection_order": 100,
+      "role": "system",
+      "system_prompt": true,
+      "marker": true,
+      "forbid_overrides": false
+    },
+    {
+      "identifier": "charPersonality",
+      "name": "Char Personality - 角色性格",
+      "enabled": true,
+      "injection_position": 0,
+      "injection_depth": 4,
+      "injection_order": 100,
+      "role": "system",
+      "system_prompt": true,
+      "marker": true,
+      "forbid_overrides": false
+    },
+    {
+      "identifier": "scenario",
+      "name": "Scenario - 情景",
+      "enabled": true,
+      "injection_position": 0,
+      "injection_depth": 4,
+      "injection_order": 100,
+      "role": "system",
+      "system_prompt": true,
+      "marker": true,
+      "forbid_overrides": false
+    },
+    {
+      "identifier": "1",
+      "name": "增强角色定义",
+      "enabled": false,
+      "injection_position": 0,
+      "injection_depth": 4,
+      "injection_order": 100,
+      "role": "system",
+      "content": "如果你掌握更多关于 {{char}} 的信息，可以补充角色经历与性格细节来增强表现，但必须以角色卡定义为最高优先级。",
+      "system_prompt": false,
+      "marker": false,
+      "forbid_overrides": false
+    },
+    {
+      "identifier": "2",
+      "name": "辅助提示词",
+      "enabled": true,
+      "injection_position": 0,
+      "injection_depth": 4,
+      "injection_order": 100,
+      "role": "system",
+      "content": "",
+      "system_prompt": false,
+      "marker": false,
+      "forbid_overrides": false
+    },
+    {
+      "identifier": "worldInfoAfter",
+      "name": "World Info (after) - 角色定义之后",
+      "enabled": true,
+      "injection_position": 0,
+      "injection_depth": 4,
+      "injection_order": 100,
+      "role": "system",
+      "system_prompt": true,
+      "marker": true,
+      "forbid_overrides": false
+    },
+    {
+      "identifier": "dialogueExamples",
+      "name": "Chat Examples - 对话示例",
+      "enabled": true,
+      "role": "system",
+      "system_prompt": true,
+      "marker": true,
+      "forbid_overrides": false
+    },
+    {
+      "identifier": "chatHistory",
+      "name": "Chat History - 聊天记录",
+      "enabled": true,
+      "role": "system",
+      "system_prompt": true,
+      "marker": true,
+      "forbid_overrides": false
+    },
+    {
+      "identifier": "3",
+      "name": "互动插入器：当前模式提示词",
+      "enabled": true,
+      "injection_position": 0,
+      "injection_depth": 4,
+      "injection_order": 100,
+      "role": "system",
+      "content": "{{ii_scene_prompt}}{{ii_private_prompt}}{{ii_remote_prompt}}",
+      "system_prompt": false,
+      "marker": false,
+      "forbid_overrides": false
+    },
+    {
+      "identifier": "4",
+      "name": "互动插入器：上下文提示词",
+      "enabled": true,
+      "injection_position": 0,
+      "injection_depth": 4,
+      "injection_order": 100,
+      "role": "system",
+      "content": "{{ii_context_prompt}}",
+      "system_prompt": false,
+      "marker": false,
+      "forbid_overrides": false
+    },
+    {
+      "identifier": "5",
+      "name": "互动插入器：互动记录",
+      "enabled": true,
+      "injection_position": 0,
+      "injection_depth": 4,
+      "injection_order": 100,
+      "role": "user",
+      "content": "",
+      "system_prompt": false,
+      "marker": false,
+      "extra": {
+        "interactionInserter": {
+          "type": "interaction_history"
+        }
+      },
+      "forbid_overrides": false
+    },
+    {
+      "identifier": "6",
+      "name": "互动插入器：用户输入",
+      "enabled": true,
+      "injection_position": 0,
+      "injection_depth": 4,
+      "injection_order": 100,
+      "role": "user",
+      "content": "",
+      "system_prompt": false,
+      "marker": false,
+      "extra": {
+        "interactionInserter": {
+          "type": "user_input"
+        }
+      },
+      "forbid_overrides": false
+    },
+    {
+      "identifier": "7",
+      "name": "历史后指令",
+      "enabled": true,
+      "injection_position": 0,
+      "injection_depth": 4,
+      "injection_order": 100,
+      "role": "system",
+      "content": "",
+      "system_prompt": false,
+      "marker": false,
+      "forbid_overrides": false
+    },
+    {
+      "identifier": "8",
+      "name": "互动插入器：通用提示词",
+      "enabled": true,
+      "injection_position": 0,
+      "injection_depth": 4,
+      "injection_order": 100,
+      "role": "system",
+      "content": "请将当前互动视为主剧情楼层之间的临时互动层。优先生成局部、可承接的互动细节，不要直接生成完整的新主剧情段落。",
+      "system_prompt": false,
+      "marker": false,
+      "forbid_overrides": false
+    }
+  ],
+  "prompt_order": [
+    {
+      "character_id": 100001,
+      "order": [
+        {
+          "identifier": "main",
+          "enabled": true
+        },
+        {
+          "identifier": "worldInfoBefore",
+          "enabled": true
+        },
+        {
+          "identifier": "personaDescription",
+          "enabled": true
+        },
+        {
+          "identifier": "charDescription",
+          "enabled": true
+        },
+        {
+          "identifier": "charPersonality",
+          "enabled": true
+        },
+        {
+          "identifier": "scenario",
+          "enabled": true
+        },
+        {
+          "identifier": "1",
+          "enabled": false
+        },
+        {
+          "identifier": "2",
+          "enabled": true
+        },
+        {
+          "identifier": "worldInfoAfter",
+          "enabled": true
+        },
+        {
+          "identifier": "dialogueExamples",
+          "enabled": true
+        },
+        {
+          "identifier": "chatHistory",
+          "enabled": true
+        },
+        {
+          "identifier": "3",
+          "enabled": true
+        },
+        {
+          "identifier": "4",
+          "enabled": true
+        },
+        {
+          "identifier": "5",
+          "enabled": true
+        },
+        {
+          "identifier": "6",
+          "enabled": true
+        },
+        {
+          "identifier": "7",
+          "enabled": true
+        }
+      ]
+    }
+  ],
+  "extensions": {
+    "regex_scripts": [],
+    "tavern_helper": {
+      "scripts": [],
+      "variables": {}
+    }
+  }
+}
