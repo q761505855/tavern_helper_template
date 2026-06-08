@@ -110,6 +110,13 @@ export function buildWorldbookContent(template: string, interactionRecords: stri
   return expandInteractionMacros(template, buildWorldbookMacros({ interactionRecords })).trim();
 }
 
+export function sanitizeInteractionReplyContent(input: string): string {
+  return input
+    .replace(/(^|\n)[ \t]*<([A-Za-z][\w:-]*)(?:\s[^>]*)?>[\s\S]*?<\/\2>[ \t]*(?=\n|$)/g, '$1')
+    .replace(/(^|\n)[ \t]*<([A-Za-z][\w:-]*)(?:\s[^>]*)?>[\s\S]*$/g, '$1')
+    .trim();
+}
+
 export function collectSendableInteractionHistory(
   sessions: SendableInteractionSession[],
   currentSession: SendableInteractionSession,

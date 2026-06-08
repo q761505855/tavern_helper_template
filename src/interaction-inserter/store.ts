@@ -4,6 +4,7 @@ import {
   convertPresetToOrderedPrompts,
   normalizePresetLike,
   parseInteractionPresetJson,
+  sanitizeInteractionReplyContent,
   stringifyInteractionPreset,
   type InteractionMode,
   type PresetLike,
@@ -925,8 +926,9 @@ export const useInteractionStore = defineStore('interaction-inserter', () => {
 
     const streamListener = eventOn(iframe_events.STREAM_TOKEN_RECEIVED_FULLY, (text, receivedGenerationId) => {
       if (receivedGenerationId !== generationId) return;
-      assistantMessage.content = text;
-      generationBuffer.value = text;
+      const sanitizedText = sanitizeInteractionReplyContent(text);
+      assistantMessage.content = sanitizedText;
+      generationBuffer.value = sanitizedText;
       session.updatedAt = Date.now();
     });
 
@@ -939,7 +941,7 @@ export const useInteractionStore = defineStore('interaction-inserter', () => {
         ordered_prompts: orderedPrompts,
         custom_api: buildCustomApi(),
       });
-      assistantMessage.content = typeof result === 'string' ? result : result.content;
+      assistantMessage.content = sanitizeInteractionReplyContent(typeof result === 'string' ? result : result.content);
       session.updatedAt = Date.now();
       persistState();
     } catch (error) {

@@ -8,6 +8,7 @@ const {
   buildInteractionMacros,
   convertPresetToOrderedPrompts,
   collectSendableInteractionHistory,
+  sanitizeInteractionReplyContent,
   normalizePresetLike,
   parseInteractionPresetJson,
   stringifyInteractionPreset,
@@ -216,6 +217,27 @@ test('trims worldbook macro output without appending records outside the templat
   const content = buildWorldbookContent('Before\n\n{{ii_interaction_records}}\n\n', 'AI：回应');
 
   assert.equal(content, 'Before\n\nAI：回应');
+});
+
+test('removes XML-style tagged blocks from interaction replies', () => {
+  const content = sanitizeInteractionReplyContent(`女班长:
+(担忧地看向你)“冷阳君……？”
+
+<SomeCustomTag>
+任何不该出现在互动回复里的结构化附加内容。
+</SomeCustomTag>`);
+
+  assert.equal(content, '女班长:\n(担忧地看向你)“冷阳君……？”');
+});
+
+test('hides incomplete XML-style tagged blocks while streaming interaction replies', () => {
+  const content = sanitizeInteractionReplyContent(`白娅:
+(攥紧裙摆)“……”
+
+<SomeCustomTag>
+still streaming`);
+
+  assert.equal(content, '白娅:\n(攥紧裙摆)“……”');
 });
 
 test('collects only manually marked earlier pending interactions in creation order', () => {
