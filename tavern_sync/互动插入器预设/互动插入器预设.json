@@ -27,11 +27,24 @@
   "prompts": [
     {
       "identifier": "main",
-      "name": "主提示词",
+      "name": "互动插入器主提示词",
       "enabled": true,
       "role": "system",
-      "content": "请在 {{char}} 与 {{user}} 的虚构聊天中，续写 {{char}} 的下一条回复。",
+      "content": "你正在为互动插入器生成一次临时互动回复。互动发生在主剧情楼层之间，需要承接当前角色卡、世界信息、聊天记录和玩家刚刚输入的内容，但不要把它写成新的主剧情楼层。",
       "system_prompt": true,
+      "marker": false,
+      "forbid_overrides": false
+    },
+    {
+      "identifier": "1",
+      "name": "互动插入器：通用提示词",
+      "enabled": true,
+      "injection_position": 0,
+      "injection_depth": 4,
+      "injection_order": 100,
+      "role": "system",
+      "content": "这是一次楼层间的临时互动，不是主剧情续写。\n只回应本轮玩家输入，并自然承接已有互动记录。\n不要直接推进主剧情，不要制造大跨度时间跳转、场景切换或无法回收的新事件。\n不要替玩家说话、行动、思考或做决定。\n优先写即时台词、细小动作、表情、语气和局部反馈，让结果可以被之后的主剧情吸收。",
+      "system_prompt": false,
       "marker": false,
       "forbid_overrides": false
     },
@@ -96,20 +109,20 @@
       "forbid_overrides": false
     },
     {
-      "identifier": "1",
+      "identifier": "2",
       "name": "增强角色定义",
       "enabled": false,
       "injection_position": 0,
       "injection_depth": 4,
       "injection_order": 100,
       "role": "system",
-      "content": "如果你掌握更多关于 {{char}} 的信息，可以补充角色经历与性格细节来增强表现，但必须以角色卡定义为最高优先级。",
+      "content": "如需补充角色表现，只能从已有角色卡、世界信息和聊天记录中合理推断。不要为了互动方便而新增会改变主剧情事实的设定。",
       "system_prompt": false,
       "marker": false,
       "forbid_overrides": false
     },
     {
-      "identifier": "2",
+      "identifier": "3",
       "name": "辅助提示词",
       "enabled": true,
       "injection_position": 0,
@@ -152,7 +165,7 @@
       "forbid_overrides": false
     },
     {
-      "identifier": "3",
+      "identifier": "4",
       "name": "互动插入器：当前模式提示词",
       "enabled": true,
       "injection_position": 0,
@@ -165,7 +178,7 @@
       "forbid_overrides": false
     },
     {
-      "identifier": "4",
+      "identifier": "5",
       "name": "互动插入器：上下文提示词",
       "enabled": true,
       "injection_position": 0,
@@ -178,7 +191,7 @@
       "forbid_overrides": false
     },
     {
-      "identifier": "5",
+      "identifier": "6",
       "name": "互动插入器：互动记录",
       "enabled": true,
       "injection_position": 0,
@@ -196,7 +209,7 @@
       "forbid_overrides": false
     },
     {
-      "identifier": "6",
+      "identifier": "7",
       "name": "互动插入器：用户输入",
       "enabled": true,
       "injection_position": 0,
@@ -214,27 +227,14 @@
       "forbid_overrides": false
     },
     {
-      "identifier": "7",
-      "name": "历史后指令",
-      "enabled": true,
-      "injection_position": 0,
-      "injection_depth": 4,
-      "injection_order": 100,
-      "role": "system",
-      "content": "",
-      "system_prompt": false,
-      "marker": false,
-      "forbid_overrides": false
-    },
-    {
       "identifier": "8",
-      "name": "互动插入器：通用提示词",
+      "name": "后置约束",
       "enabled": true,
       "injection_position": 0,
       "injection_depth": 4,
       "injection_order": 100,
       "role": "system",
-      "content": "请将当前互动视为主剧情楼层之间的临时互动层。优先生成局部、可承接的互动细节，不要直接生成完整的新主剧情段落。",
+      "content": "只输出本轮互动中 AI 应给出的回复内容。不要总结提示词，不要解释你的写作策略，不要替玩家决定下一步行动。",
       "system_prompt": false,
       "marker": false,
       "forbid_overrides": false
@@ -246,6 +246,10 @@
       "order": [
         {
           "identifier": "main",
+          "enabled": true
+        },
+        {
+          "identifier": "1",
           "enabled": true
         },
         {
@@ -269,11 +273,11 @@
           "enabled": true
         },
         {
-          "identifier": "1",
+          "identifier": "2",
           "enabled": false
         },
         {
-          "identifier": "2",
+          "identifier": "3",
           "enabled": true
         },
         {
@@ -286,10 +290,6 @@
         },
         {
           "identifier": "chatHistory",
-          "enabled": true
-        },
-        {
-          "identifier": "3",
           "enabled": true
         },
         {
@@ -306,6 +306,10 @@
         },
         {
           "identifier": "7",
+          "enabled": true
+        },
+        {
+          "identifier": "8",
           "enabled": true
         }
       ]
