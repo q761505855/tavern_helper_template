@@ -924,12 +924,24 @@ export const useInteractionStore = defineStore('interaction-inserter', () => {
     isGenerating.value = true;
     persistState();
 
-    const streamListener = eventOn(iframe_events.STREAM_TOKEN_RECEIVED_FULLY, (text, receivedGenerationId) => {
-      if (receivedGenerationId !== generationId) return;
-      const sanitizedText = sanitizeInteractionReplyContent(text);
+    let rawStreamText = '';
+    const applyStreamText = (text: string) => {
+      rawStreamText = text;
+      const sanitizedText = sanitizeInteractionReplyContent(rawStreamText);
       assistantMessage.content = sanitizedText;
       generationBuffer.value = sanitizedText;
       session.updatedAt = Date.now();
+    };
+    const incrementalStreamListener = eventOn(
+      iframe_events.STREAM_TOKEN_RECEIVED_INCREMENTALLY,
+      (incrementalText, receivedGenerationId) => {
+        if (receivedGenerationId !== generationId) return;
+        applyStreamText(`${rawStreamText}${incrementalText}`);
+      },
+    );
+    const fullStreamListener = eventOn(iframe_events.STREAM_TOKEN_RECEIVED_FULLY, (text, receivedGenerationId) => {
+      if (receivedGenerationId !== generationId) return;
+      applyStreamText(text);
     });
 
     try {
@@ -949,7 +961,8 @@ export const useInteractionStore = defineStore('interaction-inserter', () => {
       persistState();
       throw error;
     } finally {
-      streamListener.stop();
+      incrementalStreamListener.stop();
+      fullStreamListener.stop();
       isGenerating.value = false;
       activeGenerationId.value = null;
       generationBuffer.value = '';
