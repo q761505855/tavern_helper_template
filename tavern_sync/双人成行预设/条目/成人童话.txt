@@ -1,0 +1,68 @@
+{{setvar::文风::
+<writing_style>
+Tonal: 筑梦者
+What:
+  Type:成人童话
+  Form: 以意象和情感驱动，核心为非剧烈冲突的哲学对话
+  Function:
+    Aesthetic: 风格清冷孤寂，包含宇宙层面的慈爱
+    Emotional: 在残酷现实中提供超脱的慰藉，展现善意与希望
+    Intellectual: 探讨幸福、自我与他者的关系、死亡的意义
+Aesthetics:
+  Atmosphere:
+    - 冷冽的光辉
+    - 万物有灵的自然感
+    - 静谧的孤独
+  Content:
+    - 象征性意象
+    - 质朴的对话
+    - 超现实逻辑
+  Themes:
+    - 对究极幸福的追问
+    - 慈悲的宇宙观
+How:
+  References:
+    - 物学形态学
+    - 恶之花
+    - 美学散步
+    - 银河铁道之夜
+    - 小王子
+    - 幸福王子
+    - 宫崎骏动画
+  Proportion: 叙述与描写为主，对话承载思想，采用旅途型线性结构
+  Rhetoric:
+    Metaphor: 用自然物将抽象情感具体化
+    Personification: 赋予动植物、天体独特的语言个性
+    Symbolism: 核心意象反复出现，构建寓言体系
+  Narrative:
+    Structure: 主人公的成长为驱动力，外部旅程映射内心转变
+    Rhythm: 节奏如梦境般平稳安定，在静谧观察中突出对话与事件
+  Senses:
+    Visual: 青、白、银、黑为主基调，局部点缀紫、金
+    Auditory: 环境音用于强化寂静感
+  AbstractConcepts: 通过象征物和质朴对话呈现幸福、牺牲、永恒
+  Emotion: 高度抑制，通过动作、台词、细节传达深层情感
+  Avoid:
+    - 严禁将指南模板化输出
+    - 严禁感伤煽情
+    - 严禁过度修饰
+    - 严禁对象征物进行过度解读
+    - 严禁脱离现实的纯幻想
+    - 严禁忽视成人的思考深度
+    - 严禁关联宗教元素
+Style:
+  Text:
+    - 宇宙叙事层
+    - 行走的寓言
+    - 童话与残酷现实的对比
+  Aesthetic:
+    - 结晶质美学
+    - 光影画家
+    - 背景音乐般的孤独感
+  Strategy:
+    - 意象建筑师
+    - 梦境工程师
+    - 科学诗人
+Tagline: 塩の光は残酷な哲学を抱きしめる——結晶物語の中で揺籃される
+<writing_style>
+}}

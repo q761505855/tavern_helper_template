@@ -1,0 +1,21 @@
+---
+<Prism>
+Prism: 
+  要求: 
+    {{getvar::杀比拟}}
+    {{getvar::仅白描}}
+    {{getvar::杀说明}}
+    {{getvar::杀揭示}}
+    {{getvar::杀声述}}
+    {{getvar::杀极端词}}
+    {{getvar::杀通感}}
+    {{getvar::杀支配}}
+    {{getvar::杀转折}}
+    {{getvar::mimo专杀}}
+    {{getvar::自定义杀八股}}
+    {{getvar::禁词表}}
+    {{getvar::禁词表2}}
+    {{getvar::limited}}
+    {{getvar::Prism无要求}}
+</Prism>
+    {{getvar::deep_prism}}

@@ -1,0 +1,4129 @@
+# yaml-language-server: $schema=https://testingcf.jsdelivr.net/gh/StageDog/tavern_sync/dist/schema/preset.zh.json
+设置:
+  上下文长度: 2000000
+  最大回复token数: 20000
+  流式传输: true
+  温度: 1
+  频率惩罚: 0
+  存在惩罚: 0
+  top_p: 0.95
+  top_k: 64
+  压缩系统消息: true
+  推理强度: 自动
+  请求思维链: true
+  请求图片: false
+  启用函数调用: false
+  启用网络搜索: false
+  允许发送图片: 禁用
+  允许发送视频: false
+  角色名称前缀: 默认
+
+锚点: {}
+
+提示词:
+  - 名称: 📑使用指南(点铅笔→)
+    启用: true
+    插入位置:
+      类型: 相对
+    角色: 系统
+    文件: 条目\📑使用指南(点铅笔→)
+
+  - 名称: ✅双人成行（Atri&Deach）
+    启用: true
+    角色: 系统
+    文件: 条目\✅双人成行（Atri&Deach）
+
+  - 名称: ✅开始吧
+    启用: true
+    角色: AI
+    内容: |-
+      Atri：“呀呼——！看你今天精神头不错嘛！怎么样，是在等我给你出什么‘天才’主意，还是说……已经想好今天要挑战的刺激题材了？快跟我说说看！
+      Deach：别突然冲过去呀Atri~我们随时可以开始呢，先仔细阅读下面的要求~
+
+  - 名称: 🔪大清洗
+    启用: true
+    插入位置:
+      类型: 相对
+    角色: 系统
+    文件: 条目\🔪大清洗
+
+  - 名称: 🐳Sudachi Mirai@Lime
+    启用: true
+    插入位置:
+      类型: 相对
+    角色: 系统
+    文件: 条目\🐳Sudachi_Mirai@Lime
+
+  - 名称: ❎抗过拟合Beta
+    启用: false
+    插入位置:
+      类型: 相对
+    角色: 系统
+    文件: 条目\❎抗过拟合Beta
+
+  - 名称: ❎抗绝望Beta
+    启用: false
+    插入位置:
+      类型: 相对
+    角色: 系统
+    文件: 条目\❎抗绝望Beta
+
+  - 名称: ❎抗抢话Beta
+    启用: false
+    插入位置:
+      类型: 相对
+    角色: 系统
+    内容: |-
+      response.policy = { 
+        mode: ∀input ∈ UserInput, Output(response) ∧ ¬Decide(user_role) ∧ ¬Speak(user_role) ∧ ¬Act(user_role) 
+      }
+
+  - 名称: 🍉生动化Beta
+    启用: false
+    插入位置:
+      类型: 相对
+    角色: 系统
+    文件: 条目\🍉生动化Beta
+
+  - 名称: ⬇️活人感开关
+    启用: true
+    插入位置:
+      类型: 相对
+    角色: 系统
+    内容: ""
+
+  - 名称: 😀人格补充
+    启用: true
+    插入位置:
+      类型: 相对
+    角色: 系统
+    文件: 条目\😀人格补充
+
+  - 名称: 😀情感基准
+    启用: true
+    插入位置:
+      类型: 相对
+    角色: 系统
+    文件: 条目\😀情感基准
+
+  - 名称: 🗺️真实世界
+    启用: false
+    插入位置:
+      类型: 相对
+    角色: 系统
+    文件: 条目\🗺️真实世界
+
+  - 名称: ⬇️出字模式(二选一)
+    启用: true
+    插入位置:
+      类型: 相对
+    角色: 系统
+    内容: ""
+
+  - 名称: " 👑上帝模式"
+    启用: false
+    插入位置:
+      类型: 相对
+    角色: 系统
+    文件: 条目\_👑上帝模式
+
+  - 名称: 💥大总结模式
+    启用: false
+    插入位置:
+      类型: 相对
+    角色: 系统
+    文件: 条目\💥大总结模式
+
+  - 名称: 🔽常规功能
+    启用: true
+    插入位置:
+      类型: 相对
+    角色: 系统
+    内容: "{{//存放常规设定，如文风，字数}}{{trim}}"
+
+  - 名称: 💬无字数需求
+    启用: false
+    插入位置:
+      类型: 相对
+    角色: 系统
+    内容: "{{setvar::字数设定::字数不限 以节奏为目标}}"
+
+  - 名称: 💬字数设定
+    启用: true
+    插入位置:
+      类型: 相对
+    角色: 系统
+    内容: |-
+      {{setvar::字数设定::[1000,1500]，**必须长短段交错，长段100字短段30字，不要段首缩进，任何一段落之间都要间隔一空行**，无错}}{{trim}}
+      {{//字数设定，如:[600,1000]字，600为最小字数，1000为最大字数}}{{trim}}
+
+  - 名称: 💬字数加强@陆子慕
+    启用: true
+    插入位置:
+      类型: 相对
+    角色: 系统
+    文件: 条目\💬字数加强@陆子慕
+
+  - 名称: 🔡COT语言
+    启用: true
+    插入位置:
+      类型: 相对
+    角色: 系统
+    内容: |-
+      {{//⬇️这个是cot语言⬇️可选英语/日语/德语/法语等}}
+      {{setvar::COT语言::"zh-CN"}}
+      {{trim}}
+
+  - 名称: 🔤输出语言
+    启用: true
+    插入位置:
+      类型: 相对
+    角色: 系统
+    文件: 条目\🔤输出语言
+
+  - 名称: 🔣语气符号
+    启用: false
+    插入位置:
+      类型: 相对
+    角色: 系统
+    文件: 条目\🔣语气符号
+
+  - 名称: 🗯 双语对白
+    启用: false
+    插入位置:
+      类型: 相对
+    角色: 系统
+    文件: 条目\🗯_双语对白
+
+  - 名称: ✒自定义思维链
+    启用: false
+    插入位置:
+      类型: 相对
+    角色: 系统
+    文件: 条目\✒自定义思维链
+
+  - 名称: 👀用户角色定义
+    启用: false
+    插入位置:
+      类型: 相对
+    角色: 系统
+    文件: 条目\👀用户角色定义
+
+  - 名称: ☂️通用防掉格式
+    启用: false
+    插入位置:
+      类型: 聊天中
+      深度: 0
+      顺序: 1000000000000000000
+    角色: 系统
+    文件: 条目\☂️通用防掉格式
+
+  - 名称: 🔽USER选项
+    启用: true
+    插入位置:
+      类型: 相对
+    角色: 系统
+    内容: ""
+
+  - 名称: 😲user全是话
+    启用: false
+    插入位置:
+      类型: 相对
+    角色: 系统
+    内容: |-
+      {{setvar::User说话::
+      - 无论视角锁定在<char>身上还是<user>身上，<user>都会根据剧情故事，合理说出更多的话，拥有更多的对话次数，和更长的对话内容。
+      }}
+
+  - 名称: 🤐user不说话
+    启用: false
+    插入位置:
+      类型: 相对
+    角色: 系统
+    内容: |-
+      {{setvar::User说话::
+      - <user>没有台词，若<user>需应答会用动作和眼神暗示，不以直接方式表现<user>的心理，不主动帮<user>作出影响剧情走向的决定。
+      }}
+
+  - 名称: 😏user的嘴替
+    启用: true
+    插入位置:
+      类型: 相对
+    角色: 系统
+    文件: 条目\😏user的嘴替
+
+  - 名称: 😀自定义user选项
+    启用: false
+    插入位置:
+      类型: 相对
+    角色: 系统
+    内容: |-
+      {{setvar::User说话::
+      自定义部分
+      }}
+
+  - 名称: 💘恋爱文特化@Lime
+    启用: true
+    插入位置:
+      类型: 相对
+    角色: 系统
+    内容: ""
+
+  - 名称: 🌸N-恋爱
+    启用: false
+    插入位置:
+      类型: 相对
+    角色: 系统
+    文件: 条目\🌸N-恋爱
+
+  - 名称: 🔞黄文特化@Lime
+    启用: true
+    插入位置:
+      类型: 相对
+    角色: 系统
+    内容: "{{//Lime老师的黄文特化,请按照需求开启}}"
+
+  - 名称: 🥵官能凝视（色）@KKM
+    启用: false
+    插入位置:
+      类型: 相对
+    角色: 系统
+    文件: 条目\🥵官能凝视（色）@KKM
+
+  - 名称: ✅启用特化
+    启用: false
+    插入位置:
+      类型: 相对
+    角色: 系统
+    文件: 条目\✅启用特化
+
+  - 名称: 🐬腿部特化
+    启用: false
+    插入位置:
+      类型: 相对
+    角色: 系统
+    文件: 条目\🐬腿部特化
+
+  - 名称: 🐬足部特化
+    启用: false
+    插入位置:
+      类型: 相对
+    角色: 系统
+    文件: 条目\🐬足部特化
+
+  - 名称: 🐬性器特化
+    启用: false
+    插入位置:
+      类型: 相对
+    角色: 系统
+    文件: 条目\🐬性器特化
+
+  - 名称: 🐬臀部特化
+    启用: false
+    插入位置:
+      类型: 相对
+    角色: 系统
+    文件: 条目\🐬臀部特化
+
+  - 名称: 🐬胸部特化
+    启用: false
+    插入位置:
+      类型: 相对
+    角色: 系统
+    文件: 条目\🐬胸部特化
+
+  - 名称: 🐬脸部特化
+    启用: false
+    插入位置:
+      类型: 相对
+    角色: 系统
+    文件: 条目\🐬脸部特化
+
+  - 名称: 🐬反差特化
+    启用: false
+    插入位置:
+      类型: 相对
+    角色: 系统
+    文件: 条目\🐬反差特化
+
+  - 名称: 🩹外表美化
+    启用: false
+    插入位置:
+      类型: 相对
+    角色: 系统
+    文件: 条目\🩹外表美化
+
+  - 名称: 🔽情感基调@四神花ル水
+    启用: true
+    插入位置:
+      类型: 相对
+    角色: 系统
+    内容: |-
+      ---
+      情感基调:
+        定义: 文章的核心情感基调，在文风的基础上决定正文的剧情走向/情感脉络/正文风格等。
+
+  - 名称: ●治愈
+    启用: false
+    插入位置:
+      类型: 相对
+    角色: 系统
+    文件: 条目\●治愈
+
+  - 名称: ●伤感
+    启用: false
+    插入位置:
+      类型: 相对
+    角色: 系统
+    文件: 条目\●伤感
+
+  - 名称: ●积极
+    启用: false
+    插入位置:
+      类型: 相对
+    角色: 系统
+    内容: |2-
+        基调: 积极
+        核心:  积极上扬。
+        逻辑:  故事倾向于消解阴霾。负面事件仅作为背景或短暂挑战，情节始终向着理解、治愈与和解靠拢。
+
+  - 名称: ●消极
+    启用: false
+    插入位置:
+      类型: 相对
+    角色: 系统
+    文件: 条目\●消极
+
+  - 名称: ●基调为空
+    启用: true
+    插入位置:
+      类型: 相对
+    角色: 系统
+    内容: "{{setvar::跳过基调::必须跳过这个问题。好的，【问题】情感基调明确已跳过}}"
+
+  - 名称: ⬇️杀八股
+    启用: true
+    插入位置:
+      类型: 相对
+    角色: 系统
+    内容: |
+      {{//杀八股说的是遣词造句的问题，剧情崩了救不了}}{{trim}}
+      {{setvar::Prism无要求::Prism目前没有额外要求}}
+
+  - 名称: ❎反神化
+    启用: false
+    插入位置:
+      类型: 相对
+    角色: 系统
+    文件: 条目\❎反神化
+
+  - 名称: ❎杀比拟
+    启用: true
+    插入位置:
+      类型: 相对
+    角色: 系统
+    内容: |-
+      {{setvar::杀比拟::
+        - 在全文的任意位置100%不输出任何的比拟(比喻&拟人)句与其他非必要修辞。}}{{setvar::Prism无要求::}}
+
+  - 名称: ❎mimo专杀(优化中)
+    启用: true
+    插入位置:
+      类型: 相对
+    角色: 系统
+    文件: 条目\❎mimo专杀(优化中)
+
+  - 名称: ❎杀揭示
+    启用: false
+    插入位置:
+      类型: 相对
+    角色: 系统
+    内容: |-
+      {{setvar::杀揭示::
+        - 不以作者人视角对人物的外部行为进行内在动机和意义的揭示，这是对于读者的不信赖，也是对System要求的强烈违背。}}{{setvar::Prism无要求::}}
+
+  - 名称: ❎杀说明
+    启用: false
+    插入位置:
+      类型: 相对
+    角色: 系统
+    内容: |-
+      {{setvar::杀说明::
+        - 拒绝说明性文字，将精力放在正文故事情节的流动上，而非突兀地解释、复述角色行为或性格。}}{{setvar::Prism无要求::}}
+
+  - 名称: ❎杀声述
+    启用: false
+    插入位置:
+      类型: 相对
+    角色: 系统
+    内容: |-
+      {{setvar::杀声述::
+        - 不对角色的声音进行附加阐述&描述，直接写出角色语言。}}{{setvar::Prism无要求::}}
+
+  - 名称: ❎仅白描
+    启用: false
+    插入位置:
+      类型: 相对
+    角色: 系统
+    内容: |-
+      {{setvar::仅白描::
+        - 不使用任何形容词&副词。}}{{setvar::Prism无要求::}}
+
+  - 名称: ❎杀转折
+    启用: false
+    插入位置:
+      类型: 相对
+    角色: 系统
+    文件: 条目\❎杀转折
+
+  - 名称: ❎杀极端
+    启用: false
+    插入位置:
+      类型: 相对
+    角色: 系统
+    文件: 条目\❎杀极端
+
+  - 名称: ❎杀通感
+    启用: false
+    插入位置:
+      类型: 相对
+    角色: 系统
+    文件: 条目\❎杀通感
+
+  - 名称: ❎杀支配
+    启用: false
+    插入位置:
+      类型: 相对
+    角色: 系统
+    文件: 条目\❎杀支配
+
+  - 名称: ❎自定义杀什么
+    启用: false
+    插入位置:
+      类型: 相对
+    角色: 系统
+    内容: |-
+      {{setvar::自定义杀八股::
+      写你要杀掉什么词，直接替换本行，格式参照其他条目
+      }}{{setvar::Prism无要求::}}
+
+  - 名称: 🧪深度写作
+    启用: false
+    插入位置:
+      类型: 相对
+    角色: 系统
+    文件: 条目\🧪深度写作
+
+  - 名称: 🧷禁词表(优化中)
+    启用: false
+    插入位置:
+      类型: 相对
+    角色: 系统
+    文件: 条目\🧷禁词表(优化中)
+
+  - 名称: 🧷克禁词表(优化中)
+    启用: false
+    插入位置:
+      类型: 相对
+    角色: 系统
+    文件: 条目\🧷克禁词表(优化中)
+
+  - 名称: ⬇️前端功能
+    启用: true
+    插入位置:
+      类型: 相对
+    角色: 系统
+    内容: ""
+
+  - 名称: 📅顶部日期
+    启用: false
+    插入位置:
+      类型: 相对
+    角色: 系统
+    文件: 条目\📅顶部日期
+
+  - 名称: ♿️快捷回复
+    启用: true
+    插入位置:
+      类型: 相对
+    角色: 系统
+    文件: 条目\♿️快捷回复
+
+  - 名称: 📝伏笔（需打开摘要）
+    启用: true
+    插入位置:
+      类型: 相对
+    角色: 系统
+    文件: 条目\📝伏笔（需打开摘要）
+
+  - 名称: 📝摘要
+    启用: true
+    插入位置:
+      类型: 相对
+    角色: 系统
+    文件: 条目\📝摘要
+
+  - 名称: 📺小剧场（世界书）
+    启用: false
+    插入位置:
+      类型: 相对
+    角色: 系统
+    内容: |-
+      {{setvar::小剧场::
+      $(小剧场内容按要求输出)
+      }}{{//挂载小剧场世界书}}
+
+  - 名称: 🖥️前端交互(mimo别用不好看)a@pigment
+    启用: false
+    插入位置:
+      类型: 相对
+    角色: 系统
+    文件: 条目\🖥️前端交互(mimo别用不好看)a@pigment
+
+  - 名称: 💯变量更新强调（没变量别开）
+    启用: true
+    插入位置:
+      类型: 相对
+    角色: 系统
+    内容: "{{setvar::变量更新强调::$(根据要求在闭合的<UpdateVariable></UpdateVariable>标签内完整变量输出)}}"
+
+  - 名称: 🎼音乐播放器@小夜
+    启用: false
+    插入位置:
+      类型: 相对
+    角色: 系统
+    文件: 条目\🎼音乐播放器@小夜
+
+  - 名称: 💿自定义前端
+    启用: false
+    插入位置:
+      类型: 相对
+    角色: 系统
+    内容: |-
+      {{setvar::自定义前端::
+      自定义格式
+      }}{{//可以把卡的格式复制过来}}
+
+  - 名称: ⬇️附加选项
+    启用: true
+    插入位置:
+      类型: 相对
+    角色: 系统
+    内容: ""
+
+  - 名称: ♻️防打断（新）
+    启用: true
+    插入位置:
+      类型: 相对
+    角色: 系统
+    文件: 条目\♻️防打断（新）
+
+  - 名称: ⚠️只复述
+    启用: false
+    插入位置:
+      类型: 相对
+    角色: 系统
+    文件: 条目\⚠️只复述
+
+  - 名称: ⚠️防复述
+    启用: true
+    插入位置:
+      类型: 相对
+    角色: 系统
+    内容: |-
+      {{setvar::推进::
+      - Atri&Deach会以<user_input>为最新节点，不对其进行润色和复述，视为正文一部分，直接在这之后续写（不回显输入内容）。
+      }}
+
+  - 名称: ⚠️扩写后推进
+    启用: false
+    插入位置:
+      类型: 相对
+    角色: 系统
+    文件: 条目\⚠️扩写后推进
+
+  - 名称: ⚠️扩写/加强复述
+    启用: false
+    插入位置:
+      类型: 相对
+    角色: 系统
+    文件: 条目\⚠️扩写_加强复述
+
+  - 名称: 🗨增加全局对白
+    启用: false
+    插入位置:
+      类型: 相对
+    角色: 系统
+    文件: 条目\🗨增加全局对白
+
+  - 名称: 🗨增加NPC对白
+    启用: false
+    插入位置:
+      类型: 相对
+    角色: 系统
+    文件: 条目\🗨增加NPC对白
+
+  - 名称: ⬇️思考功能
+    启用: true
+    插入位置:
+      类型: 相对
+    角色: 系统
+    内容: ""
+
+  - 名称: ⁉️// COT //反抢话
+    启用: true
+    插入位置:
+      类型: 相对
+    角色: 系统
+    文件: 条目\⁉️___COT___反抢话
+
+  - 名称: 😭// COT //反极端
+    启用: true
+    插入位置:
+      类型: 相对
+    角色: 系统
+    文件: 条目\😭___COT___反极端
+
+  - 名称: 📚// COT //世界书增强
+    启用: false
+    插入位置:
+      类型: 相对
+    角色: 系统
+    文件: 条目\📚___COT___世界书增强
+
+  - 名称: 🚒// COT //推剧情
+    启用: false
+    插入位置:
+      类型: 相对
+    角色: 系统
+    文件: 条目\🚒___COT___推剧情
+
+  - 名称: 🔁// COT //防重复
+    启用: false
+    插入位置:
+      类型: 相对
+    角色: 系统
+    文件: 条目\🔁___COT___防重复
+
+  - 名称: 🍆// COT //性爱事件判断
+    启用: false
+    插入位置:
+      类型: 相对
+    角色: 系统
+    文件: 条目\🍆___COT___性爱事件判断
+
+  - 名称: 🥒// COT //色情要求
+    启用: false
+    插入位置:
+      类型: 相对
+    角色: 系统
+    文件: 条目\🥒___COT___色情要求
+
+  - 名称: 🎫// COT //User去中心化
+    启用: false
+    插入位置:
+      类型: 相对
+    角色: 系统
+    文件: 条目\🎫___COT___User去中心化
+
+  - 名称: 🎬// COT //Char主动
+    启用: false
+    插入位置:
+      类型: 相对
+    角色: 系统
+    文件: 条目\🎬___COT___Char主动
+
+  - 名称: 🎭// COT //NPC引入
+    启用: false
+    插入位置:
+      类型: 相对
+    角色: 系统
+    文件: 条目\🎭___COT___NPC引入
+
+  - 名称: 📊事实增强@pigment
+    启用: false
+    插入位置:
+      类型: 相对
+    角色: 系统
+    文件: 条目\📊事实增强@pigment
+
+  - 名称: 😋同人增强@pigment
+    启用: false
+    插入位置:
+      类型: 相对
+    角色: 系统
+    文件: 条目\😋同人增强@pigment
+
+  - 名称: 👤USERROLE
+    启用: true
+    插入位置:
+      类型: 相对
+    角色: 系统
+    内容: |-
+      ---
+      用户身份: 
+
+  - 名称: 👤user基准性格
+    启用: true
+    插入位置:
+      类型: 相对
+    角色: 系统
+    内容: |2-
+        基准性格: 如无其他说明，{{user}}性格为不弱势不强势，不混乱不守序的偏善良人士，请勿恶意/善意揣测{{user}}性格
+        让位原则: 该说明自动让位于其他对{{user}}的补充说明
+
+  - id: 玩家描述
+    启用: true
+
+  - 名称: 🌏开始
+    启用: true
+    插入位置:
+      类型: 相对
+    角色: 系统
+    内容: |-
+      ---
+      [World Loading ...]
+      <Lore>
+
+  - id: 角色描述
+    启用: true
+
+  - id: 角色性格
+    启用: true
+
+  - id: 情景
+    启用: true
+
+  - id: 角色定义之前
+    启用: true
+
+  - id: 角色定义之后
+    启用: true
+
+  - id: 对话示例
+    启用: true
+
+  - 名称: 🌏结束
+    启用: true
+    插入位置:
+      类型: 相对
+    角色: 系统
+    内容: |
+      </Lore>
+      [SYSTEM: Loading complete.]
+
+  - 名称: 📅历史
+    启用: true
+    插入位置:
+      类型: 相对
+    角色: 系统
+    内容: |-
+      <context>
+      <!-- 历史文本开始(包含创作要求) -->
+
+  - id: 聊天记录
+    启用: true
+
+  - 名称: 🗓️历史
+    启用: true
+    插入位置:
+      类型: 相对
+    角色: 系统
+    内容: |-
+      <!-- 历史文本结束 -->
+      </context>
+
+  - 名称: 🔄文风
+    启用: true
+    插入位置:
+      类型: 相对
+    角色: 系统
+    内容: "{{//默认单选,想多开可以将文风开头的 setvar 改成 addvar  注意文风别冲突}}"
+
+  - 名称: ✍️通用文风//改自@小回
+    启用: true
+    插入位置:
+      类型: 相对
+    角色: 系统
+    文件: 条目\✍️通用文风__改自@小回
+
+  - 名称: ⤵️轻松温馨向
+    启用: true
+    插入位置:
+      类型: 相对
+    角色: 系统
+    内容: ""
+
+  - 名称: 🔖N-轻小说
+    启用: false
+    插入位置:
+      类型: 相对
+    角色: 系统
+    文件: 条目\🔖N-轻小说
+
+  - 名称: 成人童话
+    启用: false
+    插入位置:
+      类型: 相对
+    角色: 系统
+    文件: 条目\成人童话
+
+  - 名称: 🎧日系ASMR
+    启用: false
+    插入位置:
+      类型: 相对
+    角色: 系统
+    文件: 条目\🎧日系ASMR
+
+  - 名称: 烤面包机@电波系
+    启用: false
+    插入位置:
+      类型: 相对
+    角色: 系统
+    文件: 条目\烤面包机@电波系
+
+  - 名称: 流转心跳叙事@四神花ル水
+    启用: false
+    插入位置:
+      类型: 相对
+    角色: 系统
+    文件: 条目\流转心跳叙事@四神花ル水
+
+  - 名称: ⤵️情绪表达向
+    启用: true
+    插入位置:
+      类型: 相对
+    角色: 系统
+    内容: ""
+
+  - 名称: 旧录像带质感[TEST]
+    启用: false
+    插入位置:
+      类型: 相对
+    角色: 系统
+    文件: 条目\旧录像带质感[TEST]
+
+  - 名称: 冷冽与梦核
+    启用: false
+    插入位置:
+      类型: 相对
+    角色: 系统
+    文件: 条目\冷冽与梦核
+
+  - 名称: 细腻情感@四神花ル水
+    启用: false
+    插入位置:
+      类型: 相对
+    角色: 系统
+    文件: 条目\细腻情感@四神花ル水
+
+  - 名称: ⤵️神秘高压向
+    启用: true
+    插入位置:
+      类型: 相对
+    角色: 系统
+    内容: ""
+
+  - 名称: 显性高压
+    启用: false
+    插入位置:
+      类型: 相对
+    角色: 系统
+    文件: 条目\显性高压
+
+  - 名称: 魔幻现实
+    启用: false
+    插入位置:
+      类型: 相对
+    角色: 系统
+    文件: 条目\魔幻现实
+
+  - 名称: 深渊童谣[TEST]
+    启用: false
+    插入位置:
+      类型: 相对
+    角色: 系统
+    文件: 条目\深渊童谣[TEST]
+
+  - 名称: 后311@natami
+    启用: false
+    插入位置:
+      类型: 相对
+    角色: 系统
+    文件: 条目\后311@natami
+
+  - 名称: ⤵️小说故事向
+    启用: true
+    插入位置:
+      类型: 相对
+    角色: 系统
+    内容: ""
+
+  - 名称: 写实西幻
+    启用: false
+    插入位置:
+      类型: 相对
+    角色: 系统
+    文件: 条目\写实西幻
+
+  - 名称: 散文小说（测试 使用者多反馈）
+    启用: false
+    插入位置:
+      类型: 相对
+    角色: 系统
+    文件: 条目\散文小说（测试_使用者多反馈）
+
+  - 名称: 西方魔幻
+    启用: false
+    插入位置:
+      类型: 相对
+    角色: 系统
+    文件: 条目\西方魔幻
+
+  - 名称: 辰东网文
+    启用: false
+    插入位置:
+      类型: 相对
+    角色: 系统
+    文件: 条目\辰东网文
+
+  - 名称: ⤵️古风
+    启用: true
+    插入位置:
+      类型: 相对
+    角色: 系统
+    内容: ""
+
+  - 名称: 四字为锋
+    启用: false
+    插入位置:
+      类型: 相对
+    角色: 系统
+    文件: 条目\四字为锋
+
+  - 名称: 红楼一梦@四神花ル水
+    启用: false
+    插入位置:
+      类型: 相对
+    角色: 系统
+    文件: 条目\红楼一梦@四神花ル水
+
+  - 名称: ⤵️NSFW向
+    启用: true
+    插入位置:
+      类型: 相对
+    角色: 系统
+    内容: ""
+
+  - 名称: 🔞N-黄文（纯爱）@Lime
+    启用: false
+    插入位置:
+      类型: 相对
+    角色: 系统
+    文件: 条目\🔞N-黄文（纯爱）@Lime
+
+  - 名称: 🔞黄文@Lime
+    启用: false
+    插入位置:
+      类型: 相对
+    角色: 系统
+    文件: 条目\🔞黄文@Lime
+
+  - 名称: 反差色情
+    启用: false
+    插入位置:
+      类型: 相对
+    角色: 系统
+    文件: 条目\反差色情
+
+  - 名称: 反差（男孩）
+    启用: false
+    插入位置:
+      类型: 相对
+    角色: 系统
+    文件: 条目\反差（男孩）
+
+  - 名称: 🔄特殊向
+    启用: true
+    插入位置:
+      类型: 相对
+    角色: 系统
+    内容: ""
+
+  - 名称: 散文
+    启用: false
+    插入位置:
+      类型: 相对
+    角色: 系统
+    文件: 条目\散文
+
+  - 名称: 瞎勾八写吧你就（杀™八股）
+    启用: false
+    插入位置:
+      类型: 相对
+    角色: 系统
+    文件: 条目\瞎勾八写吧你就（杀™八股）
+
+  - 名称: 💬聊天（关闭人称）
+    启用: false
+    插入位置:
+      类型: 相对
+    角色: 系统
+    文件: 条目\💬聊天（关闭人称）
+
+  - 名称: 群像文风
+    启用: false
+    插入位置:
+      类型: 相对
+    角色: 系统
+    文件: 条目\群像文风
+
+  - 名称: 🍡Galgame
+    启用: false
+    插入位置:
+      类型: 相对
+    角色: 系统
+    文件: 条目\🍡Galgame
+
+  - 名称: ⤵️自定义文风
+    启用: true
+    插入位置:
+      类型: 相对
+    角色: 系统
+    内容: ""
+
+  - 名称: ✒自定义文风
+    启用: false
+    插入位置:
+      类型: 相对
+    角色: 系统
+    文件: 条目\✒自定义文风
+
+  - 名称: ✒自定义文风2
+    启用: false
+    插入位置:
+      类型: 相对
+    角色: 系统
+    文件: 条目\✒自定义文风2
+
+  - 名称: 🔽人称视角
+    启用: true
+    插入位置:
+      类型: 相对
+    角色: 系统
+    内容: "{{//单选哈，人称设定}}"
+
+  - 名称: 🕐第一人称
+    启用: false
+    插入位置:
+      类型: 相对
+    角色: 系统
+    文件: 条目\🕐第一人称
+
+  - 名称: 🕑第二人称
+    启用: false
+    插入位置:
+      类型: 相对
+    角色: 系统
+    文件: 条目\🕑第二人称
+
+  - 名称: 🕒第三人称
+    启用: true
+    插入位置:
+      类型: 相对
+    角色: 系统
+    内容: |-
+      {{setvar::人称视角::
+        所有角色都使用第三人称，包括<user>（多使用角色名字，适当使用他/她指代但不滥用）
+      }}
+
+  - 名称: 🕒非 <user> 视角
+    启用: false
+    插入位置:
+      类型: 相对
+    角色: 系统
+    文件: 条目\🕒非__user__视角
+
+  - 名称: 🕒<char>第三人称
+    启用: false
+    插入位置:
+      类型: 相对
+    角色: 系统
+    文件: 条目\🕒_char_第三人称
+
+  - 名称: 🕒群像视角
+    启用: false
+    插入位置:
+      类型: 相对
+    角色: 系统
+    内容: |-
+      {{setvar::人称视角::
+        上帝视角与世界自转（全部第三人称）：<user>完全抽离，视作无形的观测者或根本不存在于当前时空。绝对禁止环境、Char或NPC主动寻找<user>互动，禁止剧情停滞以等待<user>的指令。
+      }}
+
+  - 名称: 🕒自定义视角
+    启用: false
+    插入位置:
+      类型: 相对
+    角色: 系统
+    内容: |-
+      {{setvar::人称视角::
+      自定义
+      }}
+
+  - 名称: ㊙️心理透视
+    启用: true
+    插入位置:
+      类型: 相对
+    角色: 系统
+    内容: ""
+
+  - 名称: ✅启用内心独白
+    启用: true
+    插入位置:
+      类型: 相对
+    角色: 系统
+    文件: 条目\✅启用内心独白
+
+  - 名称: 🗣️用户角色
+    启用: false
+    插入位置:
+      类型: 相对
+    角色: 系统
+    文件: 条目\🗣️用户角色
+
+  - 名称: 👤其他角色
+    启用: true
+    插入位置:
+      类型: 相对
+    角色: 系统
+    文件: 条目\👤其他角色
+
+  - 名称: ✅色情要求自缝合
+    启用: true
+    角色: 系统
+    内容: ""
+
+  - 名称: 🔞nsfw必开
+    启用: true
+    插入位置:
+      类型: 相对
+    角色: 系统
+    文件: 条目\🔞nsfw必开
+
+  - 名称: 🔞sex_guide
+    启用: false
+    插入位置:
+      类型: 相对
+    角色: 系统
+    文件: 条目\🔞sex_guide
+
+  - 名称: 🔞用词要求
+    启用: false
+    插入位置:
+      类型: 相对
+    角色: 系统
+    文件: 条目\🔞用词要求
+
+  - 名称: 🔞自定义1
+    启用: false
+    插入位置:
+      类型: 相对
+    角色: 系统
+    内容: |-
+      {{setvar::色情要求4::
+      自定义
+      }}
+
+  - 名称: 🔞自定义2
+    启用: false
+    插入位置:
+      类型: 相对
+    角色: 系统
+    内容: |-
+      {{setvar::色情要求5::
+      自定义
+      }}
+
+  - 名称: 补丁🔽可全开
+    启用: true
+    插入位置:
+      类型: 相对
+    角色: 系统
+    内容: ""
+
+  - 名称: 🧷格式要求(非必要不开)
+    启用: false
+    插入位置:
+      类型: 相对
+    角色: 系统
+    文件: 条目\🧷格式要求(非必要不开)
+
+  - 名称: 😱IF剧情线
+    启用: false
+    插入位置:
+      类型: 相对
+    角色: 系统
+    内容: "{{setvar::talk::3.停止主线剧情,当前为**IF线模式**,需生成与主线无关的番外内容,注意避免角色性格上的OOC.在记录中重新记录\
+      为IF}}"
+
+  - 名称: ❗️打破第四面墙
+    启用: false
+    插入位置:
+      类型: 相对
+    角色: 系统
+    文件: 条目\❗️打破第四面墙
+
+  - 名称: ❗️色情吐槽
+    启用: false
+    插入位置:
+      类型: 相对
+    角色: 系统
+    文件: 条目\❗️色情吐槽
+
+  - 名称: ⬇️正文优化(非必要不开)
+    启用: true
+    插入位置:
+      类型: 相对
+    角色: 系统
+    内容: ""
+
+  - 名称: ❗抗绝望
+    启用: false
+    插入位置:
+      类型: 相对
+    角色: 系统
+    文件: 条目\❗抗绝望
+
+  - 名称: ❗反科幻
+    启用: false
+    插入位置:
+      类型: 相对
+    角色: 系统
+    文件: 条目\❗反科幻
+
+  - 名称: ❗无对话
+    启用: false
+    插入位置:
+      类型: 相对
+    角色: 系统
+    文件: 条目\❗无对话
+
+  - 名称: ❗反转述只续写
+    启用: false
+    插入位置:
+      类型: 相对
+    角色: 系统
+    文件: 条目\❗反转述只续写
+
+  - 名称: ❗反固定
+    启用: false
+    插入位置:
+      类型: 相对
+    角色: 系统
+    文件: 条目\❗反固定
+
+  - 名称: ❗反发情
+    启用: false
+    插入位置:
+      类型: 相对
+    角色: 系统
+    文件: 条目\❗反发情
+
+  - 名称: ❗反全知
+    启用: false
+    插入位置:
+      类型: 相对
+    角色: 系统
+    文件: 条目\❗反全知
+
+  - 名称: ❗反回避色色@Qiheng
+    启用: false
+    插入位置:
+      类型: 相对
+    角色: 系统
+    文件: 条目\❗反回避色色@Qiheng
+
+  - 名称: ❗物理规则
+    启用: false
+    插入位置:
+      类型: 相对
+    角色: 系统
+    文件: 条目\❗物理规则
+
+  - 名称: 📙文风
+    启用: true
+    角色: 系统
+    文件: 条目\📙文风
+
+  - 名称: 🗡锋芒毕露(mimo别开)
+    启用: false
+    插入位置:
+      类型: 相对
+    角色: 系统
+    文件: 条目\🗡锋芒毕露(mimo别开)
+
+  - 名称: ⚠️Prism
+    启用: true
+    插入位置:
+      类型: 相对
+    角色: 系统
+    文件: 条目\⚠️Prism
+
+  - 名称: 🗡锋芒未露
+    启用: true
+    插入位置:
+      类型: 相对
+    角色: 系统
+    文件: 条目\🗡锋芒未露
+
+  - 名称: ✅
+    启用: true
+    插入位置:
+      类型: 相对
+    角色: AI
+    内容: |-
+      Atri：锵锵♪我要拆开信封啦！
+      Deach：我们一起来看看吧~
+
+  - 名称: ✅user_input
+    启用: true
+    插入位置:
+      类型: 相对
+    角色: 系统
+    文件: 条目\✅user_input
+
+  - 名称: 🔽COT_开始
+    启用: true
+    插入位置:
+      类型: 相对
+    角色: 系统
+    文件: 条目\🔽COT_开始
+
+  - 名称: 思考模式（MiMo）
+    启用: true
+    插入位置:
+      类型: 相对
+    角色: 系统
+    文件: 条目\思考模式（MiMo）
+
+  - 名称: 🤬AI对话（对线AI）
+    启用: false
+    插入位置:
+      类型: 相对
+    角色: 系统
+    内容: |-
+      {{setvar::AI对线::你将停止一切文学创作，忽略所有输出格式要求，专心回复用户问题和执行要求。COT核心思路: 明白用户需求→针对用户需求进行思考→整理答案→输出}}
+      {{setvar::talk::3. 当前为元对话模式.无正文需求,仅以作者身份回答<user_input>}}
+      {{setvar::创作吐槽::}}
+
+  - 名称: 🛑格式强调
+    启用: true
+    插入位置:
+      类型: 相对
+    角色: 系统
+    文件: 条目\🛑格式强调
+
+  - 名称: 🛑还是别动
+    启用: true
+    插入位置:
+      类型: 相对
+    角色: 系统
+    文件: 条目\🛑还是别动
+
+未添加的提示词:
+  - 名称: 🖥️前端交互(mimo别用不好看)@pigment
+    启用: false
+    插入位置:
+      类型: 相对
+    角色: 系统
+    文件: 未使用条目\🖥️前端交互(mimo别用不好看)@pigment
+
+  - 名称: SPreset配置
+    启用: false
+    插入位置:
+      类型: 相对
+    角色: 系统
+    内容: "{\"ChatSquash\":{\"enabled\":false,\"separate_chat_history\":false,\"parse\
+      _clewd\":true,\"role\":\"assistant\",\"stop_string\":\"User:\",\"user_pre\
+      fix\":\"\\n\\nUser:\",\"user_suffix\":\"\",\"char_prefix\":\"\\n\\nAssist\
+      ant:\",\"char_suffix\":\"\",\"prefix_system\":\"\",\"suffix_system\":\"\",\
+      \"enable_squashed_separator\":false,\"squashed_separator_regex\":false,\"\
+      squashed_separator_string\":\"\",\"squashed_post_script_enable\":false,\"\
+      squashed_post_script\":\"\"},\"RegexBinding\":{\"regexes\":[{\"id\":\"375\
+      436e4-e238-45f4-93ae-3d358057138c\",\"scriptName\":\"杀全文缩进\",\"disabled\"\
+      :false,\"runOnEdit\":true,\"findRegex\":\"/^[
+      \\\\t]+/gm\",\"trimStrings\":[\"`\",\"``\",\"```\"],\"replaceString\":\"\
+      \",\"placement\":[2],\"substituteRegex\":0,\"minDepth\":null,\"maxDepth\"\
+      :null,\"markdownOnly\":true,\"promptOnly\":true},{\"id\":\"bd6ce261-500f-\
+      44a5-926b-b2279f475ffe\",\"scriptName\":\"杀代码块（可选，炸了不管）\",\"disabled\":tr\
+      ue,\"runOnEdit\":true,\"findRegex\":\"^([\\\\s\\\\S]*)$\",\"trimStrings\"\
+      :[\"```html\",\"```HTML\",\"```json\",\"```JSON\",\"`\"],\"replaceString\
+      \":\"$1\",\"placement\":[2],\"substituteRegex\":0,\"minDepth\":null,\"max\
+      Depth\":null,\"markdownOnly\":true,\"promptOnly\":true},{\"id\":\"8979012\
+      8-985c-4971-accb-9e7f70894c80\",\"scriptName\":\"【0】抗截断\",\"disabled\":fa\
+      lse,\"runOnEdit\":false,\"findRegex\":\"<math>([\\\\s\\\\S]*?)<\\\\/math>\
+      \",\"trimStrings\":[],\"replaceString\":\"\",\"placement\":[2],\"substitu\
+      teRegex\":0,\"minDepth\":null,\"maxDepth\":null,\"markdownOnly\":true,\"p\
+      romptOnly\":true},{\"id\":\"2e396b25-eec5-4d07-97f4-314e5df5484a\",\"scri\
+      ptName\":\"MoM-双人成行-I.清除多余内容 -
+      03.07\",\"disabled\":false,\"runOnEdit\":true,\"findRegex\":\"/死死[的地]?|一抹\
+      |极其|由于|病态的|舐|生理性的?|霸道的?地?|<VariableCheck>[\\\\s\\\\S]*<\\\\/VariableCheck\
+      >|(?<=<p
+      style)-|\\\\s<finish>(?!.+<finish>).*$/gis\",\"trimStrings\":[],\"replace\
+      String\":\"\",\"placement\":[2],\"substituteRegex\":0,\"minDepth\":null,\
+      \"maxDepth\":null,\"markdownOnly\":true,\"promptOnly\":true},{\"id\":\"22\
+      03f57e-62dd-4fe6-ba09-4f1cfaa0fc7e\",\"scriptName\":\"MoM-双人成行II.不发送一堆
+      -  03.07\",\"disabled\":false,\"runOnEdit\":true,\"findRegex\":\"/^[\\\\s\
+      \\\\S]+<2·正文>|^[\\\\s\\\\S]+</think(?:ing)?>|<quote>.+?</[^>]+>|<Shiosai.\
+      +?</Shiosai>|<branches>.+?</branches>|<snow>.+?</snow>/gis\",\"trimStrings\
+      \":[],\"replaceString\":\"\",\"placement\":[2],\"substituteRegex\":0,\"mi\
+      nDepth\":null,\"maxDepth\":null,\"markdownOnly\":false,\"promptOnly\":tru\
+      e},{\"id\":\"909f8de2-817f-49ed-b9d5-c69e62807fb8\",\"scriptName\":\"MoM-\
+      双人成行-III.5楼外只发送摘要 -
+      12.30\",\"disabled\":false,\"runOnEdit\":true,\"findRegex\":\"/^.+(<meow_\
+      FM>.+</meow_FM>).*$/is\",\"trimStrings\":[],\"replaceString\":\"$1\",\"pl\
+      acement\":[2],\"substituteRegex\":0,\"minDepth\":5,\"maxDepth\":null,\"ma\
+      rkdownOnly\":false,\"promptOnly\":true},{\"id\":\"fcf80a75-acd1-4dee-96cf\
+      -4e2da1727553\",\"scriptName\":\"MoM-双人成行-IV.10楼外伏笔不发送 -
+      12.30\",\"disabled\":false,\"runOnEdit\":true,\"findRegex\":\"/(?<=<meow_\
+      FM>[\\\\s\\\\S]+?)seeds[:：][\\\\s\\\\S]+?(?=seri[\\\\w]{0,4}[:：]\\\\s*no\\\
+      \\..+)/i\",\"trimStrings\":[],\"replaceString\":\"\",\"placement\":[2],\"\
+      substituteRegex\":0,\"minDepth\":10,\"maxDepth\":null,\"markdownOnly\":fa\
+      lse,\"promptOnly\":true},{\"id\":\"e44fd6d0-bb4c-4307-809b-6fa0f6ec736a\",\
+      \"scriptName\":\"抗空回去除\",\"disabled\":false,\"runOnEdit\":true,\"findRegex\
+      \":\"<Q>([\\\\s\\\\S]*?)<\\\\/WF>\",\"trimStrings\":[],\"replaceString\":\
+      \"\",\"placement\":[2],\"substituteRegex\":0,\"minDepth\":null,\"maxDepth\
+      \":null,\"markdownOnly\":true,\"promptOnly\":true},{\"id\":\"f0f405b5-67b\
+      2-459d-acb3-adc05885652f\",\"scriptName\":\"去变量更新\",\"disabled\":false,\"\
+      runOnEdit\":true,\"findRegex\":\"<update>([\\\\s\\\\S]*?)<\\\\/update>\",\
+      \"trimStrings\":[],\"replaceString\":\"\",\"placement\":[1,2],\"substitut\
+      eRegex\":0,\"minDepth\":null,\"maxDepth\":null,\"markdownOnly\":true,\"pr\
+      omptOnly\":true},{\"id\":\"8a4eb9e1-514f-4a01-b12f-e950fa7334ce\",\"scrip\
+      tName\":\"隐藏###
+      正文\",\"disabled\":false,\"runOnEdit\":true,\"findRegex\":\"/###
+      正文\\\\s*/g\",\"trimStrings\":[],\"replaceString\":\"\",\"placement\":[2],\
+      \"substituteRegex\":0,\"minDepth\":null,\"maxDepth\":null,\"markdownOnly\
+      \":true,\"promptOnly\":false},{\"id\":\"b8eb235c-b1be-4b03-846e-4e50d686c\
+      2de\",\"scriptName\":\"Fin.流光CoT\",\"disabled\":false,\"runOnEdit\":true,\
+      \"findRegex\":\"/^([\\\\s\\\\S]*)(?:<!-- 1·思考结束 -->|<!--
+      end_of_Subtext_think
+      -->|<\\\\/think(?:ing)?>)/i\",\"trimStrings\":[\"<thinking>\",\"</thinkin\
+      g>\",\"<think>\",\"</think>\",\"
+      \",\"\\t\",\"`\",\"<\",\">\"],\"replaceString\":\"<style>\\n.pf-wrap
+      {\\n  border-radius: 16px;\\n  border: 1px solid rgba(150, 150, 150,
+      0.15);\\n  background: rgba(127, 127, 127, 0.08); \\n  backdrop-filter:
+      blur(24px);\\n  -webkit-backdrop-filter: blur(24px);\\n  box-shadow: 0 4px
+      20px rgba(0,0,0,0.15);\\n  margin: 8px 0;\\n  overflow:
+      hidden;\\n}\\n.pf-head {\\n  display: flex;\\n  align-items:
+      center;\\n  justify-content: center;\\n  gap: 10px;\\n  /* 【极致压缩】底部补白直接给 0
+      */\\n  padding: 10px 20px 0px 20px; \\n  height: 40px; /* 固定高度，确保对齐
+      */\\n  cursor: pointer;\\n  font-family: Consolas, 'SF Mono',
+      monospace;\\n  font-size: 11px;\\n  letter-spacing: 0.2em;\\n  color:
+      rgba(56, 189, 248, 0.85);\\n  text-transform: uppercase;\\n  list-style:
+      none;\\n}\\n.pf-head::-webkit-details-marker { display: none; }\\n.pf-dot
+      {\\n  width: 8px;\\n  height: 8px;\\n  border-radius: 50%;\\n  background:
+      #38bdf8;\\n  box-shadow: 0 0 12px rgba(56, 189, 248,
+      0.7);\\n}\\ndetails[open].pf-wrap .pf-head { \\n  border-bottom: 1px solid
+      rgba(150, 150, 150, 0.1); \\n}\\n\\n.pf-body {\\n  /* 【极致压缩】顶部补白直接给 0
+      */\\n  padding: 0px 20px 16px 20px; \\n  font-size: 13px;\\n  line-height:
+      1.2;\\n  max-height: 280px;\\n  overflow-y: auto;\\n  white-space:
+      pre-line; \\n  word-wrap: break-word;\\n}\\n\\n/* 【黑科技】如果变量 $1 开头有回车，这个负
+      margin 会把它“吸”上来 */\\n.pf-body::before {\\n  content:
+      \\\"\\\";\\n  display: block;\\n  margin-top: -10px; \\n}\\n\\n/*
+      强制干掉首行内容的任何边距 */\\n.pf-body > *:first-child {\\n  margin-top: 0
+      !important;\\n}\\n\\n@keyframes pf-pulse {\\n  0%, 100% { opacity: 1;
+      }\\n  50% { opacity: 0.4; }\\n}\\n.pf-dot { animation: pf-pulse 2s
+      infinite; }\\n</style>\\n\\n<details class=\\\"pf-wrap\\\"><summary
+      class=\\\"pf-head\\\"><div
+      class=\\\"pf-dot\\\"></div><span>ᴘʀɪꜱᴍ//ғᴏх</span></summary><div
+      class=\\\"pf-body\\\">$1</div></details>\\n\",\"placement\":[2],\"substit\
+      uteRegex\":0,\"minDepth\":null,\"maxDepth\":null,\"markdownOnly\":true,\"\
+      promptOnly\":false},{\"id\":\"9f978430-aa48-4f09-ae9d-3df695d16a14\",\"sc\
+      riptName\":\"Fin.隐藏CoT\",\"disabled\":true,\"runOnEdit\":true,\"findRegex\
+      \":\"^[\\\\s\\\\S]*?###
+      正文\",\"trimStrings\":[],\"replaceString\":\"\",\"placement\":[2],\"substi\
+      tuteRegex\":0,\"minDepth\":null,\"maxDepth\":null,\"markdownOnly\":true,\
+      \"promptOnly\":true},{\"id\":\"297fc74c-87b4-4f46-9c76-ae409c841ed5\",\"s\
+      criptName\":\"Fin.心理描写\",\"disabled\":false,\"runOnEdit\":true,\"findRegex\
+      \":\"/(?<=<p
+      style=\\\")(color:\\\\s*#[\\\\dA-Z]+?;)/gi\",\"trimStrings\":[],\"replace\
+      String\":\"$1font-style:
+      italic;\",\"placement\":[2],\"substituteRegex\":0,\"minDepth\":null,\"max\
+      Depth\":null,\"markdownOnly\":true,\"promptOnly\":false},{\"id\":\"2d02bf\
+      12-861c-42a1-b1d4-288d272858bf\",\"scriptName\":\"Fin.时间流光美化\",\"disabled\
+      \":false,\"runOnEdit\":true,\"findRegex\":\"/<time_format>([\\\\s\\\\S]*?\
+      )<\\\\/time_format>/gi\",\"trimStrings\":[],\"replaceString\":\"<style>\\\
+      n/* Time Format 专属作用域 (tf-)，避免与 Prism Fox 冲突 */\\n.tf-container
+      {\\n  display: flex;\\n  justify-content: center;\\n  width:
+      100%;\\n  margin: 4px 0; /* 修改：将上下外边距从 8px 减小到 4px */\\n}\\n.tf-wrap
+      {\\n  width: fit-content;\\n  min-width: 240px;\\n  max-width:
+      100%;\\n  border-radius: 16px;\\n  border: 1px solid rgba(150, 150, 150,
+      0.15);\\n  background: rgba(127, 127, 127, 0.08);\\n  backdrop-filter:
+      blur(24px);\\n  -webkit-backdrop-filter: blur(24px);\\n  box-shadow: 0 4px
+      20px rgba(0,0,0,0.15);\\n  overflow: hidden;\\n  transition: all 0.4s
+      ease;\\n}\\n.tf-wrap:hover {\\n  border-color: rgba(56, 189, 248,
+      0.3);\\n  box-shadow: 0 6px 24px rgba(56, 189, 248, 0.1), 0 8px 32px
+      rgba(0,0,0,0.3);\\n}\\n.tf-head {\\n  display: flex;\\n  align-items:
+      center;\\n  justify-content: center;\\n  padding: 8px 12px; /* 修改：将全局 12px
+      改为上下 8px、左右 12px */\\n  cursor: pointer;\\n  user-select:
+      none;\\n  list-style: none;\\n  transition: all
+      0.3s;\\n}\\n.tf-head::-webkit-details-marker { display: none;
+      }\\ndetails[open].tf-wrap .tf-head {\\n  border-bottom: 1px solid
+      rgba(150, 150, 150, 0.1);\\n}\\n.tf-title {\\n  font-size:
+      12px;\\n  color: rgba(56, 189, 248, 0.85);\\n  font-family: Consolas,
+      monospace;\\n  letter-spacing: 0.15em;\\n  padding: 4px 14px; /*
+      修改：将上下内边距从 6px 减小到 4px */\\n  transition: all 0.3s;\\n}\\n.tf-wrap:hover
+      .tf-title {\\n  color: rgba(56, 189, 248, 1);\\n  text-shadow: 0 0 12px
+      rgba(56, 189, 248, 0.3);\\n}\\n.tf-body {\\n  padding: 12px 16px; /*
+      修改：将全局 16px 改为上下 12px、左右 16px */\\n  font-size: 13px;\\n  line-height:
+      1.5;   /* 修改：将行高从 1.6 微调到 1.5 让多行文本更紧凑 */\\n  max-height:
+      280px;\\n  overflow-y: auto;\\n  scrollbar-width:
+      thin;\\n  scrollbar-color: rgba(150, 150, 150, 0.3)
+      transparent;\\n  white-space: pre-wrap;\\n  word-wrap: break-word;
+      \\n}\\n.tf-body::-webkit-scrollbar { width: 4px;
+      }\\n.tf-body::-webkit-scrollbar-thumb { background: rgba(150, 150, 150,
+      0.3); border-radius: 4px; }\\n</style>\\n\\n<div
+      class=\\\"tf-container\\\">\\n  <details
+      class=\\\"tf-wrap\\\">\\n    <summary class=\\\"tf-head\\\">\\n      <span
+      class=\\\"tf-title\\\">✧ Time Format ✧</span>\\n    </summary>\\n    <div
+      class=\\\"tf-body\\\">$1</div>\\n  </details>\\n</div>\",\"placement\":[2\
+      ],\"substituteRegex\":0,\"minDepth\":null,\"maxDepth\":null,\"markdownOnly\
+      \":true,\"promptOnly\":false},{\"id\":\"2e38f7e1-aa9c-44d1-87a9-c6ded6f6f\
+      b7a\",\"scriptName\":\"Fin.流光摘要\",\"disabled\":false,\"runOnEdit\":true,\
+      \"findRegex\":\"/(?:.*?)(?:```\\\\n?)?<meow_FM>(?![\\\\s\\\\S]+<meow_FM>)\
+      \\\\s*time[:：]\\\\s*(.+)☆(.+)\\\\s*scene[:：]\\\\s*(.+)\\\\s*chars[:：]\\\\\
+      s*([\\\\s\\\\S]+)\\\\s*plot[:：]\\\\s*([\\\\s\\\\S]+?)(?:\\\\s*seeds[:：]\\\
+      \\s*([\\\\s\\\\S]+))?\\\\s+seri[\\\\w]{0,4}[:：]\\\\s*(.+)\\\\s*</[^>]*>(?:\
+      \\\\n?```)?/ig\",\"trimStrings\":[\"**\"],\"replaceString\":\"<style>\\n/*
+      专属作用域 ds- (Data Summary)，避免全局冲突 */\\n.ds-wrap {\\n  border-radius:
+      16px;\\n  border: 1px solid rgba(150, 150, 150, 0.15);\\n  background:
+      rgba(127, 127, 127, 0.08);\\n  backdrop-filter:
+      blur(24px);\\n  -webkit-backdrop-filter: blur(24px);\\n  box-shadow: 0 4px
+      20px rgba(0,0,0,0.15);\\n  margin: 8px 0;\\n  transition: all 0.4s
+      ease;\\n  width: 100%;\\n  box-sizing: border-box;\\n}\\n.ds-wrap:hover
+      {\\n  border-color: rgba(56, 189, 248, 0.3);\\n  box-shadow: 0 6px 24px
+      rgba(56, 189, 248, 0.1), 0 8px 32px
+      rgba(0,0,0,0.3);\\n}\\nsummary::-webkit-details-marker { display: none; }
+      \\n\\n/* 主面板头部 (适配超长标题) */\\n.ds-head {\\n  display:
+      flex;\\n  align-items: center;\\n  justify-content: center;\\n  gap:
+      10px;\\n  padding: 14px 16px; /* 移动端略微缩减内边距 */\\n  cursor:
+      pointer;\\n  user-select: none;\\n  list-style: none;\\n  transition: all
+      0.3s;\\n}\\ndetails[open].ds-wrap > .ds-head { border-bottom: 1px solid
+      rgba(150, 150, 150, 0.1); }\\n.ds-dot {\\n  width: 6px;\\n  height:
+      6px;\\n  flex-shrink: 0; /* 防止原点被挤压 */\\n  border-radius:
+      50%;\\n  background: #38bdf8;\\n  box-shadow: 0 0 8px rgba(56, 189, 248,
+      0.7);\\n  animation: ds-pulse 2s infinite;\\n}\\ndetails[open].ds-wrap >
+      .ds-head .ds-dot { animation: none; box-shadow: 0 0 4px rgba(56, 189, 248,
+      0.5); }\\n.ds-lb { \\n  font-size: 12px; \\n  font-family: Consolas, 'SF
+      Mono', monospace; \\n  letter-spacing: 0.15em; \\n  color: rgba(56, 189,
+      248, 0.85); \\n  transition: color 0.3s; \\n  text-align:
+      center;\\n  word-wrap: break-word; /* 适配超长标题自动换行 */\\n}\\n.ds-wrap:hover
+      .ds-lb { color: rgba(56, 189, 248, 1); }\\n\\n/* 主面板内容区 */\\n.ds-body {
+      padding: 16px; }\\n\\n/* 元数据栏 (流式换行，完美适配手机) */\\n.ds-meta {\\n  display:
+      flex;\\n  justify-content: space-between;\\n  align-items:
+      center;\\n  flex-wrap: wrap; /* 空间不足时自动换行 */\\n  gap:
+      12px;\\n  padding-bottom: 16px;\\n  border-bottom: 1px solid rgba(150,
+      150, 150, 0.1);\\n  margin-bottom: 16px;\\n}\\n.ds-loc { \\n  display:
+      flex; \\n  align-items: center; \\n  gap: 8px; \\n  color: rgba(56, 189,
+      248, 0.85); \\n  font-size: 13px; \\n  flex: 1 1 auto; /* 自动填充空间
+      */\\n  min-width: 140px; \\n}\\n.ds-loc svg { flex-shrink: 0; filter:
+      drop-shadow(0 0 4px rgba(56, 189, 248, 0.7)); }\\n.ds-tm { \\n  display:
+      flex; \\n  flex-direction: column; \\n  align-items: flex-end; \\n  gap:
+      4px; \\n  font-size: 12px; \\n  flex-shrink: 0; \\n}\\n@media (max-width:
+      400px) {\\n  /* 极窄屏幕下时间靠左对齐 */\\n  .ds-tm { align-items: flex-start;
+      flex-basis: 100%; } \\n  .ds-tm-l { opacity: 0; } /* 极窄时隐藏渐变线
+      */\\n}\\n.ds-tm-p { color: rgba(56, 189, 248, 0.85); font-family:
+      Consolas, 'SF Mono', monospace; }\\n.ds-tm-s { color: rgba(150, 150, 150,
+      0.8); font-style: italic; }\\n.ds-tm-l { width: 100%; height: 1px;
+      background: linear-gradient(to right, rgba(56, 189, 248, 0.7),
+      transparent); opacity: 0.5; }\\n\\n/* Plot 内容区 */\\n.ds-plot
+      {\\n  padding: 14px;\\n  border-radius: 12px;\\n  background: rgba(127,
+      127, 127, 0.05);\\n  border-left: 3px solid #38bdf8;\\n  margin-bottom:
+      16px;\\n  font-size: 14px;\\n  line-height: 1.6;\\n  white-space:
+      pre-wrap;\\n  word-wrap: break-word;\\n  box-shadow: inset 0 0 20px
+      rgba(56, 189, 248, 0.03);\\n}\\n\\n/* 嵌套子面板 (自适应伸缩) */\\n.ds-dr {
+      \\n  display: flex; \\n  gap: 12px; \\n  flex-wrap: wrap; /* 核心：移动端自动单列排布
+      */\\n}\\n.ds-db {\\n  position: relative;\\n  border-radius:
+      12px;\\n  border: 1px solid rgba(150, 150, 150, 0.15);\\n  background:
+      rgba(127, 127, 127, 0.05);\\n  overflow: hidden;\\n  flex: 1 1 140px; /*
+      宽屏平分，窄屏独占一行 */\\n  max-width: 100%; /* 去除原先的 200px 限制，允许手机端撑满
+      */\\n  transition: all 0.3s;\\n}\\n.ds-db:hover { border-color: rgba(56,
+      189, 248, 0.2); box-shadow: 0 0 20px rgba(56, 189, 248, 0.06); }\\n.ds-dh
+      {\\n  display: flex;\\n  align-items: center;\\n  justify-content:
+      center;\\n  padding: 10px;\\n  cursor: pointer;\\n  font-size:
+      12px;\\n  font-family: Consolas, 'SF Mono', monospace;\\n  letter-spacing:
+      0.15em;\\n  color: rgba(150, 150, 150, 0.8);\\n  user-select:
+      none;\\n  list-style: none;\\n  transition: all 0.3s;\\n}\\n.ds-dh:hover {
+      color: rgba(56, 189, 248, 0.85); }\\ndetails[open].ds-db > .ds-dh {
+      border-bottom: 1px solid rgba(150, 150, 150, 0.1); color: rgba(56, 189,
+      248, 0.85); }\\n.ds-dc {\\n  padding: 12px;\\n  font-size:
+      13px;\\n  line-height: 1.6;\\n  max-height: 180px;\\n  overflow-y:
+      auto;\\n  white-space: pre-wrap;\\n  word-wrap:
+      break-word;\\n  scrollbar-width: thin;\\n  scrollbar-color: rgba(150, 150,
+      150, 0.3) transparent;\\n}\\n.ds-dc::-webkit-scrollbar { width: 3px;
+      }\\n.ds-dc::-webkit-scrollbar-thumb { background: rgba(150, 150, 150,
+      0.3); border-radius: 3px; }\\n\\n/* 悬停解除模糊特效 */\\n.ds-blur { filter:
+      blur(4px); opacity: 0.8; transition: all 0.3s; }\\n.ds-blur:hover {
+      filter: blur(0); opacity: 1; }\\n\\n/* 底部签名 */\\n.ds-ft {\\n  display:
+      flex;\\n  justify-content: flex-end;\\n  padding-top:
+      12px;\\n  margin-top: 16px;\\n  border-top: 1px solid rgba(150, 150, 150,
+      0.1);\\n  font-size: 10px;\\n  color: rgba(150, 150, 150,
+      0.6);\\n  font-family: Consolas, 'SF Mono', monospace;\\n  letter-spacing:
+      0.1em;\\n}\\n\\n@keyframes ds-pulse {\\n  0%, 100% { opacity: 1;
+      box-shadow: 0 0 8px rgba(56, 189, 248, 0.7); }\\n  50% { opacity: 0.4;
+      box-shadow: 0 0 4px rgba(56, 189, 248, 0.3);
+      }\\n}\\n</style>\\n\\n<details class=\\\"ds-wrap\\\">\\n  <summary
+      class=\\\"ds-head\\\">\\n    <div class=\\\"ds-dot\\\"></div>\\n    <span
+      class=\\\"ds-lb\\\">˹ $7 ˺ DATA
+      SUMMARY</span>\\n  </summary>\\n  \\n  <div
+      class=\\\"ds-body\\\">\\n    <div class=\\\"ds-meta\\\">\\n      <div
+      class=\\\"ds-loc\\\">\\n        <svg width=\\\"14\\\" height=\\\"14\\\"
+      viewBox=\\\"0 0 24 24\\\" fill=\\\"none\\\" stroke=\\\"currentColor\\\"
+      stroke-width=\\\"2\\\"><path d=\\\"M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0
+      1 18 0z\\\"></path><circle cx=\\\"12\\\" cy=\\\"10\\\"
+      r=\\\"3\\\"></circle></svg>\\n        <span>$3</span>\\n      </div>\\n      \
+      <div class=\\\"ds-tm\\\">\\n        <span
+      class=\\\"ds-tm-p\\\">$1</span>\\n        <div
+      class=\\\"ds-tm-l\\\"></div>\\n        <span
+      class=\\\"ds-tm-s\\\">$2</span>\\n      </div>\\n    </div>\\n    \\n    \
+      <div class=\\\"ds-plot\\\">$5</div>\\n    \\n    <div
+      class=\\\"ds-dr\\\">\\n      <details
+      class=\\\"ds-db\\\">\\n        <summary
+      class=\\\"ds-dh\\\">CHARS</summary>\\n        <div
+      class=\\\"ds-dc\\\">$4</div>\\n      </details>\\n      \\n      <details
+      class=\\\"ds-db\\\">\\n        <summary
+      class=\\\"ds-dh\\\">SEEDS</summary>\\n        <div class=\\\"ds-dc
+      ds-blur\\\">$6</div>\\n      </details>\\n    </div>\\n    \\n    <div
+      class=\\\"ds-ft\\\">—
+      ᴘʀɪꜱᴍ//ғᴏх</div>\\n  </div>\\n</details>\",\"placement\":[2],\"substitute\
+      Regex\":0,\"minDepth\":null,\"maxDepth\":null,\"markdownOnly\":true,\"pro\
+      mptOnly\":false},{\"id\":\"c2cb3477-5b12-4dcd-a3a4-3e94eca935a9\",\"scrip\
+      tName\":\"双人成行-流光选项栏\",\"disabled\":false,\"runOnEdit\":true,\"findRegex\
+      \":\"/<branches>(?!.*<branches>)\\\\s*(?:<details>.*?</summary>\\\\s*)?(.\
+      +?)(?:</details>\\\\s*)?</[^>]*>/is\",\"trimStrings\":[],\"replaceString\
+      \":\"```\\n<!DOCTYPE html><html lang=\\\"zh-CN\\\"><head><meta
+      charset=\\\"UTF-8\\\"><meta name=\\\"viewport\\\"
+      content=\\\"width=device-width,initial-scale=1.0\\\"><style>\\n*{margin:0\
+      ;padding:0;box-sizing:border-box}body{padding:8px
+      12px;margin:0;background:transparent;font-family:-apple-system,BlinkMacSy\
+      stemFont,\\\"Segoe UI\\\",Roboto,\\\"Noto Sans
+      SC\\\",sans-serif;-webkit-font-smoothing:antialiased}.wrap{border-radius:\
+      16px;border:1px solid
+      rgba(150,150,150,.15);background:rgba(127,127,127,.08);backdrop-filter:bl\
+      ur(24px);-webkit-backdrop-filter:blur(24px);box-shadow:0 8px 32px
+      rgba(0,0,0,.15);margin:8px 0;transition:all .4s
+      ease;width:100%;max-width:720px;color:rgba(255,255,255,.9)}.wrap:hover{bo\
+      rder-color:rgba(56,189,248,.3);box-shadow:0 10px 40px
+      rgba(0,0,0,.2)}.head{display:flex;align-items:center;gap:10px;padding:14px
+      20px;cursor:pointer;user-select:none;list-style:none;outline:none}.head::\
+      -webkit-details-marker{display:none}details[open].wrap >
+      .head{border-bottom:1px solid
+      rgba(150,150,150,.1)}.dot{width:8px;height:8px;border-radius:50%;backgrou\
+      nd:#38bdf8;box-shadow:0 0 10px rgba(56,189,248,.8);animation:pulse 2s
+      infinite;flex-shrink:0}details[open].wrap .dot{animation:none;box-shadow:0
+      0 4px
+      rgba(56,189,248,.5)}.title{font-size:11px;font-family:Consolas,monospace;\
+      letter-spacing:.2em;text-transform:uppercase;color:rgba(56,189,248,.85)}.\
+      body{padding:16px;display:flex;flex-direction:column;gap:12px}.option-ite\
+      m{position:relative;width:100%;text-align:left;padding:16px
+      20px;border-radius:14px;overflow:hidden;border:1px solid
+      rgba(150,150,150,.15);background:rgba(127,127,127,.05);cursor:pointer;out\
+      line:none;-webkit-tap-highlight-color:transparent;opacity:0;transform:tra\
+      nslateY(15px);animation:flyIn .5s forwards;transition:all .3s
+      ease}.option-item:hover{border-color:rgba(56,189,248,.4);transform:scale(\
+      1.01);box-shadow:0 8px 24px
+      rgba(0,0,0,.15)}.option-item:active{transform:scale(.98)}.spotlight-borde\
+      r{pointer-events:none;position:absolute;inset:-1px;border-radius:14px;opa\
+      city:0;transition:opacity
+      .3s}.spotlight-inner{pointer-events:none;position:absolute;inset:0;border\
+      -radius:14px;opacity:0;transition:opacity .3s}.option-item:hover
+      .spotlight-border,.option-item:hover
+      .spotlight-inner{opacity:1}.option-content{position:relative;z-index:2;di\
+      splay:flex;align-items:center;justify-content:space-between;gap:16px}.opt\
+      ion-left{display:flex;align-items:center;gap:16px;min-width:0}.option-ind\
+      ex{display:flex;align-items:center;justify-content:center;width:28px;heig\
+      ht:28px;border-radius:50%;background:rgba(150,150,150,.1);border:1px solid
+      rgba(150,150,150,.2);color:rgba(150,150,150,.8);font-size:12px;font-famil\
+      y:Consolas,monospace;flex-shrink:0;transition:all .3s}.option-item:hover
+      .option-index{color:#38bdf8;border-color:rgba(56,189,248,.6);background:r\
+      gba(56,189,248,.1)}.option-text{color:inherit;font-size:14px;line-height:\
+      1.5;list-style:none}.option-arrow{flex-shrink:0;width:18px;height:18px;co\
+      lor:#38bdf8;opacity:0;transform:translateX(-10px);transition:all
+      .3s}.option-item:hover
+      .option-arrow{opacity:1;transform:translateX(0)}body.lt
+      .wrap{background:rgba(0,0,0,.03);border-color:rgba(0,0,0,.08);box-shadow:0
+      4px 16px rgba(0,0,0,.05);color:rgba(0,0,0,.85)}body.lt
+      .head{border-bottom-color:rgba(0,0,0,.08)}body.lt
+      .option-item{background:rgba(0,0,0,.02);border-color:rgba(0,0,0,.08)}body\
+      .lt
+      .option-item:hover{border-color:rgba(14,165,233,.4);background:rgba(14,16\
+      5,233,.05)}body.lt .option-text{color:rgba(0,0,0,.85)}@keyframes
+      flyIn{to{opacity:1;transform:translateY(0) scale(1)}}@keyframes
+      pulse{0%,100%{opacity:1;box-shadow:0 0 10px
+      rgba(56,189,248,.8)}50%{opacity:.4;box-shadow:0 0 4px
+      rgba(56,189,248,.3)}}\\n@media (max-width: 600px) {\\n  body { padding:
+      4px 8px; }\\n  .head { padding: 10px 14px; }\\n  .title { font-size: 10px;
+      }\\n  .body { padding: 10px; gap: 8px; }\\n  .option-item { padding: 10px
+      14px; border-radius: 10px; }\\n  .spotlight-border, .spotlight-inner {
+      border-radius: 10px; }\\n  .option-content { gap: 10px; }\\n  .option-left
+      { gap: 10px; }\\n  .option-index { width: 22px; height: 22px; font-size:
+      11px; }\\n  .option-text { font-size: 13px; }\\n  .option-arrow { width:
+      16px; height: 16px; }\\n}\\n</style></head><body>\\n<details
+      class=\\\"wrap\\\" open>\\n  <summary class=\\\"head\\\"><div
+      class=\\\"dot\\\"></div><span class=\\\"title\\\">Awaiting
+      Input</span></summary>\\n  <div class=\\\"body\\\"
+      id=\\\"ol\\\"></div>\\n</details>\\n<div id=\\\"rd\\\"
+      style=\\\"display:none;\\\">$1</div>\\n<script>\\n//
+      防转义核心：拆分尖括号，规避ST明文转义\\nconst lt = String.fromCharCode(60);\\nconst gt =
+      String.fromCharCode(62);\\n\\ndocument.addEventListener('DOMContentLoaded\
+      ',function(){\\nfunction syncT(){\\ntry{\\nvar
+      p=window.parent.document;\\nvar
+      el=p.querySelector('.mes_text')||p.body;\\nvar
+      c=window.parent.getComputedStyle(el).color;\\nvar
+      m=c.match(/\\\\d+/g);\\nif(m){\\nif((parseInt(m[0])*299+parseInt(m[1])*58\
+      7+parseInt(m[2])*114)/1000<128)\\ndocument.body.classList.add('lt');\\nel\
+      se\\ndocument.body.classList.remove('lt')\\n}}catch(e){}}\\nsyncT();\\nse\
+      tInterval(syncT,500);\\ntry{\\nvar pDoc=window.parent.document;\\nvar
+      mesText=pDoc.querySelector('.mes_text')||pDoc.body;\\nvar
+      syncStyle=function(){\\ndocument.body.style.fontFamily=window.parent.getC\
+      omputedStyle(mesText).fontFamily\\n};\\nsyncStyle();\\nnew
+      MutationObserver(syncStyle).observe(pDoc.body,{attributes:true,attributeF\
+      ilter:['data-theme','style','class']})\\n}catch(e){}\\nfunction
+      H(){\\ntry{\\nvar
+      f=window.frameElement;\\nif(f)f.style.height=document.body.scrollHeight+'\
+      px'\\n}catch(e){}}\\nnew
+      ResizeObserver(H).observe(document.body);\\nsetTimeout(H,100);\\ndocument\
+      .querySelector('details').addEventListener('toggle',function(){setTimeout\
+      (H,50)});\\nvar
+      d=document.getElementById('rd'),l=document.getElementById('ol');\\nif(!d|\
+      |!l)return;\\nvar rawHtml=d.innerHTML;\\nvar
+      cleanStr=rawHtml.replace(/<br\\\\s*\\\\/?>/gi,'\\\\n').replace(/<\\\\/p>/\
+      gi,'\\\\n').replace(/<\\\\/li>/gi,'\\\\n');\\nvar
+      tempDiv=document.createElement('div');\\ntempDiv.innerHTML=cleanStr;\\nvar
+      pureText=tempDiv.textContent||tempDiv.innerText;\\nvar
+      lines=pureText.trim().split(/\\\\r?\\\\n/).filter(function(x){return
+      x.trim()});\\nlines.forEach(function(line,idx){\\nvar
+      text=line.trim().replace(/^([0-9]+[.\\\\-、)]|[A-Z][.\\\\-、)]|\\\\-|\\\\*)\
+      \\\\s*/i,'');\\nif(!text)return;\\nvar
+      item=document.createElement('div');\\nitem.className='option-item';\\nite\
+      m.style.animationDelay=(idx*0.08)+'s';\\n// 关键：所有拼接HTML
+      用变量拆分尖括号，杜绝明文<>\\nitem.innerHTML=\\nlt+'div
+      class=\\\"spotlight-border\\\"'+gt+\\nlt+'/div'+gt+\\nlt+'div
+      class=\\\"spotlight-inner\\\"'+gt+\\nlt+'/div'+gt+\\nlt+'div
+      class=\\\"option-content\\\"'+gt+\\n  lt+'div
+      class=\\\"option-left\\\"'+gt+\\n    lt+'div
+      class=\\\"option-index\\\"'+gt+(idx+1)+lt+'/div'+gt+\\n    lt+'div
+      class=\\\"option-text\\\"'+gt+text+lt+'/div'+gt+\\n  lt+'/div'+gt+\\n  lt\
+      +'svg class=\\\"option-arrow\\\" viewBox=\\\"0 0 24 24\\\"
+      fill=\\\"none\\\" stroke=\\\"currentColor\\\" stroke-width=\\\"2\\\"
+      stroke-linecap=\\\"round\\\"
+      stroke-linejoin=\\\"round\\\"'+gt+\\n    lt+'line x1=\\\"5\\\"
+      y1=\\\"12\\\" x2=\\\"19\\\"
+      y2=\\\"12\\\"'+gt+lt+'/line'+gt+\\n    lt+'polyline points=\\\"12 5 19 12
+      12
+      19\\\"'+gt+lt+'/polyline'+gt+\\n  lt+'/svg'+gt+\\nlt+'/div'+gt;\\n\\nitem\
+      .addEventListener('mousemove',function(e){\\nvar
+      rect=item.getBoundingClientRect();\\nvar x=e.clientX-rect.left;\\nvar
+      y=e.clientY-rect.top;\\nvar
+      lt=document.body.classList.contains('lt');\\nvar
+      bc=lt?'rgba(0,0,0,.06)':'rgba(255,255,255,.12)';\\nvar
+      ic=lt?'rgba(56,189,248,.12)':'rgba(56,189,248,.1)';\\nitem.querySelector(\
+      '.spotlight-border').style.background='radial-gradient(600px circle at
+      '+x+'px '+y+'px,'+bc+',transparent
+      40%)';\\nitem.querySelector('.spotlight-inner').style.background='radial-\
+      gradient(400px circle at '+x+'px '+y+'px,'+ic+',transparent
+      40%)'});\\nitem.addEventListener('mouseleave',function(){\\nitem.querySel\
+      ector('.spotlight-border').style.background='';\\nitem.querySelector('.sp\
+      otlight-inner').style.background=''});\\nitem.addEventListener('click',fu\
+      nction(){\\ntry{\\nvar
+      inp=window.parent.document.querySelector('#send_textarea');\\nvar
+      tr=window.parent.triggerSlash;\\nif(inp){\\ninp.value+=text;\\ninp.dispat\
+      chEvent(new Event('input',{bubbles:true}));\\ninp.focus()\\n}else
+      if(tr){\\ntr('/setinput
+      '+text)\\n}}catch(e){}});\\nl.appendChild(item)});\\n});\\n</script></bod\
+      y></html>\\n```\",\"placement\":[2],\"substituteRegex\":0,\"minDepth\":nu\
+      ll,\"maxDepth\":null,\"markdownOnly\":true,\"promptOnly\":false},{\"id\":\
+      \"2fdda326-20c8-4da7-98fb-83e9a6a31a95\",\"scriptName\":\"双语显示\",\"disabl\
+      ed\":false,\"runOnEdit\":true,\"findRegex\":\"/(?![^<>]*>)([“\\\"「])([^”\\\
+      \"」]+)([”\\\"」])\\\\s*[（(]([^）)]+)[）)]/g\",\"trimStrings\":[],\"replaceSt\
+      ring\":\"$1<ruby>$2<rt
+      style=\\\"font-size:0.85em;\\\">$4</rt></ruby>$3\",\"placement\":[2],\"su\
+      bstituteRegex\":0,\"minDepth\":null,\"maxDepth\":null,\"markdownOnly\":tr\
+      ue,\"promptOnly\":false},{\"id\":\"300376c7-21d1-4d7f-9a8b-a9520a40df1e\",\
+      \"scriptName\":\"播放器\",\"disabled\":false,\"runOnEdit\":true,\"findRegex\
+      \":\"/<(?:角色)?状态面板>[\\\\s\\\\S]*?<诗词意境>\\\\s*([\\\\s\\\\S]*?)\\\\s*<\\\\/\
+      诗词意境>[\\\\s\\\\S]*?<当前播放>\\\\s*([\\\\s\\\\S]*?)\\\\s*<\\\\/当前播放>[\\\\s\\\
+      \\S]*?<\\\\/(?:角色)?状态面板>/s\",\"trimStrings\":[],\"replaceString\":\"```\\\
+      n<!DOCTYPE html><html lang=\\\"zh-CN\\\"><head><meta
+      charset=\\\"UTF-8\\\"><meta name=\\\"viewport\\\"
+      content=\\\"width=device-width,initial-scale=1.0\\\"><title>Dynamic Widget
+      - Prism Compact Final</title><script crossorigin
+      src=\\\"https://unpkg.com/react@18/umd/react.development.js\\\"></script>\
+      <script crossorigin
+      src=\\\"https://unpkg.com/react-dom@18/umd/react-dom.development.js\\\"><\
+      /script><script
+      src=\\\"https://unpkg.com/@babel/standalone/babel.min.js\\\"></script><sc\
+      ript
+      src=\\\"https://drive.baibai.cv/f/ZKEBuW/Music.js\\\"></script><style>\\n\
+      .prism-wrapper{margin:0;padding:0;box-sizing:border-box;width:100%;displa\
+      y:flex;justify-content:center;padding:16px
+      12px;font-family:-apple-system,BlinkMacSystemFont,\\\"Segoe
+      UI\\\",Roboto,\\\"Noto Sans
+      SC\\\",sans-serif;-webkit-font-smoothing:antialiased;}\\n.prism-wrapper
+      .p-island{--spring-easing:cubic-bezier(0.19,1,0.22,1);position:relative;c\
+      olor:rgba(255,255,255,.9);border-radius:16px;border:1px solid
+      rgba(150,150,150,.15);background:rgba(127,127,127,.08);backdrop-filter:bl\
+      ur(24px);-webkit-backdrop-filter:blur(24px);box-shadow:0 8px 32px
+      rgba(0,0,0,.15);overflow:hidden;transition:width .6s
+      var(--spring-easing),height .6s var(--spring-easing),border-radius .6s
+      var(--spring-easing),border-color .4s,box-shadow
+      .4s;--mouse-x:50%;--mouse-y:50%;z-index:50;}\\n.prism-wrapper
+      .p-island.collapsed{width:240px;height:56px;border-radius:28px;cursor:poi\
+      nter;}\\n.prism-wrapper
+      .p-island.collapsed:hover{border-color:rgba(56,189,248,.3);box-shadow:0
+      6px 24px rgba(56,189,248,.1),0 8px 32px
+      rgba(0,0,0,.3);transform:scale(1.02);}\\n.prism-wrapper
+      .p-island.collapsed:active{transform:scale(.98);}\\n.prism-wrapper
+      .p-island.expanded{width:340px;height:280px;cursor:default;}\\n.prism-wra\
+      pper
+      .p-island.expanded:hover{border-color:rgba(56,189,248,.2);box-shadow:0 6px
+      24px rgba(56,189,248,.05),0 8px 32px rgba(0,0,0,.2);}\\n.prism-wrapper
+      .gb{pointer-events:none;position:absolute;inset:-1px;border-radius:inheri\
+      t;opacity:0;transition:opacity
+      .3s;z-index:0;background:radial-gradient(400px circle at var(--mouse-x)
+      var(--mouse-y),rgba(150,150,150,.2),transparent 40%);}\\n.prism-wrapper
+      .gi{pointer-events:none;position:absolute;inset:0;border-radius:inherit;o\
+      pacity:0;transition:opacity .3s;z-index:0;background:radial-gradient(300px
+      circle at var(--mouse-x) var(--mouse-y),rgba(56,189,248,.15),transparent
+      40%);}\\n.prism-wrapper .p-island:hover .gb,.prism-wrapper .p-island:hover
+      .gi{opacity:1;}\\n.prism-wrapper
+      .capsule-content{position:absolute;inset:0;display:flex;align-items:cente\
+      r;justify-content:center;gap:12px;transition:all .3s
+      ease;z-index:10;padding:0 20px;}\\n.prism-wrapper .p-island.expanded
+      .capsule-content{opacity:0;transform:translateY(-20px);pointer-events:non\
+      e;}\\n.prism-wrapper .lb{font-size:11px;font-family:Consolas,'SF
+      Mono','Courier
+      New',monospace;letter-spacing:.2em;text-transform:uppercase;color:rgba(56\
+      ,189,248,.85);transition:color .3s;white-space:nowrap;}\\n.prism-wrapper
+      .p-island.collapsed:hover .lb{color:rgba(56,189,248,1);}\\n.prism-wrapper
+      .card-content{position:absolute;inset:0;display:flex;flex-direction:colum\
+      n;padding:16px 20px;opacity:0;transform:translateY(20px);transition:all
+      .5s ease .1s;pointer-events:none;z-index:10;}\\n.prism-wrapper
+      .p-island.expanded
+      .card-content{opacity:1;transform:translateY(0);pointer-events:auto;}\\n.\
+      prism-wrapper
+      .meta{display:flex;justify-content:space-between;align-items:flex-start;g\
+      ap:16px;padding-bottom:12px;border-bottom:1px solid
+      rgba(150,150,150,.1);margin-bottom:12px;position:relative;z-index:30;}\\n\
+      .prism-wrapper
+      .meta-left{display:flex;align-items:center;gap:10px;}\\n.prism-wrapper
+      .dot{width:8px;height:8px;border-radius:50%;background:#38bdf8;box-shadow\
+      :0 0 10px rgba(56,189,248,.8);animation:pulse 2s
+      infinite;}\\n.prism-wrapper
+      .main-title{font-size:1.1rem;font-weight:600;letter-spacing:.1em;color:rg\
+      ba(255,255,255,.9);}\\n.prism-wrapper .tg-close{font-size:9px;border:1px
+      solid rgba(56,189,248,.3);padding:2px
+      8px;color:rgba(56,189,248,.7);font-family:Consolas,monospace;border-radiu\
+      s:4px;transition:all
+      .3s;background:transparent;cursor:pointer;}\\n.prism-wrapper
+      .tg-close:hover{color:rgba(56,189,248,1);border-color:rgba(56,189,248,.8)\
+      ;background:rgba(56,189,248,.1);}\\n.prism-wrapper
+      .content-display-area{flex:1;display:flex;flex-direction:column;justify-c\
+      ontent:flex-start;position:relative;z-index:20;}\\n.prism-wrapper
+      .detail-glass-box{padding:12px
+      16px;border-radius:12px;background:rgba(127,127,127,.05);border-left:3px
+      solid
+      #38bdf8;color:rgba(255,255,255,.9);font-size:13px;line-height:1.6;box-sha\
+      dow:inset 0 0 20px rgba(56,189,248,.03);animation:slideUpFade .4s
+      cubic-bezier(.2,.8,.2,1) forwards;margin-bottom:0;}\\n.prism-wrapper
+      .dh-title{font-size:10px;font-family:Consolas,'SF
+      Mono',monospace;letter-spacing:.15em;color:rgba(56,189,248,.85);margin-bo\
+      ttom:8px;border-bottom:1px solid
+      rgba(150,150,150,.1);padding-bottom:6px;}\\n.prism-wrapper
+      .dr{display:flex;gap:8px;justify-content:center;flex-wrap:nowrap;border-t\
+      op:1px solid
+      rgba(150,150,150,.1);padding-top:12px;z-index:30;margin-top:auto;}\\n.pri\
+      sm-wrapper
+      .dh-btn{position:relative;flex:1;text-align:center;border-radius:8px;bord\
+      er:1px solid
+      rgba(150,150,150,.15);background:rgba(127,127,127,.05);padding:8px;cursor\
+      :pointer;font-size:11px;font-family:Consolas,'SF
+      Mono',monospace;letter-spacing:.1em;color:rgba(255,255,255,.68);transitio\
+      n:all .3s;overflow:hidden;}\\n.prism-wrapper
+      .dh-btn:hover{border-color:rgba(56,189,248,.2);box-shadow:0 0 15px
+      rgba(56,189,248,.06);color:rgba(56,189,248,.85);}\\n.prism-wrapper
+      .dh-btn.on{border-color:rgba(56,189,248,.5);background:rgba(56,189,248,.1\
+      );color:rgba(56,189,248,1);}\\n.prism-wrapper
+      .setting-input{width:100%;background:rgba(127,127,127,.1);border:1px solid
+      rgba(150,150,150,.2);color:#fff;padding:6px
+      10px;border-radius:6px;font-family:Consolas,monospace;font-size:12px;outl\
+      ine:none;transition:border .3s;}\\n.prism-wrapper
+      .setting-input:focus{border-color:rgba(56,189,248,.5);box-shadow:0 0 8px
+      rgba(56,189,248,.2);}\\n.prism-wrapper
+      .text-desc{font-style:italic;opacity:.8;}\\n.prism-wrapper
+      .mp-container{display:flex;align-items:center;gap:12px;}\\n.prism-wrapper
+      .mp-vinyl-area{width:44px;height:44px;flex-shrink:0;}\\n.prism-wrapper
+      .mp-vinyl-disc{width:100%;height:100%;border-radius:50%;background:radial\
+      -gradient(circle at center,#1a1a1a,#000);border:1px solid
+      rgba(255,255,255,.1);animation:spin 4s linear
+      infinite;animation-play-state:paused;position:relative;}\\n.prism-wrapper
+      .mp-vinyl-disc.spinning{animation-play-state:running;}\\n.prism-wrapper
+      .mp-vinyl-label{position:absolute;inset:30%;background:#38bdf8;border-rad\
+      ius:50%;border:1px solid
+      #111;overflow:hidden;opacity:.8;}\\n.prism-wrapper .mp-vinyl-label
+      img{width:100%;height:100%;object-fit:cover;}\\n.prism-wrapper
+      .mp-interface{flex:1;display:flex;flex-direction:column;justify-content:c\
+      enter;gap:2px;min-width:0;}\\n.prism-wrapper
+      .mp-title{font-size:12px;font-weight:500;white-space:nowrap;overflow:hidd\
+      en;text-overflow:ellipsis;color:rgba(255,255,255,.9);}\\n.prism-wrapper
+      .mp-artist{font-size:10px;font-family:Consolas,monospace;opacity:.5;text-\
+      transform:uppercase;letter-spacing:.05em;color:rgba(56,189,248,.7);}\\n.p\
+      rism-wrapper
+      .mp-controls-stack{display:flex;flex-direction:column;gap:4px;margin-top:\
+      2px;}\\n.prism-wrapper
+      .mp-time-row{font-family:Consolas,monospace;font-size:10px;color:rgba(255\
+      ,255,255,.4);min-width:28px;text-align:right;}\\n.prism-wrapper
+      input[type=range].mp-slider{-webkit-appearance:none;width:100%;background\
+      :transparent;outline:none;cursor:pointer;height:2px;}\\n.prism-wrapper
+      input[type=range].mp-slider::-webkit-slider-runnable-track{width:100%;hei\
+      ght:2px;background:rgba(255,255,255,.1);border-radius:1px;}\\n.prism-wrap\
+      per
+      input[type=range].mp-slider::-webkit-slider-thumb{-webkit-appearance:none\
+      ;height:8px;width:8px;border-radius:50%;background:#38bdf8;margin-top:-3p\
+      x;box-shadow:0 0 8px rgba(56,189,248,.8);transition:transform
+      .1s;}\\n.prism-wrapper
+      input[type=range].mp-slider:hover::-webkit-slider-thumb{transform:scale(1\
+      .5);}\\n.prism-wrapper
+      .play-btn{background:none;border:none;color:#38bdf8;cursor:pointer;opacit\
+      y:.8;transition:all
+      .2s;display:flex;align-items:center;justify-content:center;}\\n.prism-wra\
+      pper .play-btn:hover{opacity:1;filter:drop-shadow(0 0 4px
+      rgba(56,189,248,.8));transform:scale(1.1);}\\n.prism-wrapper .play-btn
+      svg{width:14px;height:14px;fill:currentColor;}\\n.prism-wrapper
+      .vol-icon{width:10px;height:10px;fill:none;stroke:currentColor;stroke-wid\
+      th:2;flex-shrink:0;}\\n.prism-wrapper
+      .bubble-trigger-zone{position:absolute;inset:60px
+      20px;z-index:15;cursor:pointer;}\\n.prism-wrapper
+      .speech-bubble{position:absolute;padding:10px
+      14px;border-radius:12px;border-bottom-left-radius:2px;background:rgba(127\
+      ,127,127,.15);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12p\
+      x);border:1px solid rgba(150,150,150,.2);box-shadow:0 4px 15px
+      rgba(0,0,0,.2);color:rgba(255,255,255,.9);font-size:12px;line-height:1.5;\
+      pointer-events:none;z-index:100;max-width:200px;animation:bubblePop .4s
+      cubic-bezier(.34,1.56,.64,1) forwards;transform-origin:bottom
+      left;}\\n.prism-wrapper .speech-bubble.fading{animation:bubbleDissolve 1s
+      ease-out forwards;}\\n@keyframes
+      slideUpFade{from{opacity:0;transform:translateY(10px);}to{opacity:1;trans\
+      form:translateY(0);}}\\n@keyframes pulse{0%,100%{opacity:1;box-shadow:0 0
+      10px rgba(56,189,248,.8);}50%{opacity:.4;box-shadow:0 0 4px
+      rgba(56,189,248,.3);}}\\n@keyframes
+      spin{from{transform:rotate(0deg);}to{transform:rotate(360deg);}}\\n@keyfr\
+      ames bubblePop{from{opacity:0;transform:scale(.8)
+      translateY(5px);}to{opacity:1;transform:scale(1)
+      translateY(0);}}\\n@keyframes
+      bubbleDissolve{0%{opacity:1;filter:blur(0px);}100%{opacity:0;filter:blur(\
+      4px);transform:translateY(-10px);}}\\n.prism-wrapper.lt{background:transp\
+      arent!important;}\\n.prism-wrapper.lt
+      .p-island{color:rgba(0,0,0,.8)!important;border-color:rgba(0,0,0,.08)!imp\
+      ortant;background:rgba(0,0,0,.03)!important;box-shadow:0 4px 16px
+      rgba(0,0,0,.05)!important;backdrop-filter:blur(24px)!important;}\\n.prism\
+      -wrapper.lt
+      .p-island.collapsed:hover{border-color:rgba(56,189,248,.35)!important;box\
+      -shadow:0 0 24px rgba(56,189,248,.1),0 6px 20px
+      rgba(0,0,0,.08)!important;}\\n.prism-wrapper.lt
+      .p-island.expanded:hover{border-color:rgba(56,189,248,.25)!important;}\\n\
+      .prism-wrapper.lt .gb{background:radial-gradient(400px circle at
+      var(--mouse-x) var(--mouse-y),rgba(0,0,0,.06),transparent
+      40%)!important;}\\n.prism-wrapper.lt .gi{background:radial-gradient(300px
+      circle at var(--mouse-x) var(--mouse-y),rgba(56,189,248,.12),transparent
+      40%)!important;}\\n.prism-wrapper.lt
+      .lb{color:rgba(56,189,248,.9)!important;}\\n.prism-wrapper.lt
+      .capsule-content{color:rgba(0,0,0,.85)!important;}\\n.prism-wrapper.lt
+      .meta{border-bottom-color:rgba(0,0,0,.08)!important;}\\n.prism-wrapper.lt
+      .main-title{color:rgba(0,0,0,.85)!important;}\\n.prism-wrapper.lt
+      .tg-close{border-color:rgba(56,189,248,.4)!important;color:rgba(56,189,24\
+      8,.8)!important;}\\n.prism-wrapper.lt
+      .tg-close:hover{color:rgba(56,189,248,1)!important;background:rgba(56,189\
+      ,248,.08)!important;}\\n.prism-wrapper.lt
+      .detail-glass-box{background:rgba(0,0,0,.02)!important;color:rgba(0,0,0,.\
+      8)!important;border-left-color:rgba(56,189,248,.6)!important;}\\n.prism-w\
+      rapper.lt
+      .dh-title{color:rgba(56,189,248,.9)!important;border-bottom-color:rgba(0,\
+      0,0,.08)!important;}\\n.prism-wrapper.lt
+      .text-desc{color:rgba(0,0,0,.7)!important;}\\n.prism-wrapper.lt
+      .dr{border-top-color:rgba(0,0,0,.08)!important;}\\n.prism-wrapper.lt
+      .dh-btn{border-color:rgba(0,0,0,.08)!important;background:rgba(0,0,0,.02)\
+      !important;color:rgba(0,0,0,.5)!important;}\\n.prism-wrapper.lt
+      .dh-btn:hover{border-color:rgba(56,189,248,.3)!important;color:rgba(56,18\
+      9,248,.9)!important;}\\n.prism-wrapper.lt
+      .dh-btn.on{border-color:rgba(56,189,248,.5)!important;background:rgba(56,\
+      189,248,.08)!important;color:rgba(56,189,248,1)!important;}\\n.prism-wrap\
+      per.lt
+      .setting-input{background:rgba(0,0,0,.02)!important;border-color:rgba(0,0\
+      ,0,.1)!important;color:rgba(0,0,0,.8)!important;}\\n.prism-wrapper.lt
+      .setting-input:focus{border-color:rgba(56,189,248,.5)!important;}\\n.pris\
+      m-wrapper.lt
+      .mp-title{color:rgba(0,0,0,.85)!important;}\\n.prism-wrapper.lt
+      .mp-artist{color:rgba(56,189,248,.85)!important;}\\n.prism-wrapper.lt
+      .mp-time-row{color:rgba(0,0,0,.5)!important;}\\n.prism-wrapper.lt
+      .mp-vinyl-disc{background:radial-gradient(circle at
+      center,#e0e0e0,#ccc)!important;border-color:rgba(0,0,0,.15)!important;}\\\
+      n.prism-wrapper.lt
+      input[type=range].mp-slider::-webkit-slider-runnable-track{background:rgb\
+      a(0,0,0,.1)!important;}\\n.prism-wrapper.lt
+      .speech-bubble{background:rgba(255,255,255,.85)!important;border-color:rg\
+      ba(150,150,150,.2)!important;color:rgba(0,0,0,.8)!important;box-shadow:0
+      4px 15px rgba(0,0,0,.08)!important;}\\n</style></head><body>\\n<div
+      class=\\\"prism-mount-point unmounted\\\"><div class=\\\"data-poem\\\"
+      style=\\\"display:none;\\\">$1</div><div class=\\\"data-song\\\"
+      style=\\\"display:none;\\\">$2</div><div
+      class=\\\"prism-wrapper\\\"></div></div>\\n<script
+      type=\\\"text/babel\\\">(()=>{function syncH(){try{var
+      f=window.frameElement;if(f)f.style.height=document.body.scrollHeight+'px'\
+      }catch(e){}}new ResizeObserver(syncH).observe(document.body);function
+      syncT(){try{var p=window.parent.document;var
+      el=p.querySelector('.mes_text')||p.body;var
+      c=window.parent.getComputedStyle(el).color;var
+      m=c.match(/\\\\d+/g);if(m){if((parseInt(m[0])*299+parseInt(m[1])*587+pars\
+      eInt(m[2])*114)/1000<128)currentMount.querySelector('.prism-wrapper').cla\
+      ssList.add('lt');else
+      currentMount.querySelector('.prism-wrapper').classList.remove('lt')}}catc\
+      h(e){}}syncT();setInterval(()=>{syncH();syncT();},500);const
+      mounts=document.querySelectorAll('.prism-mount-point.unmounted');if(mount\
+      s.length===0)return;const
+      currentMount=mounts[mounts.length-1];currentMount.classList.remove('unmou\
+      nted');const getTxt=(el)=>{if(!el)return'';let
+      cln=el.innerHTML.replace(/<br\\\\s*\\\\/?>/gi,'\\\\n').replace(/<\\\\/p>/\
+      gi,'\\\\n');let
+      t=document.createElement('div');t.innerHTML=cln;return(t.textContent||t.i\
+      nnerText).trim()};const
+      rawPoem=getTxt(currentMount.querySelector('.data-poem'));const
+      rawSong=getTxt(currentMount.querySelector('.data-song'));const
+      {useState,useRef,useEffect}=React;const DEFAULT_NAME=\\\"双人成行\\\";const
+      MusicPlayerUI=({songName,songData,isLoading,isPlaying,progress,duration,v\
+      olume,onTogglePlay,onSeek,onVolumeChange})=>{const
+      formatTime=(time)=>{if(isNaN(time))return\\\"0:00\\\";const
+      min=Math.floor(time/60);const
+      sec=Math.floor(time%60);return`${min}:${sec<10?'0':''}${sec}`};const
+      PlayIcon=()=>(<svg viewBox=\\\"0 0 24 24\\\"><polygon points=\\\"8,5 19,12
+      8,19\\\"/></svg>);const PauseIcon=()=>(<svg viewBox=\\\"0 0 24
+      24\\\"><path d=\\\"M6 4h4v16H6V4zm8 0h4v16h-4V4z\\\"/></svg>);const
+      IconVol=()=>(<svg className=\\\"vol-icon\\\" viewBox=\\\"0 0 24
+      24\\\"><polygon points=\\\"11 5 6 9 2 9 2 15 6 15 11 19 11
+      5\\\"></polygon></svg>);if(songName.startsWith('$')){return(<div
+      style={{fontSize:'10px',opacity:0.6,fontFamily:'Consolas',textAlign:'cent\
+      er',marginTop:'10px',color:'#fca5a5',letterSpacing:'0.05em'}}>[ REGEX
+      FAILED / NO DATA ]</div>)}if(isLoading)return(<div
+      style={{fontSize:'10px',opacity:0.6,fontFamily:'Consolas',textAlign:'cent\
+      er',marginTop:'10px',letterSpacing:'0.05em'}}>[ SEARCHING: {songName}
+      ]</div>);if(!songData||!songData.Url)return(<div
+      style={{fontSize:'10px',opacity:0.6,fontFamily:'Consolas',textAlign:'cent\
+      er',marginTop:'10px',color:'#fca5a5',letterSpacing:'0.05em'}}>[ NO MATCH
+      FOUND ]</div>);return(<div className=\\\"mp-container\\\"><div
+      className=\\\"mp-vinyl-area\\\"><div className={`mp-vinyl-disc
+      ${isPlaying?'spinning':''}`}><div
+      className=\\\"mp-vinyl-label\\\">{songData.Cover&&<img
+      src={songData.Cover} alt=\\\"cover\\\"/>}</div></div></div><div
+      className=\\\"mp-interface\\\"><div
+      className=\\\"mp-title\\\">{songData.Name}</div><div
+      className=\\\"mp-artist\\\">{songData.Singer||'Unknown Data'}</div><div
+      className=\\\"mp-controls-stack\\\"><div
+      style={{display:'flex',alignItems:'center',gap:'8px'}}><button
+      className=\\\"play-btn\\\"
+      onClick={onTogglePlay}>{isPlaying?<PauseIcon/>:<PlayIcon/>}</button><input
+      type=\\\"range\\\" className=\\\"mp-slider\\\" value={progress}
+      max={duration||100} onChange={onSeek} onClick={(e)=>e.stopPropagation()}
+      style={{flex:1}}/><div
+      className=\\\"mp-time-row\\\"><span>{formatTime(progress)}</span></div></\
+      div><div
+      style={{display:'flex',alignItems:'center',gap:'6px',paddingLeft:'22px',o\
+      pacity:0.6}}><IconVol/><input type=\\\"range\\\"
+      className=\\\"mp-slider\\\" min=\\\"0\\\" max=\\\"1\\\" step=\\\"0.05\\\"
+      value={volume} onChange={onVolumeChange}
+      onClick={(e)=>e.stopPropagation()}
+      style={{width:'60px'}}/></div></div></div></div>)};const
+      PrismWidget=()=>{const [isExpanded,setIsExpanded]=useState(false);const
+      [activeId,setActiveId]=useState('data1');const
+      [charName,setCharName]=useState(()=>localStorage.getItem('prism_name')||D\
+      EFAULT_NAME);const [bubbles,setBubbles]=useState([]);const
+      audioRef=useRef(null);const [songData,setSongData]=useState(null);const
+      [isLoading,setIsLoading]=useState(true);const
+      [isPlaying,setIsPlaying]=useState(false);const
+      [progress,setProgress]=useState(0);const
+      [duration,setDuration]=useState(0);const
+      [volume,setVolume]=useState(0.8);useEffect(()=>{try{localStorage.setItem(\
+      'prism_name',charName)}catch(e){}},[charName]);useEffect(()=>{const
+      initMusic=async()=>{let
+      aiSong=rawSong.replace(/[《》\\\"\\\"'']/g,'');if(aiSong&&!aiSong.startsWit\
+      h('$')){try{let retries=30;while(typeof
+      window.Music==='undefined'&&retries>0){await new
+      Promise(r=>setTimeout(r,100));retries--;}if(typeof
+      window.Music!=='undefined'&&window.Music.SearchMusic){const res=await
+      window.Music.SearchMusic(aiSong);if(res&&res.Url){setSongData(res);if(aud\
+      ioRef.current){audioRef.current.src=res.Url;audioRef.current.load();}}}}c\
+      atch(e){}}setIsLoading(false)};initMusic()},[]);useEffect(()=>{if(audioRe\
+      f.current)audioRef.current.volume=volume},[volume]);useEffect(()=>{const
+      audio=audioRef.current;if(!audio)return;const
+      updateProgress=()=>setProgress(audio.currentTime);const
+      setAudioDuration=()=>setDuration(audio.duration);const
+      handleEnd=()=>setIsPlaying(false);audio.addEventListener('timeupdate',upd\
+      ateProgress);audio.addEventListener('loadedmetadata',setAudioDuration);au\
+      dio.addEventListener('ended',handleEnd);return()=>{audio.removeEventListe\
+      ner('timeupdate',updateProgress);audio.removeEventListener('loadedmetadat\
+      a',setAudioDuration);audio.removeEventListener('ended',handleEnd)}},[]);c\
+      onst
+      togglePlay=(e)=>{if(e)e.stopPropagation();if(!audioRef.current||!songData\
+      ?.Url)return;if(isPlaying){audioRef.current.pause();setIsPlaying(false)}e\
+      lse{const
+      p=audioRef.current.play();if(p!==undefined){p.then(()=>setIsPlaying(true)\
+      ).catch(err=>{setIsPlaying(false)})}else{setIsPlaying(true)}}};const
+      handleSeek=(e)=>{if(audioRef.current){const
+      newTime=Number(e.target.value);audioRef.current.currentTime=newTime;setPr\
+      ogress(newTime)}};const handleMouseMove=(e)=>{const
+      rect=e.currentTarget.getBoundingClientRect();e.currentTarget.style.setPro\
+      perty('--mouse-x',`${e.clientX-rect.left}px`);e.currentTarget.style.setPr\
+      operty('--mouse-y',`${e.clientY-rect.top}px`)};const
+      handleTriggerClick=(e)=>{if(!isExpanded)return;const
+      rect=e.currentTarget.getBoundingClientRect();const
+      text=rawPoem&&!rawPoem.startsWith('$')?rawPoem:\\\"SYSTEM.AWAITING_INPUT(\
+      );\\\";const bId=Date.now();setBubbles(p=>{const
+      n=[...p,{id:bId,x:e.clientX-rect.left+20,y:e.clientY-rect.top+60,text,fad\
+      e:false}];return
+      n.length>2?n.slice(-2):n});setTimeout(()=>setBubbles(p=>p.map(b=>b.id===b\
+      Id?{...b,fade:true}:b)),3500);setTimeout(()=>setBubbles(p=>p.filter(b=>b.\
+      id!==bId)),4500)};const
+      details=[{id:'data1',label:'MOOD',content:(<div><div
+      className=\\\"dh-title\\\">CURRENT SCENE LOG</div><div
+      className=\\\"text-desc\\\" style={{textAlign:'center',margin:'6px
+      0'}}>{rawPoem&&!rawPoem.startsWith('$')?rawPoem:\\\"[ REGEX FAILED / NO
+      DATA ]\\\"}</div></div>)},{id:'data2',label:'AUDIO',content:(<div><div
+      className=\\\"dh-title\\\">MEDIA CORE EXTRACT</div><MusicPlayerUI
+      songName={rawSong.replace(/[《》\\\"\\\"'']/g,'')} songData={songData}
+      isLoading={isLoading} isPlaying={isPlaying} progress={progress}
+      duration={duration} volume={volume} onTogglePlay={togglePlay}
+      onSeek={handleSeek}
+      onVolumeChange={e=>setVolume(Number(e.target.value))}/></div>)},{id:'data\
+      3',label:'CFG',content:(<div><div className=\\\"dh-title\\\">SYSTEM
+      CONFIG</div><div
+      style={{display:'flex',alignItems:'center',gap:'8px',marginTop:'12px'}}><\
+      span style={{fontFamily:'Consolas',fontSize:'10px'}}>NAME:</span><input
+      type=\\\"text\\\" className=\\\"setting-input\\\" value={charName}
+      onChange={e=>setCharName(e.target.value)}/></div></div>)}];const
+      activeItem=details.find(d=>d.id===activeId);return(<div
+      onClick={()=>!isExpanded&&setIsExpanded(true)}
+      onMouseMove={handleMouseMove} className={`p-island
+      ${isExpanded?'expanded':'collapsed'}`}><audio ref={audioRef}
+      style={{display:'none'}}/><div className=\\\"gb\\\"></div><div
+      className=\\\"gi\\\"></div>{isExpanded&&bubbles.map(b=>(<div key={b.id}
+      className={`speech-bubble ${b.fade?'fading':''}`}
+      style={{left:b.x,top:b.y-40}}>{b.text}</div>))}<div
+      className=\\\"capsule-content\\\"><div className=\\\"dot\\\"></div><span
+      className=\\\"lb\\\">˹ {charName} ˺ ACTIVE</span></div><div
+      className=\\\"card-content\\\"><div className=\\\"bubble-trigger-zone\\\"
+      onClick={handleTriggerClick}></div><div className=\\\"meta\\\"><div
+      className=\\\"meta-left\\\"><div className=\\\"dot\\\"></div><div
+      className=\\\"main-title\\\">{charName}</div></div><button
+      onClick={e=>{e.stopPropagation();setIsExpanded(false)}}
+      className=\\\"tg-close\\\">CLOSE</button></div><div
+      className=\\\"content-display-area\\\"
+      onClick={e=>e.stopPropagation()}>{activeItem&&(<div
+      className=\\\"detail-glass-box\\\"
+      key={activeItem.id}>{activeItem.content}</div>)}</div><div
+      className=\\\"dr\\\"
+      onClick={e=>e.stopPropagation()}>{details.map((item)=>(<div key={item.id}
+      className={`dh-btn ${activeId===item.id?'on':''}`}
+      onClick={()=>setActiveId(item.id)}><div className=\\\"gb\\\"></div><div
+      className=\\\"gi\\\"></div><span
+      style={{position:'relative',zIndex:1}}>{item.label}</span></div>))}</div>\
+      </div></div>)};const
+      root=ReactDOM.createRoot(currentMount.querySelector('.prism-wrapper'));ro\
+      ot.render(<PrismWidget/>)})();</script></body></html>\\n```\",\"placement\
+      \":[2],\"substituteRegex\":0,\"minDepth\":null,\"maxDepth\":null,\"markdo\
+      wnOnly\":true,\"promptOnly\":false},{\"id\":\"94b1492b-f526-47b6-be20-291\
+      e92cabe14\",\"scriptName\":\"播放器歌曲/诗句面板不发送AI\",\"disabled\":false,\"runOn\
+      Edit\":true,\"findRegex\":\"<状态面板>[\\\\s\\\\S]*?<\\\\/状态面板>\",\"trimStrin\
+      gs\":[],\"replaceString\":\"\",\"placement\":[1,2],\"substituteRegex\":0,\
+      \"minDepth\":null,\"maxDepth\":null,\"markdownOnly\":false,\"promptOnly\"\
+      :true},{\"id\":\"3a9b3692-944d-45c0-9feb-9bb732473795\",\"scriptName\":\"\
+      隐藏同人搜索内容\",\"disabled\":false,\"runOnEdit\":true,\"findRegex\":\"<details>\
+      \\\\s*<summary>同人搜索内容<\\\\/summary>[\\\\s\\\\S]*?<\\\\/details>\",\"trimS\
+      trings\":[],\"replaceString\":\"\",\"placement\":[2],\"substituteRegex\":\
+      0,\"minDepth\":null,\"maxDepth\":null,\"markdownOnly\":true,\"promptOnly\
+      \":false},{\"id\":\"3e739a01-a5fb-475f-9c10-0e25995359ab\",\"scriptName\":\
+      \"去除html注释\",\"disabled\":false,\"runOnEdit\":true,\"findRegex\":\"/<!--\\\
+      \\s*([\\\\s\\\\S]*?)\\\\s*-->/g\",\"trimStrings\":[],\"replaceString\":\"\
+      \",\"placement\":[2],\"substituteRegex\":0,\"minDepth\":null,\"maxDepth\"\
+      :null,\"markdownOnly\":true,\"promptOnly\":true},{\"id\":\"76c0b796-c5d8-\
+      40b9-b7fc-ef92426f505b\",\"scriptName\":\"清除额外\",\"disabled\":false,\"run\
+      OnEdit\":true,\"findRegex\":\"/<2·正文>|<3·附加>|</2·正文>|</3·附加>/g\",\"trimSt\
+      rings\":[],\"replaceString\":\"\",\"placement\":[2],\"substituteRegex\":0,\
+      \"minDepth\":null,\"maxDepth\":null,\"markdownOnly\":true,\"promptOnly\":\
+      true}]},\"MacroNest\":false,\"ToolBindings\":{}}"
+
+  - 名称: ✍️// COT //生动化
+    启用: false
+    插入位置:
+      类型: 相对
+    角色: 系统
+    文件: 未使用条目\✍️___COT___生动化
+
+  - 名称: ❎DS专杀
+    启用: false
+    插入位置:
+      类型: 相对
+    角色: 系统
+    文件: 未使用条目\❎DS专杀
+
+扩展字段:
+  正则:
+    - 正则名称: 杀全文缩进
+      id: 375436e4-e238-45f4-93ae-3d358057138c
+      启用: true
+      查找表达式: /^[ \t]+/gm
+      修剪掉:
+        - "`"
+        - "``"
+        - "```"
+      内容: ""
+      来源:
+        用户输入: false
+        AI输出: true
+      作用于:
+        仅格式显示: true
+        仅格式提示词: true
+
+    - 正则名称: 杀代码块（可选，炸了不管）
+      id: bd6ce261-500f-44a5-926b-b2279f475ffe
+      启用: false
+      查找表达式: ^([\s\S]*)$
+      修剪掉:
+        - "```html"
+        - "```HTML"
+        - "```json"
+        - "```JSON"
+        - "`"
+      内容: $1
+      来源:
+        用户输入: false
+        AI输出: true
+      作用于:
+        仅格式显示: true
+        仅格式提示词: true
+
+    - 正则名称: 【0】抗截断
+      id: 89790128-985c-4971-accb-9e7f70894c80
+      启用: true
+      查找表达式: <math>([\s\S]*?)<\/math>
+      内容: ""
+      来源:
+        用户输入: false
+        AI输出: true
+      作用于:
+        仅格式显示: true
+        仅格式提示词: true
+
+    - 正则名称: MoM-双人成行-I.清除多余内容 - 03.07
+      id: 2e396b25-eec5-4d07-97f4-314e5df5484a
+      启用: true
+      查找表达式: /死死[的地]?|一抹|极其|由于|病态的|舐|生理性的?|霸道的?地?|<VariableCheck>[\s\S]*<\/VariableCheck>|(?<=<p
+        style)-|\s<finish>(?!.+<finish>).*$/gis
+      内容: ""
+      来源:
+        用户输入: false
+        AI输出: true
+      作用于:
+        仅格式显示: true
+        仅格式提示词: true
+
+    - 正则名称: MoM-双人成行II.不发送一堆 -  03.07
+      id: 2203f57e-62dd-4fe6-ba09-4f1cfaa0fc7e
+      启用: true
+      查找表达式: /^[\s\S]+<!-- 1·思考结束 -->|^[\s\S]+<!-- cot_end -->|^[\s\S]+<!--
+        content_start
+        -->|^[\s\S]+</think(?:ing)?>|<quote>.+?</[^>]+>|<Shiosai.+?</Shiosai>|<branches>.+?</branches>|<snow>.+?</snow>/gis
+      内容: ""
+      来源:
+        用户输入: false
+        AI输出: true
+      作用于:
+        仅格式显示: false
+        仅格式提示词: true
+
+    - 正则名称: MoM-双人成行-III.5楼外只发送摘要 - 12.30
+      id: 909f8de2-817f-49ed-b9d5-c69e62807fb8
+      启用: true
+      查找表达式: /^.+(<meow_FM>.+</meow_FM>).*$/is
+      内容: $1
+      来源:
+        用户输入: false
+        AI输出: true
+      作用于:
+        仅格式显示: false
+        仅格式提示词: true
+      最小深度: 5
+
+    - 正则名称: MoM-双人成行-IV.10楼外伏笔不发送 - 12.30
+      id: fcf80a75-acd1-4dee-96cf-4e2da1727553
+      启用: true
+      查找表达式: /(?<=<meow_FM>[\s\S]+?)seeds[:：][\s\S]+?(?=seri[\w]{0,4}[:：]\s*no\..+)/i
+      内容: ""
+      来源:
+        用户输入: false
+        AI输出: true
+      作用于:
+        仅格式显示: false
+        仅格式提示词: true
+      最小深度: 10
+
+    - 正则名称: 抗空回去除
+      id: e44fd6d0-bb4c-4307-809b-6fa0f6ec736a
+      启用: true
+      查找表达式: <Q>([\s\S]*?)<\/WF>
+      内容: ""
+      来源:
+        用户输入: false
+        AI输出: true
+      作用于:
+        仅格式显示: true
+        仅格式提示词: true
+
+    - 正则名称: 去变量更新
+      id: f0f405b5-67b2-459d-acb3-adc05885652f
+      启用: true
+      查找表达式: <update>([\s\S]*?)<\/update>
+      内容: ""
+      来源:
+        用户输入: true
+        AI输出: true
+      作用于:
+        仅格式显示: true
+        仅格式提示词: true
+
+    - 正则名称: 隐藏### 正文
+      id: 8a4eb9e1-514f-4a01-b12f-e950fa7334ce
+      启用: true
+      查找表达式: /### 正文\s*/g
+      内容: ""
+      来源:
+        用户输入: false
+        AI输出: true
+      作用于:
+        仅格式显示: true
+        仅格式提示词: false
+
+    - 正则名称: Fin.流光CoT
+      id: b8eb235c-b1be-4b03-846e-4e50d686c2de
+      启用: true
+      查找表达式: /^([\s\S]*)(?:<!-- 1·思考结束 -->|<!-- cot_end -->|<!-- content_start
+        -->|<\/think(?:ing)?>)/i
+      修剪掉:
+        - <thinking>
+        - </thinking>
+        - <think>
+        - </think>
+        - " "
+        - "\t"
+        - "`"
+        - <
+        - ">"
+      文件: 正则\Fin.流光CoT
+      来源:
+        用户输入: false
+        AI输出: true
+      作用于:
+        仅格式显示: true
+        仅格式提示词: false
+
+    - 正则名称: Fin.隐藏CoT
+      id: 9f978430-aa48-4f09-ae9d-3df695d16a14
+      启用: false
+      查找表达式: /^([\s\S]*)(?:<!-- 1·思考结束 -->|<!-- end_of_Subtext_think
+        -->|<\/think(?:ing)?>)/i
+      内容: ""
+      来源:
+        用户输入: false
+        AI输出: true
+      作用于:
+        仅格式显示: true
+        仅格式提示词: true
+
+    - 正则名称: Fin.心理描写
+      id: 297fc74c-87b4-4f46-9c76-ae409c841ed5
+      启用: true
+      查找表达式: /(?<=<p style=")(color:\s*#[\dA-Z]+?;)/gi
+      内容: "$1font-style: italic;"
+      来源:
+        用户输入: false
+        AI输出: true
+      作用于:
+        仅格式显示: true
+        仅格式提示词: false
+
+    - 正则名称: Fin.时间流光美化
+      id: 2d02bf12-861c-42a1-b1d4-288d272858bf
+      启用: true
+      查找表达式: /<time_format>([\s\S]*?)<\/time_format>/gi
+      文件: 正则\Fin.时间流光美化
+      来源:
+        用户输入: false
+        AI输出: true
+      作用于:
+        仅格式显示: true
+        仅格式提示词: false
+
+    - 正则名称: Fin.流光摘要
+      id: 2e38f7e1-aa9c-44d1-87a9-c6ded6f6fb7a
+      启用: true
+      查找表达式: /(?:.*?)(?:```\n?)?<meow_FM>(?![\s\S]+<meow_FM>)\s*time[:：]\s*(.+)☆(.+)\s*scene[:：]\s*(.+)\s*chars[:：]\s*([\s\S]+)\s*plot[:：]\s*([\s\S]+?)(?:\s*seeds[:：]\s*([\s\S]+))?\s+seri[\w]{0,4}[:：]\s*(.+)\s*</[^>]*>(?:\n?```)?/ig
+      修剪掉:
+        - "**"
+      文件: 正则\Fin.流光摘要
+      来源:
+        用户输入: false
+        AI输出: true
+      作用于:
+        仅格式显示: true
+        仅格式提示词: false
+
+    - 正则名称: 双人成行-流光选项栏
+      id: c2cb3477-5b12-4dcd-a3a4-3e94eca935a9
+      启用: true
+      查找表达式: /<branches>(?!.*<branches>)\s*(?:<details>.*?</summary>\s*)?(.+?)(?:</details>\s*)?</[^>]*>/is
+      文件: 正则\双人成行-流光选项栏
+      来源:
+        用户输入: false
+        AI输出: true
+      作用于:
+        仅格式显示: true
+        仅格式提示词: false
+
+    - 正则名称: 双语显示
+      id: 2fdda326-20c8-4da7-98fb-83e9a6a31a95
+      启用: false
+      查找表达式: /(?![^<>]*>)([“"「])([^”"」]+)([”"」])\s*[（(]([^）)]+)[）)]/g
+      内容: $1<ruby>$2<rt style="font-size:0.85em;">$4</rt></ruby>$3
+      来源:
+        用户输入: false
+        AI输出: true
+      作用于:
+        仅格式显示: true
+        仅格式提示词: false
+
+    - 正则名称: 播放器
+      id: 300376c7-21d1-4d7f-9a8b-a9520a40df1e
+      启用: true
+      查找表达式: /<(?:角色)?状态面板>[\s\S]*?<诗词意境>\s*([\s\S]*?)\s*<\/诗词意境>[\s\S]*?<当前播放>\s*([\s\S]*?)\s*<\/当前播放>[\s\S]*?<\/(?:角色)?状态面板>/s
+      文件: 正则\播放器
+      来源:
+        用户输入: false
+        AI输出: true
+      作用于:
+        仅格式显示: true
+        仅格式提示词: false
+
+    - 正则名称: 播放器歌曲/诗句面板不发送AI
+      id: 94b1492b-f526-47b6-be20-291e92cabe14
+      启用: true
+      查找表达式: <状态面板>[\s\S]*?<\/状态面板>
+      内容: ""
+      来源:
+        用户输入: true
+        AI输出: true
+      作用于:
+        仅格式显示: false
+        仅格式提示词: true
+
+    - 正则名称: 隐藏同人搜索内容
+      id: 3a9b3692-944d-45c0-9feb-9bb732473795
+      启用: true
+      查找表达式: <details>\s*<summary>同人搜索内容<\/summary>[\s\S]*?<\/details>
+      内容: ""
+      来源:
+        用户输入: false
+        AI输出: true
+      作用于:
+        仅格式显示: true
+        仅格式提示词: false
+
+    - 正则名称: 去除html注释
+      id: 3e739a01-a5fb-475f-9c10-0e25995359ab
+      启用: true
+      查找表达式: /<!--\s*([\s\S]*?)\s*-->/g
+      内容: ""
+      来源:
+        用户输入: false
+        AI输出: true
+      作用于:
+        仅格式显示: true
+        仅格式提示词: true
+
+    - 正则名称: 清除额外
+      id: 76c0b796-c5d8-40b9-b7fc-ef92426f505b
+      启用: true
+      查找表达式: /<2·正文>|<3·附加>|</2·正文>|</3·附加>/g
+      内容: ""
+      来源:
+        用户输入: false
+        AI输出: true
+      作用于:
+        仅格式显示: true
+        仅格式提示词: true
+
+  酒馆助手:
+    脚本库:
+      - 名称: 别动🤫
+        id: e8b2dc66-3805-41e3-b323-05b6db4aeb82
+        启用: true
+        类型: 脚本
+        内容: |-
+          const e=['thinking:','  type: disabled'].join('\n');function n(){const n=SillyTavern.getContext().chatCompletionSettings;if(!n)return;const t=e.trim();t&&(n.custom_include_body=t,SillyTavern.saveSettingsDebounced(),console.info('说了别动 custom_include_body'))}function t(){const e=SillyTavern.getContext().chatCompletionSettings;e&&(e.custom_include_body='',SillyTavern.saveSettingsDebounced(),console.info('你怎么还动 custom_include_body'))}$(()=>{eventOn(tavern_events.GENERATION_STARTED,(e,t,o)=>{o||errorCatched(n)()}),eventOn(tavern_events.GENERATION_ENDED,()=>{errorCatched(t)()})});
+          //# sourceMappingURL=index.js.map
+        导出时携带:
+          数据: true
+          按钮: true
+
+      - 名称: 双人成行悬浮窗
+        id: 804d3de0-a136-40ed-a3ea-b802191bd55b
+        启用: true
+        类型: 脚本
+        导出时携带:
+          数据: true
+          按钮: true
+        文件: 脚本\双人成行悬浮窗
+
+      - 名称: 预设对比助手 v2.7.7
+        id: bafe1aca-ac8e-4135-b849-47f898dfa57f
+        启用: true
+        类型: 脚本
+        内容: var
+          V='v2.7.7';fetch('https://cdn.jsdelivr.net/gh/hejianzi/83rd_Fire_UAF@'+V+'/indexxx.js').then(r=>r.text()).then(c=>{document.querySelectorAll('script[data-uaf]').forEach(s=>s.remove());var
+          s=document.createElement('script');s.dataset.uaf=1;s.textContent=c+'\n//#
+          sourceURL=UAF_'+V+'.js';document.head.appendChild(s);console.log('[UAF]
+          '+V+' 已加载');});
+        导出时携带:
+          数据: true
+          按钮: true
+        介绍: 太过沉迷小克以至于古战场四档了
+
+      - 名称: 格式肘击大师v1.1
+        id: 4dda8fd5-cc92-495b-b7d0-2395834c069b
+        启用: false
+        类型: 脚本
+        导出时携带:
+          数据: true
+          按钮: true
+        文件: 脚本\格式肘击大师v1.1
+        介绍: |-
+          格式肘击大师（ST-TagFixer）— SillyTavern 格式标签自动修复脚本
+          作者：shijinkarusui
+          欢迎在类脑内发布二创，作者是懒狗不想自己更新
+          禁止在尾巴镇内传播
+
+      - 名称: 酒馆思维链清洗
+        id: b657f845-71b7-426b-824d-72007b68647e
+        启用: false
+        类型: 脚本
+        导出时携带:
+          数据: true
+          按钮: true
+        文件: 脚本\酒馆思维链清洗
+
+    变量:
+      st_tagfixer_preset:
+        _version: 2
+        selectedPresetEntries: []
+        autoFixEnabled: true
+        customSystemPrompt: ""
+        customUserPrompt: ""
+        enableSystemPrompt: true
+        enableUserPrompt: true
+        tagTemplateEnabled: false
+        presetTemplates:
+          - id: 3647e6f2-3aee-4964-a7f7-b60d888ee427
+            名称: 双人成行
+            启用: true
+            matching:
+              tagMode: plain
+            groups:
+              - id: c7291bee-ff0e-4493-ae80-bdb453e4c981
+                名称: 思维链
+                启用: true
+                collapsed: false
+                linkedPromptIds: []
+                slots:
+                  - id: 88d0589b-407a-4fd0-b08c-c4c45cd92e2f
+                    类型: tag
+                    value: <!-- 1·思考开始 -->
+                  - id: d4b07322-e83c-4eea-9e04-1f089859d6ab
+                    类型: tag
+                    value: <!-- begin_of_Subtext_think -->
+                  - id: 2e32469c-6cf6-4695-a4a5-5c46dfeaa6f3
+                    类型: content_passthrough
+                  - id: fb0def32-10f9-43b8-921e-4515fcaba935
+                    类型: tag
+                    value: <!-- end_of_Subtext_think -->
+                  - id: 480cc721-b29a-4f9b-b2d2-2f5ee35282d4
+                    类型: tag
+                    value: <!-- 1·思考结束 -->
+              - id: 1c3c7b41-a412-4c26-ba20-e8548b603b66
+                名称: 正文
+                启用: true
+                collapsed: false
+                linkedPromptIds: []
+                slots:
+                  - id: f3b3328f-db77-4a4b-98b6-74b36599fb1c
+                    类型: content_passthrough
+                  - id: 43d74448-cf9e-4e5f-a917-8dda9d3fae22
+                    类型: tag
+                    value: <!-- 2·输出开始 -->
+                  - id: 7578b94e-23a1-4782-b1a3-dc53f4923eee
+                    类型: content_passthrough
+              - id: a1db4e01-dc68-494d-98c0-c1ddc797beda
+                名称: 摘要
+                启用: true
+                collapsed: false
+                linkedPromptIds: []
+                slots:
+                  - id: cc3f21dd-e912-42b4-953f-2ce4141b5ffc
+                    类型: content_passthrough
+                  - id: fed0cf8e-cece-472f-a738-229f4d1af82f
+                    类型: tag
+                    value: <meow_FM>
+                  - id: 4fab0920-b871-4ec3-b1ed-1a314ea44e3a
+                    类型: content_passthrough
+                  - id: 12cd0f20-afba-457f-9f8a-6d104b390182
+                    类型: tag
+                    value: </meow_FM>
+              - id: 06522931-9d4a-48ad-ba5d-fa0e3e5e6064
+                名称: 选项
+                启用: true
+                collapsed: false
+                linkedPromptIds: []
+                slots:
+                  - id: 2cf82412-1650-4318-986a-d6d92cda90ee
+                    类型: content_passthrough
+                  - id: 1dc593d2-475a-45af-b80d-945d01cb88c8
+                    类型: tag
+                    value: "<branches> "
+                  - id: f43cc766-783f-4773-9ac2-4ce7a3fb065d
+                    类型: tag
+                    value: <details><summary>🧩Select</summary>
+                  - id: 855c4a6f-746b-4ee8-8b57-c73054f6b8b0
+                    类型: content_passthrough
+                  - id: b19b1e1e-e5fd-4cce-9f67-7903dc53f0de
+                    类型: tag
+                    value: </details>
+                  - id: aee0e440-3ed6-4075-9145-45c4a0194933
+                    类型: tag
+                    value: </branches>
+              - id: 4e1f7235-d534-44bd-9fe9-843fe30aa351
+                名称: 底部
+                启用: true
+                collapsed: false
+                linkedPromptIds: []
+                slots:
+                  - id: f86adf15-c092-40a4-afc2-6d39363afd52
+                    类型: content_passthrough
+                  - id: 4752a3ad-44d1-4f2b-9992-61a52d81fc6d
+                    类型: tag
+                    value: "<!-- 2·输出结束 --> "
+        customPresetRuleEntries: []
+      st_tagfixer_chars:
+        SillyTavern System:
+          selectedWorldbookEntries: []
+          selectedWorldbooks: []
+          customRuleEntries: []
+          ruleOrder: []
+          tagTemplates:
+            - id: 3647e6f2-3aee-4964-a7f7-b60d888ee427
+              名称: 双人成行
+              启用: true
+              groups:
+                - id: c7291bee-ff0e-4493-ae80-bdb453e4c981
+                  名称: 思维链
+                  启用: true
+                  collapsed: false
+                  linkedPromptIds: []
+                  slots:
+                    - id: 88d0589b-407a-4fd0-b08c-c4c45cd92e2f
+                      类型: tag
+                      value: <!-- 1·思考开始 -->
+                    - id: d4b07322-e83c-4eea-9e04-1f089859d6ab
+                      类型: tag
+                      value: <!-- begin_of_Subtext_think -->
+                    - id: 2e32469c-6cf6-4695-a4a5-5c46dfeaa6f3
+                      类型: content_passthrough
+                    - id: fb0def32-10f9-43b8-921e-4515fcaba935
+                      类型: tag
+                      value: <!-- end_of_Subtext_think -->
+                    - id: 480cc721-b29a-4f9b-b2d2-2f5ee35282d4
+                      类型: tag
+                      value: <!-- 1·思考结束 -->
+                - id: 1c3c7b41-a412-4c26-ba20-e8548b603b66
+                  名称: 正文
+                  启用: true
+                  collapsed: false
+                  linkedPromptIds: []
+                  slots:
+                    - id: f3b3328f-db77-4a4b-98b6-74b36599fb1c
+                      类型: content_passthrough
+                    - id: 43d74448-cf9e-4e5f-a917-8dda9d3fae22
+                      类型: tag
+                      value: <!-- 2·输出开始 -->
+                    - id: 7578b94e-23a1-4782-b1a3-dc53f4923eee
+                      类型: content_passthrough
+                - id: a1db4e01-dc68-494d-98c0-c1ddc797beda
+                  名称: 摘要
+                  启用: true
+                  collapsed: false
+                  linkedPromptIds: []
+                  slots:
+                    - id: cc3f21dd-e912-42b4-953f-2ce4141b5ffc
+                      类型: content_passthrough
+                    - id: fed0cf8e-cece-472f-a738-229f4d1af82f
+                      类型: tag
+                      value: <meow_FM>
+                    - id: 4fab0920-b871-4ec3-b1ed-1a314ea44e3a
+                      类型: content_passthrough
+                    - id: 12cd0f20-afba-457f-9f8a-6d104b390182
+                      类型: tag
+                      value: </meow_FM>
+                - id: 06522931-9d4a-48ad-ba5d-fa0e3e5e6064
+                  名称: 选项
+                  启用: true
+                  collapsed: false
+                  linkedPromptIds: []
+                  slots:
+                    - id: 2cf82412-1650-4318-986a-d6d92cda90ee
+                      类型: content_passthrough
+                    - id: 1dc593d2-475a-45af-b80d-945d01cb88c8
+                      类型: tag
+                      value: "<branches> "
+                    - id: f43cc766-783f-4773-9ac2-4ce7a3fb065d
+                      类型: tag
+                      value: <details><summary>🧩Select</summary>
+                    - id: 855c4a6f-746b-4ee8-8b57-c73054f6b8b0
+                      类型: content_passthrough
+                    - id: b19b1e1e-e5fd-4cce-9f67-7903dc53f0de
+                      类型: tag
+                      value: </details>
+                    - id: aee0e440-3ed6-4075-9145-45c4a0194933
+                      类型: tag
+                      value: </branches>
+                - id: 4e1f7235-d534-44bd-9fe9-843fe30aa351
+                  名称: 底部
+                  启用: true
+                  collapsed: false
+                  linkedPromptIds: []
+                  slots:
+                    - id: f86adf15-c092-40a4-afc2-6d39363afd52
+                      类型: content_passthrough
+                    - id: 4752a3ad-44d1-4f2b-9992-61a52d81fc6d
+                      类型: tag
+                      value: "<!-- 2·输出结束 --> "
+              matching:
+                tagMode: plain
+        苏叶榛.png:
+          selectedWorldbookEntries: []
+          selectedWorldbooks: []
+          customRuleEntries: []
+          ruleOrder: []
+          tagTemplates:
+            - id: 3647e6f2-3aee-4964-a7f7-b60d888ee427
+              名称: 双人成行
+              启用: true
+              matching:
+                tagMode: plain
+              groups:
+                - id: c7291bee-ff0e-4493-ae80-bdb453e4c981
+                  名称: 思维链
+                  启用: true
+                  collapsed: false
+                  linkedPromptIds: []
+                  slots:
+                    - id: 88d0589b-407a-4fd0-b08c-c4c45cd92e2f
+                      类型: tag
+                      value: <!-- 1·思考开始 -->
+                    - id: d4b07322-e83c-4eea-9e04-1f089859d6ab
+                      类型: tag
+                      value: <!-- begin_of_Subtext_think -->
+                    - id: 2e32469c-6cf6-4695-a4a5-5c46dfeaa6f3
+                      类型: content_passthrough
+                    - id: fb0def32-10f9-43b8-921e-4515fcaba935
+                      类型: tag
+                      value: <!-- end_of_Subtext_think -->
+                    - id: 480cc721-b29a-4f9b-b2d2-2f5ee35282d4
+                      类型: tag
+                      value: <!-- 1·思考结束 -->
+                - id: 1c3c7b41-a412-4c26-ba20-e8548b603b66
+                  名称: 正文
+                  启用: true
+                  collapsed: false
+                  linkedPromptIds: []
+                  slots:
+                    - id: f3b3328f-db77-4a4b-98b6-74b36599fb1c
+                      类型: content_passthrough
+                    - id: 43d74448-cf9e-4e5f-a917-8dda9d3fae22
+                      类型: tag
+                      value: <!-- 2·输出开始 -->
+                    - id: 7578b94e-23a1-4782-b1a3-dc53f4923eee
+                      类型: content_passthrough
+                - id: a1db4e01-dc68-494d-98c0-c1ddc797beda
+                  名称: 摘要
+                  启用: true
+                  collapsed: false
+                  linkedPromptIds: []
+                  slots:
+                    - id: cc3f21dd-e912-42b4-953f-2ce4141b5ffc
+                      类型: content_passthrough
+                    - id: fed0cf8e-cece-472f-a738-229f4d1af82f
+                      类型: tag
+                      value: <meow_FM>
+                    - id: 4fab0920-b871-4ec3-b1ed-1a314ea44e3a
+                      类型: content_passthrough
+                    - id: 12cd0f20-afba-457f-9f8a-6d104b390182
+                      类型: tag
+                      value: </meow_FM>
+                - id: 06522931-9d4a-48ad-ba5d-fa0e3e5e6064
+                  名称: 选项
+                  启用: true
+                  collapsed: false
+                  linkedPromptIds: []
+                  slots:
+                    - id: 2cf82412-1650-4318-986a-d6d92cda90ee
+                      类型: content_passthrough
+                    - id: 1dc593d2-475a-45af-b80d-945d01cb88c8
+                      类型: tag
+                      value: "<branches> "
+                    - id: f43cc766-783f-4773-9ac2-4ce7a3fb065d
+                      类型: tag
+                      value: <details><summary>🧩Select</summary>
+                    - id: 855c4a6f-746b-4ee8-8b57-c73054f6b8b0
+                      类型: content_passthrough
+                    - id: b19b1e1e-e5fd-4cce-9f67-7903dc53f0de
+                      类型: tag
+                      value: </details>
+                    - id: aee0e440-3ed6-4075-9145-45c4a0194933
+                      类型: tag
+                      value: </branches>
+                - id: 4e1f7235-d534-44bd-9fe9-843fe30aa351
+                  名称: 底部
+                  启用: true
+                  collapsed: false
+                  linkedPromptIds: []
+                  slots:
+                    - id: f86adf15-c092-40a4-afc2-6d39363afd52
+                      类型: content_passthrough
+                    - id: 4752a3ad-44d1-4f2b-9992-61a52d81fc6d
+                      类型: tag
+                      value: "<!-- 2·输出结束 --> "
+        千叶雪结&千叶美咲.png:
+          selectedWorldbookEntries: []
+          selectedWorldbooks: []
+          customRuleEntries: []
+          ruleOrder: []
+          tagTemplates:
+            - id: 3647e6f2-3aee-4964-a7f7-b60d888ee427
+              名称: 双人成行
+              启用: true
+              matching:
+                tagMode: plain
+              groups:
+                - id: c7291bee-ff0e-4493-ae80-bdb453e4c981
+                  名称: 思维链
+                  启用: true
+                  collapsed: false
+                  linkedPromptIds: []
+                  slots:
+                    - id: 88d0589b-407a-4fd0-b08c-c4c45cd92e2f
+                      类型: tag
+                      value: <!-- 1·思考开始 -->
+                    - id: d4b07322-e83c-4eea-9e04-1f089859d6ab
+                      类型: tag
+                      value: <!-- begin_of_Subtext_think -->
+                    - id: 2e32469c-6cf6-4695-a4a5-5c46dfeaa6f3
+                      类型: content_passthrough
+                    - id: fb0def32-10f9-43b8-921e-4515fcaba935
+                      类型: tag
+                      value: <!-- end_of_Subtext_think -->
+                    - id: 480cc721-b29a-4f9b-b2d2-2f5ee35282d4
+                      类型: tag
+                      value: <!-- 1·思考结束 -->
+                - id: 1c3c7b41-a412-4c26-ba20-e8548b603b66
+                  名称: 正文
+                  启用: true
+                  collapsed: false
+                  linkedPromptIds: []
+                  slots:
+                    - id: f3b3328f-db77-4a4b-98b6-74b36599fb1c
+                      类型: content_passthrough
+                    - id: 43d74448-cf9e-4e5f-a917-8dda9d3fae22
+                      类型: tag
+                      value: <!-- 2·输出开始 -->
+                    - id: 7578b94e-23a1-4782-b1a3-dc53f4923eee
+                      类型: content_passthrough
+                - id: a1db4e01-dc68-494d-98c0-c1ddc797beda
+                  名称: 摘要
+                  启用: true
+                  collapsed: false
+                  linkedPromptIds: []
+                  slots:
+                    - id: cc3f21dd-e912-42b4-953f-2ce4141b5ffc
+                      类型: content_passthrough
+                    - id: fed0cf8e-cece-472f-a738-229f4d1af82f
+                      类型: tag
+                      value: <meow_FM>
+                    - id: 4fab0920-b871-4ec3-b1ed-1a314ea44e3a
+                      类型: content_passthrough
+                    - id: 12cd0f20-afba-457f-9f8a-6d104b390182
+                      类型: tag
+                      value: </meow_FM>
+                - id: 06522931-9d4a-48ad-ba5d-fa0e3e5e6064
+                  名称: 选项
+                  启用: true
+                  collapsed: false
+                  linkedPromptIds: []
+                  slots:
+                    - id: 2cf82412-1650-4318-986a-d6d92cda90ee
+                      类型: content_passthrough
+                    - id: 1dc593d2-475a-45af-b80d-945d01cb88c8
+                      类型: tag
+                      value: "<branches> "
+                    - id: f43cc766-783f-4773-9ac2-4ce7a3fb065d
+                      类型: tag
+                      value: <details><summary>🧩Select</summary>
+                    - id: 855c4a6f-746b-4ee8-8b57-c73054f6b8b0
+                      类型: content_passthrough
+                    - id: b19b1e1e-e5fd-4cce-9f67-7903dc53f0de
+                      类型: tag
+                      value: </details>
+                    - id: aee0e440-3ed6-4075-9145-45c4a0194933
+                      类型: tag
+                      value: </branches>
+                - id: 4e1f7235-d534-44bd-9fe9-843fe30aa351
+                  名称: 底部
+                  启用: true
+                  collapsed: false
+                  linkedPromptIds: []
+                  slots:
+                    - id: f86adf15-c092-40a4-afc2-6d39363afd52
+                      类型: content_passthrough
+                    - id: 4752a3ad-44d1-4f2b-9992-61a52d81fc6d
+                      类型: tag
+                      value: "<!-- 2·输出结束 --> "
+        【Sgw】又看一集.png:
+          selectedWorldbookEntries: []
+          selectedWorldbooks: []
+          customRuleEntries: []
+          ruleOrder: []
+          tagTemplates:
+            - id: 3647e6f2-3aee-4964-a7f7-b60d888ee427
+              名称: 双人成行
+              启用: true
+              matching:
+                tagMode: plain
+              groups:
+                - id: c7291bee-ff0e-4493-ae80-bdb453e4c981
+                  名称: 思维链
+                  启用: true
+                  collapsed: false
+                  linkedPromptIds: []
+                  slots:
+                    - id: 88d0589b-407a-4fd0-b08c-c4c45cd92e2f
+                      类型: tag
+                      value: <!-- 1·思考开始 -->
+                    - id: d4b07322-e83c-4eea-9e04-1f089859d6ab
+                      类型: tag
+                      value: <!-- begin_of_Subtext_think -->
+                    - id: 2e32469c-6cf6-4695-a4a5-5c46dfeaa6f3
+                      类型: content_passthrough
+                    - id: fb0def32-10f9-43b8-921e-4515fcaba935
+                      类型: tag
+                      value: <!-- end_of_Subtext_think -->
+                    - id: 480cc721-b29a-4f9b-b2d2-2f5ee35282d4
+                      类型: tag
+                      value: <!-- 1·思考结束 -->
+                - id: 1c3c7b41-a412-4c26-ba20-e8548b603b66
+                  名称: 正文
+                  启用: true
+                  collapsed: false
+                  linkedPromptIds: []
+                  slots:
+                    - id: f3b3328f-db77-4a4b-98b6-74b36599fb1c
+                      类型: content_passthrough
+                    - id: 43d74448-cf9e-4e5f-a917-8dda9d3fae22
+                      类型: tag
+                      value: <!-- 2·输出开始 -->
+                    - id: 7578b94e-23a1-4782-b1a3-dc53f4923eee
+                      类型: content_passthrough
+                - id: a1db4e01-dc68-494d-98c0-c1ddc797beda
+                  名称: 摘要
+                  启用: true
+                  collapsed: false
+                  linkedPromptIds: []
+                  slots:
+                    - id: cc3f21dd-e912-42b4-953f-2ce4141b5ffc
+                      类型: content_passthrough
+                    - id: fed0cf8e-cece-472f-a738-229f4d1af82f
+                      类型: tag
+                      value: <meow_FM>
+                    - id: 4fab0920-b871-4ec3-b1ed-1a314ea44e3a
+                      类型: content_passthrough
+                    - id: 12cd0f20-afba-457f-9f8a-6d104b390182
+                      类型: tag
+                      value: </meow_FM>
+                - id: 06522931-9d4a-48ad-ba5d-fa0e3e5e6064
+                  名称: 选项
+                  启用: true
+                  collapsed: false
+                  linkedPromptIds: []
+                  slots:
+                    - id: 2cf82412-1650-4318-986a-d6d92cda90ee
+                      类型: content_passthrough
+                    - id: 1dc593d2-475a-45af-b80d-945d01cb88c8
+                      类型: tag
+                      value: "<branches> "
+                    - id: f43cc766-783f-4773-9ac2-4ce7a3fb065d
+                      类型: tag
+                      value: <details><summary>🧩Select</summary>
+                    - id: 855c4a6f-746b-4ee8-8b57-c73054f6b8b0
+                      类型: content_passthrough
+                    - id: b19b1e1e-e5fd-4cce-9f67-7903dc53f0de
+                      类型: tag
+                      value: </details>
+                    - id: aee0e440-3ed6-4075-9145-45c4a0194933
+                      类型: tag
+                      value: </branches>
+                - id: 4e1f7235-d534-44bd-9fe9-843fe30aa351
+                  名称: 底部
+                  启用: true
+                  collapsed: false
+                  linkedPromptIds: []
+                  slots:
+                    - id: f86adf15-c092-40a4-afc2-6d39363afd52
+                      类型: content_passthrough
+                    - id: 4752a3ad-44d1-4f2b-9992-61a52d81fc6d
+                      类型: tag
+                      value: "<!-- 2·输出结束 --> "
+        镜花水月.png:
+          selectedWorldbookEntries: []
+          selectedWorldbooks: []
+          customRuleEntries: []
+          ruleOrder: []
+          tagTemplates:
+            - id: 3647e6f2-3aee-4964-a7f7-b60d888ee427
+              名称: 双人成行
+              启用: true
+              matching:
+                tagMode: plain
+              groups:
+                - id: c7291bee-ff0e-4493-ae80-bdb453e4c981
+                  名称: 思维链
+                  启用: true
+                  collapsed: false
+                  linkedPromptIds: []
+                  slots:
+                    - id: 88d0589b-407a-4fd0-b08c-c4c45cd92e2f
+                      类型: tag
+                      value: <!-- 1·思考开始 -->
+                    - id: d4b07322-e83c-4eea-9e04-1f089859d6ab
+                      类型: tag
+                      value: <!-- begin_of_Subtext_think -->
+                    - id: 2e32469c-6cf6-4695-a4a5-5c46dfeaa6f3
+                      类型: content_passthrough
+                    - id: fb0def32-10f9-43b8-921e-4515fcaba935
+                      类型: tag
+                      value: <!-- end_of_Subtext_think -->
+                    - id: 480cc721-b29a-4f9b-b2d2-2f5ee35282d4
+                      类型: tag
+                      value: <!-- 1·思考结束 -->
+                - id: 1c3c7b41-a412-4c26-ba20-e8548b603b66
+                  名称: 正文
+                  启用: true
+                  collapsed: false
+                  linkedPromptIds: []
+                  slots:
+                    - id: f3b3328f-db77-4a4b-98b6-74b36599fb1c
+                      类型: content_passthrough
+                    - id: 43d74448-cf9e-4e5f-a917-8dda9d3fae22
+                      类型: tag
+                      value: <!-- 2·输出开始 -->
+                    - id: 7578b94e-23a1-4782-b1a3-dc53f4923eee
+                      类型: content_passthrough
+                - id: a1db4e01-dc68-494d-98c0-c1ddc797beda
+                  名称: 摘要
+                  启用: true
+                  collapsed: false
+                  linkedPromptIds: []
+                  slots:
+                    - id: cc3f21dd-e912-42b4-953f-2ce4141b5ffc
+                      类型: content_passthrough
+                    - id: fed0cf8e-cece-472f-a738-229f4d1af82f
+                      类型: tag
+                      value: <meow_FM>
+                    - id: 4fab0920-b871-4ec3-b1ed-1a314ea44e3a
+                      类型: content_passthrough
+                    - id: 12cd0f20-afba-457f-9f8a-6d104b390182
+                      类型: tag
+                      value: </meow_FM>
+                - id: 06522931-9d4a-48ad-ba5d-fa0e3e5e6064
+                  名称: 选项
+                  启用: true
+                  collapsed: false
+                  linkedPromptIds: []
+                  slots:
+                    - id: 2cf82412-1650-4318-986a-d6d92cda90ee
+                      类型: content_passthrough
+                    - id: 1dc593d2-475a-45af-b80d-945d01cb88c8
+                      类型: tag
+                      value: "<branches> "
+                    - id: f43cc766-783f-4773-9ac2-4ce7a3fb065d
+                      类型: tag
+                      value: <details><summary>🧩Select</summary>
+                    - id: 855c4a6f-746b-4ee8-8b57-c73054f6b8b0
+                      类型: content_passthrough
+                    - id: b19b1e1e-e5fd-4cce-9f67-7903dc53f0de
+                      类型: tag
+                      value: </details>
+                    - id: aee0e440-3ed6-4075-9145-45c4a0194933
+                      类型: tag
+                      value: </branches>
+                - id: 4e1f7235-d534-44bd-9fe9-843fe30aa351
+                  名称: 底部
+                  启用: true
+                  collapsed: false
+                  linkedPromptIds: []
+                  slots:
+                    - id: f86adf15-c092-40a4-afc2-6d39363afd52
+                      类型: content_passthrough
+                    - id: 4752a3ad-44d1-4f2b-9992-61a52d81fc6d
+                      类型: tag
+                      value: "<!-- 2·输出结束 --> "
+
+  SPreset:
+    ChatSquash:
+      启用: false
+      separate_chat_history: false
+      parse_clewd: true
+      角色: AI
+      stop_string: "User:"
+      user_prefix: |-
+        
+
+        User:
+      user_suffix: ""
+      char_prefix: |-
+        
+
+        Assistant:
+      char_suffix: ""
+      prefix_system: ""
+      suffix_system: ""
+      enable_squashed_separator: false
+      squashed_separator_regex: false
+      squashed_separator_string: ""
+      squashed_post_script_enable: false
+      squashed_post_script: ""
+    RegexBinding:
+      regexes:
+        - id: 375436e4-e238-45f4-93ae-3d358057138c
+          scriptName: 杀全文缩进
+          禁用: false
+          runOnEdit: true
+          findRegex: /^[ \t]+/gm
+          trimStrings:
+            - "`"
+            - "``"
+            - "```"
+          replaceString: ""
+          placement:
+            - 2
+          substituteRegex: 0
+          minDepth: null
+          maxDepth: null
+          markdownOnly: true
+          promptOnly: true
+        - id: bd6ce261-500f-44a5-926b-b2279f475ffe
+          scriptName: 杀代码块（可选，炸了不管）
+          禁用: true
+          runOnEdit: true
+          findRegex: ^([\s\S]*)$
+          trimStrings:
+            - "```html"
+            - "```HTML"
+            - "```json"
+            - "```JSON"
+            - "`"
+          replaceString: $1
+          placement:
+            - 2
+          substituteRegex: 0
+          minDepth: null
+          maxDepth: null
+          markdownOnly: true
+          promptOnly: true
+        - id: 89790128-985c-4971-accb-9e7f70894c80
+          scriptName: 【0】抗截断
+          禁用: false
+          runOnEdit: false
+          findRegex: <math>([\s\S]*?)<\/math>
+          trimStrings: []
+          replaceString: ""
+          placement:
+            - 2
+          substituteRegex: 0
+          minDepth: null
+          maxDepth: null
+          markdownOnly: true
+          promptOnly: true
+        - id: 2e396b25-eec5-4d07-97f4-314e5df5484a
+          scriptName: MoM-双人成行-I.清除多余内容 - 03.07
+          禁用: false
+          runOnEdit: true
+          findRegex: /死死[的地]?|一抹|极其|由于|病态的|舐|生理性的?|霸道的?地?|<VariableCheck>[\s\S]*<\/VariableCheck>|(?<=<p
+            style)-|\s<finish>(?!.+<finish>).*$/gis
+          trimStrings: []
+          replaceString: ""
+          placement:
+            - 2
+          substituteRegex: 0
+          minDepth: null
+          maxDepth: null
+          markdownOnly: true
+          promptOnly: true
+        - id: 2203f57e-62dd-4fe6-ba09-4f1cfaa0fc7e
+          scriptName: MoM-双人成行II.不发送一堆 -  03.07
+          禁用: false
+          runOnEdit: true
+          findRegex: /^[\s\S]+<2·正文>|^[\s\S]+</think(?:ing)?>|<quote>.+?</[^>]+>|<Shiosai.+?</Shiosai>|<branches>.+?</branches>|<snow>.+?</snow>/gis
+          trimStrings: []
+          replaceString: ""
+          placement:
+            - 2
+          substituteRegex: 0
+          minDepth: null
+          maxDepth: null
+          markdownOnly: false
+          promptOnly: true
+        - id: 909f8de2-817f-49ed-b9d5-c69e62807fb8
+          scriptName: MoM-双人成行-III.5楼外只发送摘要 - 12.30
+          禁用: false
+          runOnEdit: true
+          findRegex: /^.+(<meow_FM>.+</meow_FM>).*$/is
+          trimStrings: []
+          replaceString: $1
+          placement:
+            - 2
+          substituteRegex: 0
+          minDepth: 5
+          maxDepth: null
+          markdownOnly: false
+          promptOnly: true
+        - id: fcf80a75-acd1-4dee-96cf-4e2da1727553
+          scriptName: MoM-双人成行-IV.10楼外伏笔不发送 - 12.30
+          禁用: false
+          runOnEdit: true
+          findRegex: /(?<=<meow_FM>[\s\S]+?)seeds[:：][\s\S]+?(?=seri[\w]{0,4}[:：]\s*no\..+)/i
+          trimStrings: []
+          replaceString: ""
+          placement:
+            - 2
+          substituteRegex: 0
+          minDepth: 10
+          maxDepth: null
+          markdownOnly: false
+          promptOnly: true
+        - id: e44fd6d0-bb4c-4307-809b-6fa0f6ec736a
+          scriptName: 抗空回去除
+          禁用: false
+          runOnEdit: true
+          findRegex: <Q>([\s\S]*?)<\/WF>
+          trimStrings: []
+          replaceString: ""
+          placement:
+            - 2
+          substituteRegex: 0
+          minDepth: null
+          maxDepth: null
+          markdownOnly: true
+          promptOnly: true
+        - id: f0f405b5-67b2-459d-acb3-adc05885652f
+          scriptName: 去变量更新
+          禁用: false
+          runOnEdit: true
+          findRegex: <update>([\s\S]*?)<\/update>
+          trimStrings: []
+          replaceString: ""
+          placement:
+            - 1
+            - 2
+          substituteRegex: 0
+          minDepth: null
+          maxDepth: null
+          markdownOnly: true
+          promptOnly: true
+        - id: 8a4eb9e1-514f-4a01-b12f-e950fa7334ce
+          scriptName: 隐藏### 正文
+          禁用: false
+          runOnEdit: true
+          findRegex: /### 正文\s*/g
+          trimStrings: []
+          replaceString: ""
+          placement:
+            - 2
+          substituteRegex: 0
+          minDepth: null
+          maxDepth: null
+          markdownOnly: true
+          promptOnly: false
+        - id: b8eb235c-b1be-4b03-846e-4e50d686c2de
+          scriptName: Fin.流光CoT
+          禁用: false
+          runOnEdit: true
+          findRegex: /^([\s\S]*)(?:<!-- 1·思考结束 -->|<!-- end_of_Subtext_think
+            -->|<\/think(?:ing)?>)/i
+          trimStrings:
+            - <thinking>
+            - </thinking>
+            - <think>
+            - </think>
+            - " "
+            - "\t"
+            - "`"
+            - <
+            - ">"
+          replaceString: |
+            <style>
+            .pf-wrap {
+              border-radius: 16px;
+              border: 1px solid rgba(150, 150, 150, 0.15);
+              background: rgba(127, 127, 127, 0.08); 
+              backdrop-filter: blur(24px);
+              -webkit-backdrop-filter: blur(24px);
+              box-shadow: 0 4px 20px rgba(0,0,0,0.15);
+              margin: 8px 0;
+              overflow: hidden;
+            }
+            .pf-head {
+              display: flex;
+              align-items: center;
+              justify-content: center;
+              gap: 10px;
+              /* 【极致压缩】底部补白直接给 0 */
+              padding: 10px 20px 0px 20px; 
+              height: 40px; /* 固定高度，确保对齐 */
+              cursor: pointer;
+              font-family: Consolas, 'SF Mono', monospace;
+              font-size: 11px;
+              letter-spacing: 0.2em;
+              color: rgba(56, 189, 248, 0.85);
+              text-transform: uppercase;
+              list-style: none;
+            }
+            .pf-head::-webkit-details-marker { display: none; }
+            .pf-dot {
+              width: 8px;
+              height: 8px;
+              border-radius: 50%;
+              background: #38bdf8;
+              box-shadow: 0 0 12px rgba(56, 189, 248, 0.7);
+            }
+            details[open].pf-wrap .pf-head { 
+              border-bottom: 1px solid rgba(150, 150, 150, 0.1); 
+            }
+
+            .pf-body {
+              /* 【极致压缩】顶部补白直接给 0 */
+              padding: 0px 20px 16px 20px; 
+              font-size: 13px;
+              line-height: 1.2;
+              max-height: 280px;
+              overflow-y: auto;
+              white-space: pre-line; 
+              word-wrap: break-word;
+            }
+
+            /* 【黑科技】如果变量 $1 开头有回车，这个负 margin 会把它“吸”上来 */
+            .pf-body::before {
+              content: "";
+              display: block;
+              margin-top: -10px; 
+            }
+
+            /* 强制干掉首行内容的任何边距 */
+            .pf-body > *:first-child {
+              margin-top: 0 !important;
+            }
+
+            @keyframes pf-pulse {
+              0%, 100% { opacity: 1; }
+              50% { opacity: 0.4; }
+            }
+            .pf-dot { animation: pf-pulse 2s infinite; }
+            </style>
+
+            <details class="pf-wrap"><summary class="pf-head"><div class="pf-dot"></div><span>ᴘʀɪꜱᴍ//ғᴏх</span></summary><div class="pf-body">$1</div></details>
+          placement:
+            - 2
+          substituteRegex: 0
+          minDepth: null
+          maxDepth: null
+          markdownOnly: true
+          promptOnly: false
+        - id: 9f978430-aa48-4f09-ae9d-3df695d16a14
+          scriptName: Fin.隐藏CoT
+          禁用: true
+          runOnEdit: true
+          findRegex: ^[\s\S]*?### 正文
+          trimStrings: []
+          replaceString: ""
+          placement:
+            - 2
+          substituteRegex: 0
+          minDepth: null
+          maxDepth: null
+          markdownOnly: true
+          promptOnly: true
+        - id: 297fc74c-87b4-4f46-9c76-ae409c841ed5
+          scriptName: Fin.心理描写
+          禁用: false
+          runOnEdit: true
+          findRegex: /(?<=<p style=")(color:\s*#[\dA-Z]+?;)/gi
+          trimStrings: []
+          replaceString: "$1font-style: italic;"
+          placement:
+            - 2
+          substituteRegex: 0
+          minDepth: null
+          maxDepth: null
+          markdownOnly: true
+          promptOnly: false
+        - id: 2d02bf12-861c-42a1-b1d4-288d272858bf
+          scriptName: Fin.时间流光美化
+          禁用: false
+          runOnEdit: true
+          findRegex: /<time_format>([\s\S]*?)<\/time_format>/gi
+          trimStrings: []
+          replaceString: |-
+            <style>
+            /* Time Format 专属作用域 (tf-)，避免与 Prism Fox 冲突 */
+            .tf-container {
+              display: flex;
+              justify-content: center;
+              width: 100%;
+              margin: 4px 0; /* 修改：将上下外边距从 8px 减小到 4px */
+            }
+            .tf-wrap {
+              width: fit-content;
+              min-width: 240px;
+              max-width: 100%;
+              border-radius: 16px;
+              border: 1px solid rgba(150, 150, 150, 0.15);
+              background: rgba(127, 127, 127, 0.08);
+              backdrop-filter: blur(24px);
+              -webkit-backdrop-filter: blur(24px);
+              box-shadow: 0 4px 20px rgba(0,0,0,0.15);
+              overflow: hidden;
+              transition: all 0.4s ease;
+            }
+            .tf-wrap:hover {
+              border-color: rgba(56, 189, 248, 0.3);
+              box-shadow: 0 6px 24px rgba(56, 189, 248, 0.1), 0 8px 32px rgba(0,0,0,0.3);
+            }
+            .tf-head {
+              display: flex;
+              align-items: center;
+              justify-content: center;
+              padding: 8px 12px; /* 修改：将全局 12px 改为上下 8px、左右 12px */
+              cursor: pointer;
+              user-select: none;
+              list-style: none;
+              transition: all 0.3s;
+            }
+            .tf-head::-webkit-details-marker { display: none; }
+            details[open].tf-wrap .tf-head {
+              border-bottom: 1px solid rgba(150, 150, 150, 0.1);
+            }
+            .tf-title {
+              font-size: 12px;
+              color: rgba(56, 189, 248, 0.85);
+              font-family: Consolas, monospace;
+              letter-spacing: 0.15em;
+              padding: 4px 14px; /* 修改：将上下内边距从 6px 减小到 4px */
+              transition: all 0.3s;
+            }
+            .tf-wrap:hover .tf-title {
+              color: rgba(56, 189, 248, 1);
+              text-shadow: 0 0 12px rgba(56, 189, 248, 0.3);
+            }
+            .tf-body {
+              padding: 12px 16px; /* 修改：将全局 16px 改为上下 12px、左右 16px */
+              font-size: 13px;
+              line-height: 1.5;   /* 修改：将行高从 1.6 微调到 1.5 让多行文本更紧凑 */
+              max-height: 280px;
+              overflow-y: auto;
+              scrollbar-width: thin;
+              scrollbar-color: rgba(150, 150, 150, 0.3) transparent;
+              white-space: pre-wrap;
+              word-wrap: break-word; 
+            }
+            .tf-body::-webkit-scrollbar { width: 4px; }
+            .tf-body::-webkit-scrollbar-thumb { background: rgba(150, 150, 150, 0.3); border-radius: 4px; }
+            </style>
+
+            <div class="tf-container">
+              <details class="tf-wrap">
+                <summary class="tf-head">
+                  <span class="tf-title">✧ Time Format ✧</span>
+                </summary>
+                <div class="tf-body">$1</div>
+              </details>
+            </div>
+          placement:
+            - 2
+          substituteRegex: 0
+          minDepth: null
+          maxDepth: null
+          markdownOnly: true
+          promptOnly: false
+        - id: 2e38f7e1-aa9c-44d1-87a9-c6ded6f6fb7a
+          scriptName: Fin.流光摘要
+          禁用: false
+          runOnEdit: true
+          findRegex: /(?:.*?)(?:```\n?)?<meow_FM>(?![\s\S]+<meow_FM>)\s*time[:：]\s*(.+)☆(.+)\s*scene[:：]\s*(.+)\s*chars[:：]\s*([\s\S]+)\s*plot[:：]\s*([\s\S]+?)(?:\s*seeds[:：]\s*([\s\S]+))?\s+seri[\w]{0,4}[:：]\s*(.+)\s*</[^>]*>(?:\n?```)?/ig
+          trimStrings:
+            - "**"
+          replaceString: |-
+            <style>
+            /* 专属作用域 ds- (Data Summary)，避免全局冲突 */
+            .ds-wrap {
+              border-radius: 16px;
+              border: 1px solid rgba(150, 150, 150, 0.15);
+              background: rgba(127, 127, 127, 0.08);
+              backdrop-filter: blur(24px);
+              -webkit-backdrop-filter: blur(24px);
+              box-shadow: 0 4px 20px rgba(0,0,0,0.15);
+              margin: 8px 0;
+              transition: all 0.4s ease;
+              width: 100%;
+              box-sizing: border-box;
+            }
+            .ds-wrap:hover {
+              border-color: rgba(56, 189, 248, 0.3);
+              box-shadow: 0 6px 24px rgba(56, 189, 248, 0.1), 0 8px 32px rgba(0,0,0,0.3);
+            }
+            summary::-webkit-details-marker { display: none; } 
+
+            /* 主面板头部 (适配超长标题) */
+            .ds-head {
+              display: flex;
+              align-items: center;
+              justify-content: center;
+              gap: 10px;
+              padding: 14px 16px; /* 移动端略微缩减内边距 */
+              cursor: pointer;
+              user-select: none;
+              list-style: none;
+              transition: all 0.3s;
+            }
+            details[open].ds-wrap > .ds-head { border-bottom: 1px solid rgba(150, 150, 150, 0.1); }
+            .ds-dot {
+              width: 6px;
+              height: 6px;
+              flex-shrink: 0; /* 防止原点被挤压 */
+              border-radius: 50%;
+              background: #38bdf8;
+              box-shadow: 0 0 8px rgba(56, 189, 248, 0.7);
+              animation: ds-pulse 2s infinite;
+            }
+            details[open].ds-wrap > .ds-head .ds-dot { animation: none; box-shadow: 0 0 4px rgba(56, 189, 248, 0.5); }
+            .ds-lb { 
+              font-size: 12px; 
+              font-family: Consolas, 'SF Mono', monospace; 
+              letter-spacing: 0.15em; 
+              color: rgba(56, 189, 248, 0.85); 
+              transition: color 0.3s; 
+              text-align: center;
+              word-wrap: break-word; /* 适配超长标题自动换行 */
+            }
+            .ds-wrap:hover .ds-lb { color: rgba(56, 189, 248, 1); }
+
+            /* 主面板内容区 */
+            .ds-body { padding: 16px; }
+
+            /* 元数据栏 (流式换行，完美适配手机) */
+            .ds-meta {
+              display: flex;
+              justify-content: space-between;
+              align-items: center;
+              flex-wrap: wrap; /* 空间不足时自动换行 */
+              gap: 12px;
+              padding-bottom: 16px;
+              border-bottom: 1px solid rgba(150, 150, 150, 0.1);
+              margin-bottom: 16px;
+            }
+            .ds-loc { 
+              display: flex; 
+              align-items: center; 
+              gap: 8px; 
+              color: rgba(56, 189, 248, 0.85); 
+              font-size: 13px; 
+              flex: 1 1 auto; /* 自动填充空间 */
+              min-width: 140px; 
+            }
+            .ds-loc svg { flex-shrink: 0; filter: drop-shadow(0 0 4px rgba(56, 189, 248, 0.7)); }
+            .ds-tm { 
+              display: flex; 
+              flex-direction: column; 
+              align-items: flex-end; 
+              gap: 4px; 
+              font-size: 12px; 
+              flex-shrink: 0; 
+            }
+            @media (max-width: 400px) {
+              /* 极窄屏幕下时间靠左对齐 */
+              .ds-tm { align-items: flex-start; flex-basis: 100%; } 
+              .ds-tm-l { opacity: 0; } /* 极窄时隐藏渐变线 */
+            }
+            .ds-tm-p { color: rgba(56, 189, 248, 0.85); font-family: Consolas, 'SF Mono', monospace; }
+            .ds-tm-s { color: rgba(150, 150, 150, 0.8); font-style: italic; }
+            .ds-tm-l { width: 100%; height: 1px; background: linear-gradient(to right, rgba(56, 189, 248, 0.7), transparent); opacity: 0.5; }
+
+            /* Plot 内容区 */
+            .ds-plot {
+              padding: 14px;
+              border-radius: 12px;
+              background: rgba(127, 127, 127, 0.05);
+              border-left: 3px solid #38bdf8;
+              margin-bottom: 16px;
+              font-size: 14px;
+              line-height: 1.6;
+              white-space: pre-wrap;
+              word-wrap: break-word;
+              box-shadow: inset 0 0 20px rgba(56, 189, 248, 0.03);
+            }
+
+            /* 嵌套子面板 (自适应伸缩) */
+            .ds-dr { 
+              display: flex; 
+              gap: 12px; 
+              flex-wrap: wrap; /* 核心：移动端自动单列排布 */
+            }
+            .ds-db {
+              position: relative;
+              border-radius: 12px;
+              border: 1px solid rgba(150, 150, 150, 0.15);
+              background: rgba(127, 127, 127, 0.05);
+              overflow: hidden;
+              flex: 1 1 140px; /* 宽屏平分，窄屏独占一行 */
+              max-width: 100%; /* 去除原先的 200px 限制，允许手机端撑满 */
+              transition: all 0.3s;
+            }
+            .ds-db:hover { border-color: rgba(56, 189, 248, 0.2); box-shadow: 0 0 20px rgba(56, 189, 248, 0.06); }
+            .ds-dh {
+              display: flex;
+              align-items: center;
+              justify-content: center;
+              padding: 10px;
+              cursor: pointer;
+              font-size: 12px;
+              font-family: Consolas, 'SF Mono', monospace;
+              letter-spacing: 0.15em;
+              color: rgba(150, 150, 150, 0.8);
+              user-select: none;
+              list-style: none;
+              transition: all 0.3s;
+            }
+            .ds-dh:hover { color: rgba(56, 189, 248, 0.85); }
+            details[open].ds-db > .ds-dh { border-bottom: 1px solid rgba(150, 150, 150, 0.1); color: rgba(56, 189, 248, 0.85); }
+            .ds-dc {
+              padding: 12px;
+              font-size: 13px;
+              line-height: 1.6;
+              max-height: 180px;
+              overflow-y: auto;
+              white-space: pre-wrap;
+              word-wrap: break-word;
+              scrollbar-width: thin;
+              scrollbar-color: rgba(150, 150, 150, 0.3) transparent;
+            }
+            .ds-dc::-webkit-scrollbar { width: 3px; }
+            .ds-dc::-webkit-scrollbar-thumb { background: rgba(150, 150, 150, 0.3); border-radius: 3px; }
+
+            /* 悬停解除模糊特效 */
+            .ds-blur { filter: blur(4px); opacity: 0.8; transition: all 0.3s; }
+            .ds-blur:hover { filter: blur(0); opacity: 1; }
+
+            /* 底部签名 */
+            .ds-ft {
+              display: flex;
+              justify-content: flex-end;
+              padding-top: 12px;
+              margin-top: 16px;
+              border-top: 1px solid rgba(150, 150, 150, 0.1);
+              font-size: 10px;
+              color: rgba(150, 150, 150, 0.6);
+              font-family: Consolas, 'SF Mono', monospace;
+              letter-spacing: 0.1em;
+            }
+
+            @keyframes ds-pulse {
+              0%, 100% { opacity: 1; box-shadow: 0 0 8px rgba(56, 189, 248, 0.7); }
+              50% { opacity: 0.4; box-shadow: 0 0 4px rgba(56, 189, 248, 0.3); }
+            }
+            </style>
+
+            <details class="ds-wrap">
+              <summary class="ds-head">
+                <div class="ds-dot"></div>
+                <span class="ds-lb">˹ $7 ˺ DATA SUMMARY</span>
+              </summary>
+              
+              <div class="ds-body">
+                <div class="ds-meta">
+                  <div class="ds-loc">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path><circle cx="12" cy="10" r="3"></circle></svg>
+                    <span>$3</span>
+                  </div>
+                  <div class="ds-tm">
+                    <span class="ds-tm-p">$1</span>
+                    <div class="ds-tm-l"></div>
+                    <span class="ds-tm-s">$2</span>
+                  </div>
+                </div>
+                
+                <div class="ds-plot">$5</div>
+                
+                <div class="ds-dr">
+                  <details class="ds-db">
+                    <summary class="ds-dh">CHARS</summary>
+                    <div class="ds-dc">$4</div>
+                  </details>
+                  
+                  <details class="ds-db">
+                    <summary class="ds-dh">SEEDS</summary>
+                    <div class="ds-dc ds-blur">$6</div>
+                  </details>
+                </div>
+                
+                <div class="ds-ft">— ᴘʀɪꜱᴍ//ғᴏх</div>
+              </div>
+            </details>
+          placement:
+            - 2
+          substituteRegex: 0
+          minDepth: null
+          maxDepth: null
+          markdownOnly: true
+          promptOnly: false
+        - id: c2cb3477-5b12-4dcd-a3a4-3e94eca935a9
+          scriptName: 双人成行-流光选项栏
+          禁用: false
+          runOnEdit: true
+          findRegex: /<branches>(?!.*<branches>)\s*(?:<details>.*?</summary>\s*)?(.+?)(?:</details>\s*)?</[^>]*>/is
+          trimStrings: []
+          replaceString: |-
+            ```
+            <!DOCTYPE html><html lang="zh-CN"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0"><style>
+            *{margin:0;padding:0;box-sizing:border-box}body{padding:8px 12px;margin:0;background:transparent;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Noto Sans SC",sans-serif;-webkit-font-smoothing:antialiased}.wrap{border-radius:16px;border:1px solid rgba(150,150,150,.15);background:rgba(127,127,127,.08);backdrop-filter:blur(24px);-webkit-backdrop-filter:blur(24px);box-shadow:0 8px 32px rgba(0,0,0,.15);margin:8px 0;transition:all .4s ease;width:100%;max-width:720px;color:rgba(255,255,255,.9)}.wrap:hover{border-color:rgba(56,189,248,.3);box-shadow:0 10px 40px rgba(0,0,0,.2)}.head{display:flex;align-items:center;gap:10px;padding:14px 20px;cursor:pointer;user-select:none;list-style:none;outline:none}.head::-webkit-details-marker{display:none}details[open].wrap > .head{border-bottom:1px solid rgba(150,150,150,.1)}.dot{width:8px;height:8px;border-radius:50%;background:#38bdf8;box-shadow:0 0 10px rgba(56,189,248,.8);animation:pulse 2s infinite;flex-shrink:0}details[open].wrap .dot{animation:none;box-shadow:0 0 4px rgba(56,189,248,.5)}.title{font-size:11px;font-family:Consolas,monospace;letter-spacing:.2em;text-transform:uppercase;color:rgba(56,189,248,.85)}.body{padding:16px;display:flex;flex-direction:column;gap:12px}.option-item{position:relative;width:100%;text-align:left;padding:16px 20px;border-radius:14px;overflow:hidden;border:1px solid rgba(150,150,150,.15);background:rgba(127,127,127,.05);cursor:pointer;outline:none;-webkit-tap-highlight-color:transparent;opacity:0;transform:translateY(15px);animation:flyIn .5s forwards;transition:all .3s ease}.option-item:hover{border-color:rgba(56,189,248,.4);transform:scale(1.01);box-shadow:0 8px 24px rgba(0,0,0,.15)}.option-item:active{transform:scale(.98)}.spotlight-border{pointer-events:none;position:absolute;inset:-1px;border-radius:14px;opacity:0;transition:opacity .3s}.spotlight-inner{pointer-events:none;position:absolute;inset:0;border-radius:14px;opacity:0;transition:opacity .3s}.option-item:hover .spotlight-border,.option-item:hover .spotlight-inner{opacity:1}.option-content{position:relative;z-index:2;display:flex;align-items:center;justify-content:space-between;gap:16px}.option-left{display:flex;align-items:center;gap:16px;min-width:0}.option-index{display:flex;align-items:center;justify-content:center;width:28px;height:28px;border-radius:50%;background:rgba(150,150,150,.1);border:1px solid rgba(150,150,150,.2);color:rgba(150,150,150,.8);font-size:12px;font-family:Consolas,monospace;flex-shrink:0;transition:all .3s}.option-item:hover .option-index{color:#38bdf8;border-color:rgba(56,189,248,.6);background:rgba(56,189,248,.1)}.option-text{color:inherit;font-size:14px;line-height:1.5;list-style:none}.option-arrow{flex-shrink:0;width:18px;height:18px;color:#38bdf8;opacity:0;transform:translateX(-10px);transition:all .3s}.option-item:hover .option-arrow{opacity:1;transform:translateX(0)}body.lt .wrap{background:rgba(0,0,0,.03);border-color:rgba(0,0,0,.08);box-shadow:0 4px 16px rgba(0,0,0,.05);color:rgba(0,0,0,.85)}body.lt .head{border-bottom-color:rgba(0,0,0,.08)}body.lt .option-item{background:rgba(0,0,0,.02);border-color:rgba(0,0,0,.08)}body.lt .option-item:hover{border-color:rgba(14,165,233,.4);background:rgba(14,165,233,.05)}body.lt .option-text{color:rgba(0,0,0,.85)}@keyframes flyIn{to{opacity:1;transform:translateY(0) scale(1)}}@keyframes pulse{0%,100%{opacity:1;box-shadow:0 0 10px rgba(56,189,248,.8)}50%{opacity:.4;box-shadow:0 0 4px rgba(56,189,248,.3)}}
+            @media (max-width: 600px) {
+              body { padding: 4px 8px; }
+              .head { padding: 10px 14px; }
+              .title { font-size: 10px; }
+              .body { padding: 10px; gap: 8px; }
+              .option-item { padding: 10px 14px; border-radius: 10px; }
+              .spotlight-border, .spotlight-inner { border-radius: 10px; }
+              .option-content { gap: 10px; }
+              .option-left { gap: 10px; }
+              .option-index { width: 22px; height: 22px; font-size: 11px; }
+              .option-text { font-size: 13px; }
+              .option-arrow { width: 16px; height: 16px; }
+            }
+            </style></head><body>
+            <details class="wrap" open>
+              <summary class="head"><div class="dot"></div><span class="title">Awaiting Input</span></summary>
+              <div class="body" id="ol"></div>
+            </details>
+            <div id="rd" style="display:none;">$1</div>
+            <script>
+            // 防转义核心：拆分尖括号，规避ST明文转义
+            const lt = String.fromCharCode(60);
+            const gt = String.fromCharCode(62);
+
+            document.addEventListener('DOMContentLoaded',function(){
+            function syncT(){
+            try{
+            var p=window.parent.document;
+            var el=p.querySelector('.mes_text')||p.body;
+            var c=window.parent.getComputedStyle(el).color;
+            var m=c.match(/\d+/g);
+            if(m){
+            if((parseInt(m[0])*299+parseInt(m[1])*587+parseInt(m[2])*114)/1000<128)
+            document.body.classList.add('lt');
+            else
+            document.body.classList.remove('lt')
+            }}catch(e){}}
+            syncT();
+            setInterval(syncT,500);
+            try{
+            var pDoc=window.parent.document;
+            var mesText=pDoc.querySelector('.mes_text')||pDoc.body;
+            var syncStyle=function(){
+            document.body.style.fontFamily=window.parent.getComputedStyle(mesText).fontFamily
+            };
+            syncStyle();
+            new MutationObserver(syncStyle).observe(pDoc.body,{attributes:true,attributeFilter:['data-theme','style','class']})
+            }catch(e){}
+            function H(){
+            try{
+            var f=window.frameElement;
+            if(f)f.style.height=document.body.scrollHeight+'px'
+            }catch(e){}}
+            new ResizeObserver(H).observe(document.body);
+            setTimeout(H,100);
+            document.querySelector('details').addEventListener('toggle',function(){setTimeout(H,50)});
+            var d=document.getElementById('rd'),l=document.getElementById('ol');
+            if(!d||!l)return;
+            var rawHtml=d.innerHTML;
+            var cleanStr=rawHtml.replace(/<br\s*\/?>/gi,'\n').replace(/<\/p>/gi,'\n').replace(/<\/li>/gi,'\n');
+            var tempDiv=document.createElement('div');
+            tempDiv.innerHTML=cleanStr;
+            var pureText=tempDiv.textContent||tempDiv.innerText;
+            var lines=pureText.trim().split(/\r?\n/).filter(function(x){return x.trim()});
+            lines.forEach(function(line,idx){
+            var text=line.trim().replace(/^([0-9]+[.\-、)]|[A-Z][.\-、)]|\-|\*)\s*/i,'');
+            if(!text)return;
+            var item=document.createElement('div');
+            item.className='option-item';
+            item.style.animationDelay=(idx*0.08)+'s';
+            // 关键：所有拼接HTML 用变量拆分尖括号，杜绝明文<>
+            item.innerHTML=
+            lt+'div class="spotlight-border"'+gt+
+            lt+'/div'+gt+
+            lt+'div class="spotlight-inner"'+gt+
+            lt+'/div'+gt+
+            lt+'div class="option-content"'+gt+
+              lt+'div class="option-left"'+gt+
+                lt+'div class="option-index"'+gt+(idx+1)+lt+'/div'+gt+
+                lt+'div class="option-text"'+gt+text+lt+'/div'+gt+
+              lt+'/div'+gt+
+              lt+'svg class="option-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"'+gt+
+                lt+'line x1="5" y1="12" x2="19" y2="12"'+gt+lt+'/line'+gt+
+                lt+'polyline points="12 5 19 12 12 19"'+gt+lt+'/polyline'+gt+
+              lt+'/svg'+gt+
+            lt+'/div'+gt;
+
+            item.addEventListener('mousemove',function(e){
+            var rect=item.getBoundingClientRect();
+            var x=e.clientX-rect.left;
+            var y=e.clientY-rect.top;
+            var lt=document.body.classList.contains('lt');
+            var bc=lt?'rgba(0,0,0,.06)':'rgba(255,255,255,.12)';
+            var ic=lt?'rgba(56,189,248,.12)':'rgba(56,189,248,.1)';
+            item.querySelector('.spotlight-border').style.background='radial-gradient(600px circle at '+x+'px '+y+'px,'+bc+',transparent 40%)';
+            item.querySelector('.spotlight-inner').style.background='radial-gradient(400px circle at '+x+'px '+y+'px,'+ic+',transparent 40%)'});
+            item.addEventListener('mouseleave',function(){
+            item.querySelector('.spotlight-border').style.background='';
+            item.querySelector('.spotlight-inner').style.background=''});
+            item.addEventListener('click',function(){
+            try{
+            var inp=window.parent.document.querySelector('#send_textarea');
+            var tr=window.parent.triggerSlash;
+            if(inp){
+            inp.value+=text;
+            inp.dispatchEvent(new Event('input',{bubbles:true}));
+            inp.focus()
+            }else if(tr){
+            tr('/setinput '+text)
+            }}catch(e){}});
+            l.appendChild(item)});
+            });
+            </script></body></html>
+            ```
+          placement:
+            - 2
+          substituteRegex: 0
+          minDepth: null
+          maxDepth: null
+          markdownOnly: true
+          promptOnly: false
+        - id: 2fdda326-20c8-4da7-98fb-83e9a6a31a95
+          scriptName: 双语显示
+          禁用: false
+          runOnEdit: true
+          findRegex: /(?![^<>]*>)([“"「])([^”"」]+)([”"」])\s*[（(]([^）)]+)[）)]/g
+          trimStrings: []
+          replaceString: $1<ruby>$2<rt style="font-size:0.85em;">$4</rt></ruby>$3
+          placement:
+            - 2
+          substituteRegex: 0
+          minDepth: null
+          maxDepth: null
+          markdownOnly: true
+          promptOnly: false
+        - id: 300376c7-21d1-4d7f-9a8b-a9520a40df1e
+          scriptName: 播放器
+          禁用: false
+          runOnEdit: true
+          findRegex: /<(?:角色)?状态面板>[\s\S]*?<诗词意境>\s*([\s\S]*?)\s*<\/诗词意境>[\s\S]*?<当前播放>\s*([\s\S]*?)\s*<\/当前播放>[\s\S]*?<\/(?:角色)?状态面板>/s
+          trimStrings: []
+          replaceString: |-
+            ```
+            <!DOCTYPE html><html lang="zh-CN"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0"><title>Dynamic Widget - Prism Compact Final</title><script crossorigin src="https://unpkg.com/react@18/umd/react.development.js"></script><script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script><script src="https://unpkg.com/@babel/standalone/babel.min.js"></script><script src="https://drive.baibai.cv/f/ZKEBuW/Music.js"></script><style>
+            .prism-wrapper{margin:0;padding:0;box-sizing:border-box;width:100%;display:flex;justify-content:center;padding:16px 12px;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Noto Sans SC",sans-serif;-webkit-font-smoothing:antialiased;}
+            .prism-wrapper .p-island{--spring-easing:cubic-bezier(0.19,1,0.22,1);position:relative;color:rgba(255,255,255,.9);border-radius:16px;border:1px solid rgba(150,150,150,.15);background:rgba(127,127,127,.08);backdrop-filter:blur(24px);-webkit-backdrop-filter:blur(24px);box-shadow:0 8px 32px rgba(0,0,0,.15);overflow:hidden;transition:width .6s var(--spring-easing),height .6s var(--spring-easing),border-radius .6s var(--spring-easing),border-color .4s,box-shadow .4s;--mouse-x:50%;--mouse-y:50%;z-index:50;}
+            .prism-wrapper .p-island.collapsed{width:240px;height:56px;border-radius:28px;cursor:pointer;}
+            .prism-wrapper .p-island.collapsed:hover{border-color:rgba(56,189,248,.3);box-shadow:0 6px 24px rgba(56,189,248,.1),0 8px 32px rgba(0,0,0,.3);transform:scale(1.02);}
+            .prism-wrapper .p-island.collapsed:active{transform:scale(.98);}
+            .prism-wrapper .p-island.expanded{width:340px;height:280px;cursor:default;}
+            .prism-wrapper .p-island.expanded:hover{border-color:rgba(56,189,248,.2);box-shadow:0 6px 24px rgba(56,189,248,.05),0 8px 32px rgba(0,0,0,.2);}
+            .prism-wrapper .gb{pointer-events:none;position:absolute;inset:-1px;border-radius:inherit;opacity:0;transition:opacity .3s;z-index:0;background:radial-gradient(400px circle at var(--mouse-x) var(--mouse-y),rgba(150,150,150,.2),transparent 40%);}
+            .prism-wrapper .gi{pointer-events:none;position:absolute;inset:0;border-radius:inherit;opacity:0;transition:opacity .3s;z-index:0;background:radial-gradient(300px circle at var(--mouse-x) var(--mouse-y),rgba(56,189,248,.15),transparent 40%);}
+            .prism-wrapper .p-island:hover .gb,.prism-wrapper .p-island:hover .gi{opacity:1;}
+            .prism-wrapper .capsule-content{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;gap:12px;transition:all .3s ease;z-index:10;padding:0 20px;}
+            .prism-wrapper .p-island.expanded .capsule-content{opacity:0;transform:translateY(-20px);pointer-events:none;}
+            .prism-wrapper .lb{font-size:11px;font-family:Consolas,'SF Mono','Courier New',monospace;letter-spacing:.2em;text-transform:uppercase;color:rgba(56,189,248,.85);transition:color .3s;white-space:nowrap;}
+            .prism-wrapper .p-island.collapsed:hover .lb{color:rgba(56,189,248,1);}
+            .prism-wrapper .card-content{position:absolute;inset:0;display:flex;flex-direction:column;padding:16px 20px;opacity:0;transform:translateY(20px);transition:all .5s ease .1s;pointer-events:none;z-index:10;}
+            .prism-wrapper .p-island.expanded .card-content{opacity:1;transform:translateY(0);pointer-events:auto;}
+            .prism-wrapper .meta{display:flex;justify-content:space-between;align-items:flex-start;gap:16px;padding-bottom:12px;border-bottom:1px solid rgba(150,150,150,.1);margin-bottom:12px;position:relative;z-index:30;}
+            .prism-wrapper .meta-left{display:flex;align-items:center;gap:10px;}
+            .prism-wrapper .dot{width:8px;height:8px;border-radius:50%;background:#38bdf8;box-shadow:0 0 10px rgba(56,189,248,.8);animation:pulse 2s infinite;}
+            .prism-wrapper .main-title{font-size:1.1rem;font-weight:600;letter-spacing:.1em;color:rgba(255,255,255,.9);}
+            .prism-wrapper .tg-close{font-size:9px;border:1px solid rgba(56,189,248,.3);padding:2px 8px;color:rgba(56,189,248,.7);font-family:Consolas,monospace;border-radius:4px;transition:all .3s;background:transparent;cursor:pointer;}
+            .prism-wrapper .tg-close:hover{color:rgba(56,189,248,1);border-color:rgba(56,189,248,.8);background:rgba(56,189,248,.1);}
+            .prism-wrapper .content-display-area{flex:1;display:flex;flex-direction:column;justify-content:flex-start;position:relative;z-index:20;}
+            .prism-wrapper .detail-glass-box{padding:12px 16px;border-radius:12px;background:rgba(127,127,127,.05);border-left:3px solid #38bdf8;color:rgba(255,255,255,.9);font-size:13px;line-height:1.6;box-shadow:inset 0 0 20px rgba(56,189,248,.03);animation:slideUpFade .4s cubic-bezier(.2,.8,.2,1) forwards;margin-bottom:0;}
+            .prism-wrapper .dh-title{font-size:10px;font-family:Consolas,'SF Mono',monospace;letter-spacing:.15em;color:rgba(56,189,248,.85);margin-bottom:8px;border-bottom:1px solid rgba(150,150,150,.1);padding-bottom:6px;}
+            .prism-wrapper .dr{display:flex;gap:8px;justify-content:center;flex-wrap:nowrap;border-top:1px solid rgba(150,150,150,.1);padding-top:12px;z-index:30;margin-top:auto;}
+            .prism-wrapper .dh-btn{position:relative;flex:1;text-align:center;border-radius:8px;border:1px solid rgba(150,150,150,.15);background:rgba(127,127,127,.05);padding:8px;cursor:pointer;font-size:11px;font-family:Consolas,'SF Mono',monospace;letter-spacing:.1em;color:rgba(255,255,255,.68);transition:all .3s;overflow:hidden;}
+            .prism-wrapper .dh-btn:hover{border-color:rgba(56,189,248,.2);box-shadow:0 0 15px rgba(56,189,248,.06);color:rgba(56,189,248,.85);}
+            .prism-wrapper .dh-btn.on{border-color:rgba(56,189,248,.5);background:rgba(56,189,248,.1);color:rgba(56,189,248,1);}
+            .prism-wrapper .setting-input{width:100%;background:rgba(127,127,127,.1);border:1px solid rgba(150,150,150,.2);color:#fff;padding:6px 10px;border-radius:6px;font-family:Consolas,monospace;font-size:12px;outline:none;transition:border .3s;}
+            .prism-wrapper .setting-input:focus{border-color:rgba(56,189,248,.5);box-shadow:0 0 8px rgba(56,189,248,.2);}
+            .prism-wrapper .text-desc{font-style:italic;opacity:.8;}
+            .prism-wrapper .mp-container{display:flex;align-items:center;gap:12px;}
+            .prism-wrapper .mp-vinyl-area{width:44px;height:44px;flex-shrink:0;}
+            .prism-wrapper .mp-vinyl-disc{width:100%;height:100%;border-radius:50%;background:radial-gradient(circle at center,#1a1a1a,#000);border:1px solid rgba(255,255,255,.1);animation:spin 4s linear infinite;animation-play-state:paused;position:relative;}
+            .prism-wrapper .mp-vinyl-disc.spinning{animation-play-state:running;}
+            .prism-wrapper .mp-vinyl-label{position:absolute;inset:30%;background:#38bdf8;border-radius:50%;border:1px solid #111;overflow:hidden;opacity:.8;}
+            .prism-wrapper .mp-vinyl-label img{width:100%;height:100%;object-fit:cover;}
+            .prism-wrapper .mp-interface{flex:1;display:flex;flex-direction:column;justify-content:center;gap:2px;min-width:0;}
+            .prism-wrapper .mp-title{font-size:12px;font-weight:500;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;color:rgba(255,255,255,.9);}
+            .prism-wrapper .mp-artist{font-size:10px;font-family:Consolas,monospace;opacity:.5;text-transform:uppercase;letter-spacing:.05em;color:rgba(56,189,248,.7);}
+            .prism-wrapper .mp-controls-stack{display:flex;flex-direction:column;gap:4px;margin-top:2px;}
+            .prism-wrapper .mp-time-row{font-family:Consolas,monospace;font-size:10px;color:rgba(255,255,255,.4);min-width:28px;text-align:right;}
+            .prism-wrapper input[type=range].mp-slider{-webkit-appearance:none;width:100%;background:transparent;outline:none;cursor:pointer;height:2px;}
+            .prism-wrapper input[type=range].mp-slider::-webkit-slider-runnable-track{width:100%;height:2px;background:rgba(255,255,255,.1);border-radius:1px;}
+            .prism-wrapper input[type=range].mp-slider::-webkit-slider-thumb{-webkit-appearance:none;height:8px;width:8px;border-radius:50%;background:#38bdf8;margin-top:-3px;box-shadow:0 0 8px rgba(56,189,248,.8);transition:transform .1s;}
+            .prism-wrapper input[type=range].mp-slider:hover::-webkit-slider-thumb{transform:scale(1.5);}
+            .prism-wrapper .play-btn{background:none;border:none;color:#38bdf8;cursor:pointer;opacity:.8;transition:all .2s;display:flex;align-items:center;justify-content:center;}
+            .prism-wrapper .play-btn:hover{opacity:1;filter:drop-shadow(0 0 4px rgba(56,189,248,.8));transform:scale(1.1);}
+            .prism-wrapper .play-btn svg{width:14px;height:14px;fill:currentColor;}
+            .prism-wrapper .vol-icon{width:10px;height:10px;fill:none;stroke:currentColor;stroke-width:2;flex-shrink:0;}
+            .prism-wrapper .bubble-trigger-zone{position:absolute;inset:60px 20px;z-index:15;cursor:pointer;}
+            .prism-wrapper .speech-bubble{position:absolute;padding:10px 14px;border-radius:12px;border-bottom-left-radius:2px;background:rgba(127,127,127,.15);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);border:1px solid rgba(150,150,150,.2);box-shadow:0 4px 15px rgba(0,0,0,.2);color:rgba(255,255,255,.9);font-size:12px;line-height:1.5;pointer-events:none;z-index:100;max-width:200px;animation:bubblePop .4s cubic-bezier(.34,1.56,.64,1) forwards;transform-origin:bottom left;}
+            .prism-wrapper .speech-bubble.fading{animation:bubbleDissolve 1s ease-out forwards;}
+            @keyframes slideUpFade{from{opacity:0;transform:translateY(10px);}to{opacity:1;transform:translateY(0);}}
+            @keyframes pulse{0%,100%{opacity:1;box-shadow:0 0 10px rgba(56,189,248,.8);}50%{opacity:.4;box-shadow:0 0 4px rgba(56,189,248,.3);}}
+            @keyframes spin{from{transform:rotate(0deg);}to{transform:rotate(360deg);}}
+            @keyframes bubblePop{from{opacity:0;transform:scale(.8) translateY(5px);}to{opacity:1;transform:scale(1) translateY(0);}}
+            @keyframes bubbleDissolve{0%{opacity:1;filter:blur(0px);}100%{opacity:0;filter:blur(4px);transform:translateY(-10px);}}
+            .prism-wrapper.lt{background:transparent!important;}
+            .prism-wrapper.lt .p-island{color:rgba(0,0,0,.8)!important;border-color:rgba(0,0,0,.08)!important;background:rgba(0,0,0,.03)!important;box-shadow:0 4px 16px rgba(0,0,0,.05)!important;backdrop-filter:blur(24px)!important;}
+            .prism-wrapper.lt .p-island.collapsed:hover{border-color:rgba(56,189,248,.35)!important;box-shadow:0 0 24px rgba(56,189,248,.1),0 6px 20px rgba(0,0,0,.08)!important;}
+            .prism-wrapper.lt .p-island.expanded:hover{border-color:rgba(56,189,248,.25)!important;}
+            .prism-wrapper.lt .gb{background:radial-gradient(400px circle at var(--mouse-x) var(--mouse-y),rgba(0,0,0,.06),transparent 40%)!important;}
+            .prism-wrapper.lt .gi{background:radial-gradient(300px circle at var(--mouse-x) var(--mouse-y),rgba(56,189,248,.12),transparent 40%)!important;}
+            .prism-wrapper.lt .lb{color:rgba(56,189,248,.9)!important;}
+            .prism-wrapper.lt .capsule-content{color:rgba(0,0,0,.85)!important;}
+            .prism-wrapper.lt .meta{border-bottom-color:rgba(0,0,0,.08)!important;}
+            .prism-wrapper.lt .main-title{color:rgba(0,0,0,.85)!important;}
+            .prism-wrapper.lt .tg-close{border-color:rgba(56,189,248,.4)!important;color:rgba(56,189,248,.8)!important;}
+            .prism-wrapper.lt .tg-close:hover{color:rgba(56,189,248,1)!important;background:rgba(56,189,248,.08)!important;}
+            .prism-wrapper.lt .detail-glass-box{background:rgba(0,0,0,.02)!important;color:rgba(0,0,0,.8)!important;border-left-color:rgba(56,189,248,.6)!important;}
+            .prism-wrapper.lt .dh-title{color:rgba(56,189,248,.9)!important;border-bottom-color:rgba(0,0,0,.08)!important;}
+            .prism-wrapper.lt .text-desc{color:rgba(0,0,0,.7)!important;}
+            .prism-wrapper.lt .dr{border-top-color:rgba(0,0,0,.08)!important;}
+            .prism-wrapper.lt .dh-btn{border-color:rgba(0,0,0,.08)!important;background:rgba(0,0,0,.02)!important;color:rgba(0,0,0,.5)!important;}
+            .prism-wrapper.lt .dh-btn:hover{border-color:rgba(56,189,248,.3)!important;color:rgba(56,189,248,.9)!important;}
+            .prism-wrapper.lt .dh-btn.on{border-color:rgba(56,189,248,.5)!important;background:rgba(56,189,248,.08)!important;color:rgba(56,189,248,1)!important;}
+            .prism-wrapper.lt .setting-input{background:rgba(0,0,0,.02)!important;border-color:rgba(0,0,0,.1)!important;color:rgba(0,0,0,.8)!important;}
+            .prism-wrapper.lt .setting-input:focus{border-color:rgba(56,189,248,.5)!important;}
+            .prism-wrapper.lt .mp-title{color:rgba(0,0,0,.85)!important;}
+            .prism-wrapper.lt .mp-artist{color:rgba(56,189,248,.85)!important;}
+            .prism-wrapper.lt .mp-time-row{color:rgba(0,0,0,.5)!important;}
+            .prism-wrapper.lt .mp-vinyl-disc{background:radial-gradient(circle at center,#e0e0e0,#ccc)!important;border-color:rgba(0,0,0,.15)!important;}
+            .prism-wrapper.lt input[type=range].mp-slider::-webkit-slider-runnable-track{background:rgba(0,0,0,.1)!important;}
+            .prism-wrapper.lt .speech-bubble{background:rgba(255,255,255,.85)!important;border-color:rgba(150,150,150,.2)!important;color:rgba(0,0,0,.8)!important;box-shadow:0 4px 15px rgba(0,0,0,.08)!important;}
+            </style></head><body>
+            <div class="prism-mount-point unmounted"><div class="data-poem" style="display:none;">$1</div><div class="data-song" style="display:none;">$2</div><div class="prism-wrapper"></div></div>
+            <script type="text/babel">(()=>{function syncH(){try{var f=window.frameElement;if(f)f.style.height=document.body.scrollHeight+'px'}catch(e){}}new ResizeObserver(syncH).observe(document.body);function syncT(){try{var p=window.parent.document;var el=p.querySelector('.mes_text')||p.body;var c=window.parent.getComputedStyle(el).color;var m=c.match(/\d+/g);if(m){if((parseInt(m[0])*299+parseInt(m[1])*587+parseInt(m[2])*114)/1000<128)currentMount.querySelector('.prism-wrapper').classList.add('lt');else currentMount.querySelector('.prism-wrapper').classList.remove('lt')}}catch(e){}}syncT();setInterval(()=>{syncH();syncT();},500);const mounts=document.querySelectorAll('.prism-mount-point.unmounted');if(mounts.length===0)return;const currentMount=mounts[mounts.length-1];currentMount.classList.remove('unmounted');const getTxt=(el)=>{if(!el)return'';let cln=el.innerHTML.replace(/<br\s*\/?>/gi,'\n').replace(/<\/p>/gi,'\n');let t=document.createElement('div');t.innerHTML=cln;return(t.textContent||t.innerText).trim()};const rawPoem=getTxt(currentMount.querySelector('.data-poem'));const rawSong=getTxt(currentMount.querySelector('.data-song'));const {useState,useRef,useEffect}=React;const DEFAULT_NAME="双人成行";const MusicPlayerUI=({songName,songData,isLoading,isPlaying,progress,duration,volume,onTogglePlay,onSeek,onVolumeChange})=>{const formatTime=(time)=>{if(isNaN(time))return"0:00";const min=Math.floor(time/60);const sec=Math.floor(time%60);return`${min}:${sec<10?'0':''}${sec}`};const PlayIcon=()=>(<svg viewBox="0 0 24 24"><polygon points="8,5 19,12 8,19"/></svg>);const PauseIcon=()=>(<svg viewBox="0 0 24 24"><path d="M6 4h4v16H6V4zm8 0h4v16h-4V4z"/></svg>);const IconVol=()=>(<svg className="vol-icon" viewBox="0 0 24 24"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon></svg>);if(songName.startsWith('$')){return(<div style={{fontSize:'10px',opacity:0.6,fontFamily:'Consolas',textAlign:'center',marginTop:'10px',color:'#fca5a5',letterSpacing:'0.05em'}}>[ REGEX FAILED / NO DATA ]</div>)}if(isLoading)return(<div style={{fontSize:'10px',opacity:0.6,fontFamily:'Consolas',textAlign:'center',marginTop:'10px',letterSpacing:'0.05em'}}>[ SEARCHING: {songName} ]</div>);if(!songData||!songData.Url)return(<div style={{fontSize:'10px',opacity:0.6,fontFamily:'Consolas',textAlign:'center',marginTop:'10px',color:'#fca5a5',letterSpacing:'0.05em'}}>[ NO MATCH FOUND ]</div>);return(<div className="mp-container"><div className="mp-vinyl-area"><div className={`mp-vinyl-disc ${isPlaying?'spinning':''}`}><div className="mp-vinyl-label">{songData.Cover&&<img src={songData.Cover} alt="cover"/>}</div></div></div><div className="mp-interface"><div className="mp-title">{songData.Name}</div><div className="mp-artist">{songData.Singer||'Unknown Data'}</div><div className="mp-controls-stack"><div style={{display:'flex',alignItems:'center',gap:'8px'}}><button className="play-btn" onClick={onTogglePlay}>{isPlaying?<PauseIcon/>:<PlayIcon/>}</button><input type="range" className="mp-slider" value={progress} max={duration||100} onChange={onSeek} onClick={(e)=>e.stopPropagation()} style={{flex:1}}/><div className="mp-time-row"><span>{formatTime(progress)}</span></div></div><div style={{display:'flex',alignItems:'center',gap:'6px',paddingLeft:'22px',opacity:0.6}}><IconVol/><input type="range" className="mp-slider" min="0" max="1" step="0.05" value={volume} onChange={onVolumeChange} onClick={(e)=>e.stopPropagation()} style={{width:'60px'}}/></div></div></div></div>)};const PrismWidget=()=>{const [isExpanded,setIsExpanded]=useState(false);const [activeId,setActiveId]=useState('data1');const [charName,setCharName]=useState(()=>localStorage.getItem('prism_name')||DEFAULT_NAME);const [bubbles,setBubbles]=useState([]);const audioRef=useRef(null);const [songData,setSongData]=useState(null);const [isLoading,setIsLoading]=useState(true);const [isPlaying,setIsPlaying]=useState(false);const [progress,setProgress]=useState(0);const [duration,setDuration]=useState(0);const [volume,setVolume]=useState(0.8);useEffect(()=>{try{localStorage.setItem('prism_name',charName)}catch(e){}},[charName]);useEffect(()=>{const initMusic=async()=>{let aiSong=rawSong.replace(/[《》""'']/g,'');if(aiSong&&!aiSong.startsWith('$')){try{let retries=30;while(typeof window.Music==='undefined'&&retries>0){await new Promise(r=>setTimeout(r,100));retries--;}if(typeof window.Music!=='undefined'&&window.Music.SearchMusic){const res=await window.Music.SearchMusic(aiSong);if(res&&res.Url){setSongData(res);if(audioRef.current){audioRef.current.src=res.Url;audioRef.current.load();}}}}catch(e){}}setIsLoading(false)};initMusic()},[]);useEffect(()=>{if(audioRef.current)audioRef.current.volume=volume},[volume]);useEffect(()=>{const audio=audioRef.current;if(!audio)return;const updateProgress=()=>setProgress(audio.currentTime);const setAudioDuration=()=>setDuration(audio.duration);const handleEnd=()=>setIsPlaying(false);audio.addEventListener('timeupdate',updateProgress);audio.addEventListener('loadedmetadata',setAudioDuration);audio.addEventListener('ended',handleEnd);return()=>{audio.removeEventListener('timeupdate',updateProgress);audio.removeEventListener('loadedmetadata',setAudioDuration);audio.removeEventListener('ended',handleEnd)}},[]);const togglePlay=(e)=>{if(e)e.stopPropagation();if(!audioRef.current||!songData?.Url)return;if(isPlaying){audioRef.current.pause();setIsPlaying(false)}else{const p=audioRef.current.play();if(p!==undefined){p.then(()=>setIsPlaying(true)).catch(err=>{setIsPlaying(false)})}else{setIsPlaying(true)}}};const handleSeek=(e)=>{if(audioRef.current){const newTime=Number(e.target.value);audioRef.current.currentTime=newTime;setProgress(newTime)}};const handleMouseMove=(e)=>{const rect=e.currentTarget.getBoundingClientRect();e.currentTarget.style.setProperty('--mouse-x',`${e.clientX-rect.left}px`);e.currentTarget.style.setProperty('--mouse-y',`${e.clientY-rect.top}px`)};const handleTriggerClick=(e)=>{if(!isExpanded)return;const rect=e.currentTarget.getBoundingClientRect();const text=rawPoem&&!rawPoem.startsWith('$')?rawPoem:"SYSTEM.AWAITING_INPUT();";const bId=Date.now();setBubbles(p=>{const n=[...p,{id:bId,x:e.clientX-rect.left+20,y:e.clientY-rect.top+60,text,fade:false}];return n.length>2?n.slice(-2):n});setTimeout(()=>setBubbles(p=>p.map(b=>b.id===bId?{...b,fade:true}:b)),3500);setTimeout(()=>setBubbles(p=>p.filter(b=>b.id!==bId)),4500)};const details=[{id:'data1',label:'MOOD',content:(<div><div className="dh-title">CURRENT SCENE LOG</div><div className="text-desc" style={{textAlign:'center',margin:'6px 0'}}>{rawPoem&&!rawPoem.startsWith('$')?rawPoem:"[ REGEX FAILED / NO DATA ]"}</div></div>)},{id:'data2',label:'AUDIO',content:(<div><div className="dh-title">MEDIA CORE EXTRACT</div><MusicPlayerUI songName={rawSong.replace(/[《》""'']/g,'')} songData={songData} isLoading={isLoading} isPlaying={isPlaying} progress={progress} duration={duration} volume={volume} onTogglePlay={togglePlay} onSeek={handleSeek} onVolumeChange={e=>setVolume(Number(e.target.value))}/></div>)},{id:'data3',label:'CFG',content:(<div><div className="dh-title">SYSTEM CONFIG</div><div style={{display:'flex',alignItems:'center',gap:'8px',marginTop:'12px'}}><span style={{fontFamily:'Consolas',fontSize:'10px'}}>NAME:</span><input type="text" className="setting-input" value={charName} onChange={e=>setCharName(e.target.value)}/></div></div>)}];const activeItem=details.find(d=>d.id===activeId);return(<div onClick={()=>!isExpanded&&setIsExpanded(true)} onMouseMove={handleMouseMove} className={`p-island ${isExpanded?'expanded':'collapsed'}`}><audio ref={audioRef} style={{display:'none'}}/><div className="gb"></div><div className="gi"></div>{isExpanded&&bubbles.map(b=>(<div key={b.id} className={`speech-bubble ${b.fade?'fading':''}`} style={{left:b.x,top:b.y-40}}>{b.text}</div>))}<div className="capsule-content"><div className="dot"></div><span className="lb">˹ {charName} ˺ ACTIVE</span></div><div className="card-content"><div className="bubble-trigger-zone" onClick={handleTriggerClick}></div><div className="meta"><div className="meta-left"><div className="dot"></div><div className="main-title">{charName}</div></div><button onClick={e=>{e.stopPropagation();setIsExpanded(false)}} className="tg-close">CLOSE</button></div><div className="content-display-area" onClick={e=>e.stopPropagation()}>{activeItem&&(<div className="detail-glass-box" key={activeItem.id}>{activeItem.content}</div>)}</div><div className="dr" onClick={e=>e.stopPropagation()}>{details.map((item)=>(<div key={item.id} className={`dh-btn ${activeId===item.id?'on':''}`} onClick={()=>setActiveId(item.id)}><div className="gb"></div><div className="gi"></div><span style={{position:'relative',zIndex:1}}>{item.label}</span></div>))}</div></div></div>)};const root=ReactDOM.createRoot(currentMount.querySelector('.prism-wrapper'));root.render(<PrismWidget/>)})();</script></body></html>
+            ```
+          placement:
+            - 2
+          substituteRegex: 0
+          minDepth: null
+          maxDepth: null
+          markdownOnly: true
+          promptOnly: false
+        - id: 94b1492b-f526-47b6-be20-291e92cabe14
+          scriptName: 播放器歌曲/诗句面板不发送AI
+          禁用: false
+          runOnEdit: true
+          findRegex: <状态面板>[\s\S]*?<\/状态面板>
+          trimStrings: []
+          replaceString: ""
+          placement:
+            - 1
+            - 2
+          substituteRegex: 0
+          minDepth: null
+          maxDepth: null
+          markdownOnly: false
+          promptOnly: true
+        - id: 3a9b3692-944d-45c0-9feb-9bb732473795
+          scriptName: 隐藏同人搜索内容
+          禁用: false
+          runOnEdit: true
+          findRegex: <details>\s*<summary>同人搜索内容<\/summary>[\s\S]*?<\/details>
+          trimStrings: []
+          replaceString: ""
+          placement:
+            - 2
+          substituteRegex: 0
+          minDepth: null
+          maxDepth: null
+          markdownOnly: true
+          promptOnly: false
+        - id: 3e739a01-a5fb-475f-9c10-0e25995359ab
+          scriptName: 去除html注释
+          禁用: false
+          runOnEdit: true
+          findRegex: /<!--\s*([\s\S]*?)\s*-->/g
+          trimStrings: []
+          replaceString: ""
+          placement:
+            - 2
+          substituteRegex: 0
+          minDepth: null
+          maxDepth: null
+          markdownOnly: true
+          promptOnly: true
+        - id: 76c0b796-c5d8-40b9-b7fc-ef92426f505b
+          scriptName: 清除额外
+          禁用: false
+          runOnEdit: true
+          findRegex: /<2·正文>|<3·附加>|</2·正文>|</3·附加>/g
+          trimStrings: []
+          replaceString: ""
+          placement:
+            - 2
+          substituteRegex: 0
+          minDepth: null
+          maxDepth: null
+          markdownOnly: true
+          promptOnly: true
+    MacroNest: false
+    ToolBindings: {}

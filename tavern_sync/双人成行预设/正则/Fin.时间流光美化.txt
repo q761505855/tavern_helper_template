@@ -1,0 +1,74 @@
+<style>
+/* Time Format 专属作用域 (tf-)，避免与 Prism Fox 冲突 */
+.tf-container {
+  display: flex;
+  justify-content: center;
+  width: 100%;
+  margin: 4px 0; /* 修改：将上下外边距从 8px 减小到 4px */
+}
+.tf-wrap {
+  width: fit-content;
+  min-width: 240px;
+  max-width: 100%;
+  border-radius: 16px;
+  border: 1px solid rgba(150, 150, 150, 0.15);
+  background: rgba(127, 127, 127, 0.08);
+  backdrop-filter: blur(24px);
+  -webkit-backdrop-filter: blur(24px);
+  box-shadow: 0 4px 20px rgba(0,0,0,0.15);
+  overflow: hidden;
+  transition: all 0.4s ease;
+}
+.tf-wrap:hover {
+  border-color: rgba(56, 189, 248, 0.3);
+  box-shadow: 0 6px 24px rgba(56, 189, 248, 0.1), 0 8px 32px rgba(0,0,0,0.3);
+}
+.tf-head {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 8px 12px; /* 修改：将全局 12px 改为上下 8px、左右 12px */
+  cursor: pointer;
+  user-select: none;
+  list-style: none;
+  transition: all 0.3s;
+}
+.tf-head::-webkit-details-marker { display: none; }
+details[open].tf-wrap .tf-head {
+  border-bottom: 1px solid rgba(150, 150, 150, 0.1);
+}
+.tf-title {
+  font-size: 12px;
+  color: rgba(56, 189, 248, 0.85);
+  font-family: Consolas, monospace;
+  letter-spacing: 0.15em;
+  padding: 4px 14px; /* 修改：将上下内边距从 6px 减小到 4px */
+  transition: all 0.3s;
+}
+.tf-wrap:hover .tf-title {
+  color: rgba(56, 189, 248, 1);
+  text-shadow: 0 0 12px rgba(56, 189, 248, 0.3);
+}
+.tf-body {
+  padding: 12px 16px; /* 修改：将全局 16px 改为上下 12px、左右 16px */
+  font-size: 13px;
+  line-height: 1.5;   /* 修改：将行高从 1.6 微调到 1.5 让多行文本更紧凑 */
+  max-height: 280px;
+  overflow-y: auto;
+  scrollbar-width: thin;
+  scrollbar-color: rgba(150, 150, 150, 0.3) transparent;
+  white-space: pre-wrap;
+  word-wrap: break-word; 
+}
+.tf-body::-webkit-scrollbar { width: 4px; }
+.tf-body::-webkit-scrollbar-thumb { background: rgba(150, 150, 150, 0.3); border-radius: 4px; }
+</style>
+
+<div class="tf-container">
+  <details class="tf-wrap">
+    <summary class="tf-head">
+      <span class="tf-title">✧ Time Format ✧</span>
+    </summary>
+    <div class="tf-body">$1</div>
+  </details>
+</div>

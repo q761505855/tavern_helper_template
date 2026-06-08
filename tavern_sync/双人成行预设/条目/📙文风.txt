@@ -1,0 +1,13 @@
+<style>
+# 此处为核心文风，是你写文章的重要依据，请务必遵守该风格
+{{getvar::深度写作}}
+{{getvar::文风}}
+{{getvar::正文格式要求}}
+<H-Guide>
+{{getvar::色情要求1}}
+{{getvar::色情要求2}}
+{{getvar::色情要求3}}
+{{getvar::色情要求4}}
+{{getvar::色情要求5}}
+</H-Guide>
+</style>

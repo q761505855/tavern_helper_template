@@ -1,0 +1,70 @@
+<style>
+.pf-wrap {
+  border-radius: 16px;
+  border: 1px solid rgba(150, 150, 150, 0.15);
+  background: rgba(127, 127, 127, 0.08); 
+  backdrop-filter: blur(24px);
+  -webkit-backdrop-filter: blur(24px);
+  box-shadow: 0 4px 20px rgba(0,0,0,0.15);
+  margin: 8px 0;
+  overflow: hidden;
+}
+.pf-head {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  /* 【极致压缩】底部补白直接给 0 */
+  padding: 10px 20px 0px 20px; 
+  height: 40px; /* 固定高度，确保对齐 */
+  cursor: pointer;
+  font-family: Consolas, 'SF Mono', monospace;
+  font-size: 11px;
+  letter-spacing: 0.2em;
+  color: rgba(56, 189, 248, 0.85);
+  text-transform: uppercase;
+  list-style: none;
+}
+.pf-head::-webkit-details-marker { display: none; }
+.pf-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #38bdf8;
+  box-shadow: 0 0 12px rgba(56, 189, 248, 0.7);
+}
+details[open].pf-wrap .pf-head { 
+  border-bottom: 1px solid rgba(150, 150, 150, 0.1); 
+}
+
+.pf-body {
+  /* 【极致压缩】顶部补白直接给 0 */
+  padding: 0px 20px 16px 20px; 
+  font-size: 13px;
+  line-height: 1.2;
+  max-height: 280px;
+  overflow-y: auto;
+  white-space: pre-line; 
+  word-wrap: break-word;
+}
+
+/* 【黑科技】如果变量 $1 开头有回车，这个负 margin 会把它“吸”上来 */
+.pf-body::before {
+  content: "";
+  display: block;
+  margin-top: -10px; 
+}
+
+/* 强制干掉首行内容的任何边距 */
+.pf-body > *:first-child {
+  margin-top: 0 !important;
+}
+
+@keyframes pf-pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.4; }
+}
+.pf-dot { animation: pf-pulse 2s infinite; }
+</style>
+
+<details class="pf-wrap"><summary class="pf-head"><div class="pf-dot"></div><span>ᴘʀɪꜱᴍ//ғᴏх</span></summary><div class="pf-body">$1</div></details>

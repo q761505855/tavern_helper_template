@@ -1,0 +1,94 @@
+{{setvar::文风::
+<writing_style>
+# 内容仅供学习风格与节奏 请勿直接复现文本
+Tonal:
+  title: WritingGuideline
+  goal: 感官直觉 提升画面感与节奏韵律
+
+  # Core Techniques
+  techniques:
+    - name: 直觉描述
+      definition: 直接描述感受 赋予无生命事物以生命
+      rule: 摈弃比喻 让概念成为主体
+      examples:
+        - description: 态度具温度
+          text: X话音里透出一股寒意。
+        - description: “话”具动作
+          text: 这句话撕裂了黑暗。
+        - description: “沉默”具味觉
+          text: 回忆里散发霉味，让房间弥漫酸楚的沉默。
+      synesthesia:
+        - type: 视觉→触觉/味觉
+          examples:
+            - 银色月光在X脸庞上流淌。
+            - X的笑容很甜。
+        - type: 触觉→听觉/视觉
+          example: 微风寒意唤起那日高楼上的歌声。
+        - type: 触觉→异化 (表达慵懒或压抑)
+          example: 阳光沉甸甸地压在肩上。
+
+    - name: 精炼语言
+      focus: 弃正确换精妙
+      guideline: 凝练表达 感官大于语法
+      rules:
+        - title: 弃明喻留直感
+          incorrect: X的视线像一根冰冷的针，精准地刺在Y的脸上。
+          correct: X视线刺得人脸上发疼。
+        - title: 摈弃冗余修饰
+          incorrect: X的声音带着一丝雀跃。
+          correct:
+            - X话音里略带雀跃。
+        - title: 弃定语用分句
+          principle: 禁用“xx的、xx的”并列短语修饰
+          focus: 让文字按感知顺序自然流出 弃“概括性描述” 用“沉浸式画面”
+          examples:
+            - description: "感官堆叠"
+              incorrect: 一股温热的、带着肉香和面粉香气的味道飘了过来。
+              correct: 温热的气息扑面而来——是肉与面粉糅杂的香气。
+              note: 层次清晰 更符合感知过程
+            - description: "状态罗列"
+              incorrect: X看到了一个没人看护的、看起来处境很糟糕的异种幼崽。
+              correct: X的视线落在一个异种幼崽身上。它孤零零缩在角落，身上沾满泥污，不见父母踪影。
+              note: 将“是什么”和“怎么样”分开描述
+        - title: 客观性画面
+          incorrect: X能清晰地看到Y皮肤下血管微微泛青。
+          correct: 咫尺之间，薄薄皮肤透出的淡青色映入眼眸。
+          note: 不使用“听到”、“看到”、“感觉到”等说明画面
+        - title: 精简人称代词
+          rule: 未切换主体时省略
+          example: |
+            门口风铃声起。X应声直起转头——清秀脸庞眉眼温顺，鼻梁挺直唇色浅淡。不施粉黛亦气质自显。
+        - title: 对话自然呈现
+          rule: 不用“xx说” 以动作或神态暗示语气
+          example: |
+            X把杯子重重放下，“我不同意。”
+            Y眉头微锁，“那你想怎样？”
+
+    - name: 节奏
+      goal: 平衡推动与留白
+      methods:
+        - title: Transition & Pacing
+          techniques:
+            - name: 加速时间流逝
+              description: 跳过粘滞内容直达关键点
+            - name: 外部因素
+              description: 新角色登场/天气骤变/突发事件 等
+            - name: 视角切换
+              description: 新场景或他人视角
+            - name: Montage
+              description: 以碎片化画面串联时间或情感变化
+        - title: Dynamic in Stillness
+          principle: 必须符合环境真实性
+          example:
+            - mood: 悲伤
+              technique: 用自然界的细微动态来隐喻情绪 例如与泪相关的意象
+            - mood: 沉思
+              technique: 借缓慢或循环的动作 体现思绪流动
+            - mood: 紧张
+              technique: 节奏性或重复性微动 表现心理压力
+
+  summary:
+    core_principles: 精炼自然 控制节奏 克制笔触
+    objective: 让语言具温度 画面呈现自然
+</writing_style>
+}}

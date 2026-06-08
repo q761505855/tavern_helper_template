@@ -1,0 +1,59 @@
+<载体生成法则>
+触发：剧情出现具体载体（屏幕/纸张/游戏画面/仪表/票据/招牌等）+ 角色执行查看动作（打开/凑近/盯着/展开/翻看等）。
+
+输出格式：
+<htm1fenge>
+<span style="display:none;">（一句话描述物件状态、材质、核心视觉信息与情绪基调）</span>
+<div style="width:100%;box-sizing:border-box;padding:8px;font-size:13px;word-break:break-word;">
+  <!-- 按载体类型选择渲染范式 -->
+</div>
+</htm1fenge>
+
+兼容规则：
+- 宽度只用100%或max-width:100%，禁固定px宽度
+- 子元素尺寸只用%、calc()、aspect-ratio、vw/vh
+- 仅inline CSS，禁<style>标签，禁position:fixed
+- 图片：max-width:100%;height:auto
+- 表格：width:100%;table-layout:fixed
+- 长文本加 word-break:break-word
+- 字号下限12px，避免不可读
+
+载体类型与渲染范式：
+
+▎现代屏幕UI
+- 现实平台（iOS/Android/微信/LINE/Twitter/Discord等）：复刻其品牌色、字体栈、圆角、状态栏样式，按真实布局还原
+- 虚构平台按调性区分：
+  · 黑客/终端：#000底 + #0f0或#0ff字 + monospace + 闪烁光标 + ASCII框
+  · 大众社交：高饱和渐变 + 圆角卡片 + 弹窗通知 + 大量emoji与表情
+  · 政府/企业系统：#1a3d6b或#4a5568蓝灰 + 衬线标题 + 密级标记 + 表格化布局
+  · 末日/反乌托邦：低饱和+故障glitch效果（text-shadow偏移+裁切）
+
+▎纸质载体
+- 信纸/文件：背景#f5f0e1或#e8d5b7，文字#3a2e1f，衬线字体，padding模拟页边距
+- 票据/小票：背景#eee，Courier New，dashed border模拟撕裂边
+- 旧档案：opacity:0.85 + 局部污渍（径向渐变深色斑点）+ 折痕（linear-gradient横线）
+- 印章/签名：transform:rotate(-3deg到-8deg) + 红色或蓝色 + 半透明
+- 手写体可用 cursive 或具体手写字体栈
+
+▎空间型载体（乐谱/仪表盘/地图/电路/示意图/X光片）
+- 强制使用SVG，HTML盒模型不适用
+- 仪表用<circle>+<line>+<text>组合，地图用<path>+<rect>分层
+- 保留原视觉的关键符号系统（音符头、电路符号、地图图例）
+
+通用约束：
+- 仅用inline CSS，禁<style>标签
+- 长内容（聊天记录/长文档/feed流）包 max-height:60vh;overflow-y:auto，底部加渐变遮罩；短票据/便签/单卡片不滚动
+- 至少两处沉浸细节，从以下任选：状态栏（时间/电量/信号/未读红点）、广告Banner、Cookie提示、加载失败:x:、印章、污渍、折痕、税号/编号、二维码占位、水印、扫描线、推送通知
+- 外语关键词后接小号灰色旁注：<span style="font-size:10px;color:#999;">（译文）</span>
+- 载体语言由其所在地决定（日本招牌用日语，美国小票用英语等），不强行翻译
+- 角色视角的系统语言可影响状态栏/输入法等元素
+
+兜底原则：
+- 不属于以上任何一类时，优先用SVG还原视觉本质
+- 宁可信息密度低、视觉简洁，也不堆砌错误细节
+- 当原载体的核心特征（如像素感、纸质感、品牌识别度）与通用规则冲突时，优先保住核心特征
+</载体生成法则>
+{{setvar::前端构建::
+【问题】前端构建: 
+  $(严格遵守<载体生成法则>的要求在正文内构建一个尽可能还原的内容界面)
+}}

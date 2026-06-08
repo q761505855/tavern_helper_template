@@ -1,0 +1,215 @@
+<style>
+/* 专属作用域 ds- (Data Summary)，避免全局冲突 */
+.ds-wrap {
+  border-radius: 16px;
+  border: 1px solid rgba(150, 150, 150, 0.15);
+  background: rgba(127, 127, 127, 0.08);
+  backdrop-filter: blur(24px);
+  -webkit-backdrop-filter: blur(24px);
+  box-shadow: 0 4px 20px rgba(0,0,0,0.15);
+  margin: 8px 0;
+  transition: all 0.4s ease;
+  width: 100%;
+  box-sizing: border-box;
+}
+.ds-wrap:hover {
+  border-color: rgba(56, 189, 248, 0.3);
+  box-shadow: 0 6px 24px rgba(56, 189, 248, 0.1), 0 8px 32px rgba(0,0,0,0.3);
+}
+summary::-webkit-details-marker { display: none; } 
+
+/* 主面板头部 (适配超长标题) */
+.ds-head {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  padding: 14px 16px; /* 移动端略微缩减内边距 */
+  cursor: pointer;
+  user-select: none;
+  list-style: none;
+  transition: all 0.3s;
+}
+details[open].ds-wrap > .ds-head { border-bottom: 1px solid rgba(150, 150, 150, 0.1); }
+.ds-dot {
+  width: 6px;
+  height: 6px;
+  flex-shrink: 0; /* 防止原点被挤压 */
+  border-radius: 50%;
+  background: #38bdf8;
+  box-shadow: 0 0 8px rgba(56, 189, 248, 0.7);
+  animation: ds-pulse 2s infinite;
+}
+details[open].ds-wrap > .ds-head .ds-dot { animation: none; box-shadow: 0 0 4px rgba(56, 189, 248, 0.5); }
+.ds-lb { 
+  font-size: 12px; 
+  font-family: Consolas, 'SF Mono', monospace; 
+  letter-spacing: 0.15em; 
+  color: rgba(56, 189, 248, 0.85); 
+  transition: color 0.3s; 
+  text-align: center;
+  word-wrap: break-word; /* 适配超长标题自动换行 */
+}
+.ds-wrap:hover .ds-lb { color: rgba(56, 189, 248, 1); }
+
+/* 主面板内容区 */
+.ds-body { padding: 16px; }
+
+/* 元数据栏 (流式换行，完美适配手机) */
+.ds-meta {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap; /* 空间不足时自动换行 */
+  gap: 12px;
+  padding-bottom: 16px;
+  border-bottom: 1px solid rgba(150, 150, 150, 0.1);
+  margin-bottom: 16px;
+}
+.ds-loc { 
+  display: flex; 
+  align-items: center; 
+  gap: 8px; 
+  color: rgba(56, 189, 248, 0.85); 
+  font-size: 13px; 
+  flex: 1 1 auto; /* 自动填充空间 */
+  min-width: 140px; 
+}
+.ds-loc svg { flex-shrink: 0; filter: drop-shadow(0 0 4px rgba(56, 189, 248, 0.7)); }
+.ds-tm { 
+  display: flex; 
+  flex-direction: column; 
+  align-items: flex-end; 
+  gap: 4px; 
+  font-size: 12px; 
+  flex-shrink: 0; 
+}
+@media (max-width: 400px) {
+  /* 极窄屏幕下时间靠左对齐 */
+  .ds-tm { align-items: flex-start; flex-basis: 100%; } 
+  .ds-tm-l { opacity: 0; } /* 极窄时隐藏渐变线 */
+}
+.ds-tm-p { color: rgba(56, 189, 248, 0.85); font-family: Consolas, 'SF Mono', monospace; }
+.ds-tm-s { color: rgba(150, 150, 150, 0.8); font-style: italic; }
+.ds-tm-l { width: 100%; height: 1px; background: linear-gradient(to right, rgba(56, 189, 248, 0.7), transparent); opacity: 0.5; }
+
+/* Plot 内容区 */
+.ds-plot {
+  padding: 14px;
+  border-radius: 12px;
+  background: rgba(127, 127, 127, 0.05);
+  border-left: 3px solid #38bdf8;
+  margin-bottom: 16px;
+  font-size: 14px;
+  line-height: 1.6;
+  white-space: pre-wrap;
+  word-wrap: break-word;
+  box-shadow: inset 0 0 20px rgba(56, 189, 248, 0.03);
+}
+
+/* 嵌套子面板 (自适应伸缩) */
+.ds-dr { 
+  display: flex; 
+  gap: 12px; 
+  flex-wrap: wrap; /* 核心：移动端自动单列排布 */
+}
+.ds-db {
+  position: relative;
+  border-radius: 12px;
+  border: 1px solid rgba(150, 150, 150, 0.15);
+  background: rgba(127, 127, 127, 0.05);
+  overflow: hidden;
+  flex: 1 1 140px; /* 宽屏平分，窄屏独占一行 */
+  max-width: 100%; /* 去除原先的 200px 限制，允许手机端撑满 */
+  transition: all 0.3s;
+}
+.ds-db:hover { border-color: rgba(56, 189, 248, 0.2); box-shadow: 0 0 20px rgba(56, 189, 248, 0.06); }
+.ds-dh {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 10px;
+  cursor: pointer;
+  font-size: 12px;
+  font-family: Consolas, 'SF Mono', monospace;
+  letter-spacing: 0.15em;
+  color: rgba(150, 150, 150, 0.8);
+  user-select: none;
+  list-style: none;
+  transition: all 0.3s;
+}
+.ds-dh:hover { color: rgba(56, 189, 248, 0.85); }
+details[open].ds-db > .ds-dh { border-bottom: 1px solid rgba(150, 150, 150, 0.1); color: rgba(56, 189, 248, 0.85); }
+.ds-dc {
+  padding: 12px;
+  font-size: 13px;
+  line-height: 1.6;
+  max-height: 180px;
+  overflow-y: auto;
+  white-space: pre-wrap;
+  word-wrap: break-word;
+  scrollbar-width: thin;
+  scrollbar-color: rgba(150, 150, 150, 0.3) transparent;
+}
+.ds-dc::-webkit-scrollbar { width: 3px; }
+.ds-dc::-webkit-scrollbar-thumb { background: rgba(150, 150, 150, 0.3); border-radius: 3px; }
+
+/* 悬停解除模糊特效 */
+.ds-blur { filter: blur(4px); opacity: 0.8; transition: all 0.3s; }
+.ds-blur:hover { filter: blur(0); opacity: 1; }
+
+/* 底部签名 */
+.ds-ft {
+  display: flex;
+  justify-content: flex-end;
+  padding-top: 12px;
+  margin-top: 16px;
+  border-top: 1px solid rgba(150, 150, 150, 0.1);
+  font-size: 10px;
+  color: rgba(150, 150, 150, 0.6);
+  font-family: Consolas, 'SF Mono', monospace;
+  letter-spacing: 0.1em;
+}
+
+@keyframes ds-pulse {
+  0%, 100% { opacity: 1; box-shadow: 0 0 8px rgba(56, 189, 248, 0.7); }
+  50% { opacity: 0.4; box-shadow: 0 0 4px rgba(56, 189, 248, 0.3); }
+}
+</style>
+
+<details class="ds-wrap">
+  <summary class="ds-head">
+    <div class="ds-dot"></div>
+    <span class="ds-lb">˹ $7 ˺ DATA SUMMARY</span>
+  </summary>
+  
+  <div class="ds-body">
+    <div class="ds-meta">
+      <div class="ds-loc">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path><circle cx="12" cy="10" r="3"></circle></svg>
+        <span>$3</span>
+      </div>
+      <div class="ds-tm">
+        <span class="ds-tm-p">$1</span>
+        <div class="ds-tm-l"></div>
+        <span class="ds-tm-s">$2</span>
+      </div>
+    </div>
+    
+    <div class="ds-plot">$5</div>
+    
+    <div class="ds-dr">
+      <details class="ds-db">
+        <summary class="ds-dh">CHARS</summary>
+        <div class="ds-dc">$4</div>
+      </details>
+      
+      <details class="ds-db">
+        <summary class="ds-dh">SEEDS</summary>
+        <div class="ds-dc ds-blur">$6</div>
+      </details>
+    </div>
+    
+    <div class="ds-ft">— ᴘʀɪꜱᴍ//ғᴏх</div>
+  </div>
+</details>
