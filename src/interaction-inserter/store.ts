@@ -1,5 +1,6 @@
 import {
   buildWorldbookContent,
+  collectSendableInteractionHistory,
   convertPresetToOrderedPrompts,
   normalizePresetLike,
   parseInteractionPresetJson,
@@ -150,6 +151,7 @@ const SessionSchema = z.object({
   title: z.string(),
   messages: z.array(InteractionMessageSchema).prefault([]),
   merged: z.boolean().prefault(false),
+  sendToContext: z.boolean().prefault(false),
   createdAt: z.coerce.number(),
   updatedAt: z.coerce.number(),
 });
@@ -214,6 +216,7 @@ function makeSession(mode: InteractionMode, character?: CharacterRef): Interacti
     title,
     messages: [],
     merged: false,
+    sendToContext: false,
     createdAt: now,
     updatedAt: now,
   };
@@ -227,9 +230,7 @@ function ensureActiveSession(state: ChatState): ChatState {
     state.activeSessionId = state.sessions[0].id;
     return state;
   }
-  const session = makeSession('scene');
-  state.sessions.push(session);
-  state.activeSessionId = session.id;
+  state.activeSessionId = null;
   return state;
 }
 
@@ -321,7 +322,7 @@ export const useInteractionStore = defineStore('interaction-inserter', () => {
   );
   const activePresetConfig = computed(() => ensureActivePresetConfig());
   const activePromptConfig = computed(() => ensureActivePromptConfig());
-  const canSend = computed(() => draft.value.trim().length > 0 && !isGenerating.value);
+  const canSend = computed(() => Boolean(activeSession.value) && draft.value.trim().length > 0 && !isGenerating.value);
 
   function sessionCharacterName(session: InteractionSession): string | null {
     return state.value.characters.find(character => character.id === session.characterId)?.label ?? null;
@@ -717,6 +718,13 @@ export const useInteractionStore = defineStore('interaction-inserter', () => {
     persistState();
   }
 
+  function toggleSessionSendToContext(sessionId: string) {
+    const session = state.value.sessions.find(item => item.id === sessionId);
+    if (!session) return;
+    session.sendToContext = !session.sendToContext;
+    persistState();
+  }
+
   function appendMessage(session: InteractionSession, role: MessageRole, content: string): InteractionMessage {
     const message = { id: makeId('message'), role, content, createdAt: Date.now() };
     session.messages.push(message);
@@ -870,11 +878,11 @@ export const useInteractionStore = defineStore('interaction-inserter', () => {
   }
 
   function recentInteractionPrompts(session: InteractionSession): RolePrompt[] {
-    const messages = session.messages.slice(-settings.value.historyLimit);
-    return messages.map(message => ({
-      role: message.role === 'assistant' ? 'assistant' : message.role === 'system' ? 'system' : 'user',
-      content: `${roleLabel(message.role, session)}：${message.content}`,
-    }));
+    return collectSendableInteractionHistory(state.value.sessions, session, {
+      historyLimit: settings.value.historyLimit,
+      labelMessage: (message, ownerSession) =>
+        `${roleLabel(message.role, ownerSession as InteractionSession)}：${message.content}`,
+    });
   }
 
   function buildOrderedPrompts(session: InteractionSession): (PlaceholderPrompt | RolePrompt)[] {
@@ -889,7 +897,11 @@ export const useInteractionStore = defineStore('interaction-inserter', () => {
   async function sendMessage() {
     const session = activeSession.value;
     const input = draft.value.trim();
-    if (!session || !input || isGenerating.value) return;
+    if (!session) {
+      toastr.warning('请先创建一个互动');
+      return;
+    }
+    if (!input || isGenerating.value) return;
     if (session.mode !== 'scene' && !session.characterId) {
       toastr.warning('请先为该会话选择角色');
       return;
@@ -952,6 +964,8 @@ export const useInteractionStore = defineStore('interaction-inserter', () => {
 
   function formatUnmergedMessages(): string {
     return state.value.sessions
+      .slice()
+      .sort((left, right) => left.createdAt - right.createdAt)
       .flatMap(session =>
         session.messages.length === 0 || session.merged
           ? []
@@ -1047,7 +1061,6 @@ export const useInteractionStore = defineStore('interaction-inserter', () => {
   function clearInteractionRecords() {
     state.value.sessions = [];
     state.value.activeSessionId = null;
-    state.value = ensureActiveSession(state.value);
     persistState();
   }
 
@@ -1137,6 +1150,7 @@ export const useInteractionStore = defineStore('interaction-inserter', () => {
     switchSession,
     deleteSession,
     toggleSessionMerged,
+    toggleSessionSendToContext,
     startEditingMessage,
     cancelEditingMessage,
     saveEditingMessage,

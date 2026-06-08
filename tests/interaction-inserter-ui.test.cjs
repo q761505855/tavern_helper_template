@@ -56,6 +56,16 @@ test('interaction messages expose edit and delete actions', () => {
   assert.match(appVue, /v-if="store\.editingMessageId === message\.id"/);
 });
 
+test('interaction list starts empty and sessions can be manually marked for context sending', () => {
+  assert.doesNotMatch(storeTs, /const session = makeSession\('scene'\);\s*state\.sessions\.push\(session\)/);
+  assert.match(storeTs, /sendToContext: z\.boolean\(\)\.prefault\(false\)/);
+  assert.match(storeTs, /toggleSessionSendToContext/);
+  assert.match(appVue, /session\.sendToContext \? '带入' : '不带入'/);
+  assert.match(appVue, /session\.sendToContext \? '取消带入' : '带入'/);
+  assert.match(appVue, /@click\.stop="store\.toggleSessionSendToContext\(session\.id\)"/);
+  assert.match(appVue, /暂无互动记录/);
+});
+
 test('default mode and worldbook prompts come from bundled prompt config JSON', () => {
   assert.match(storeTs, /默认提示词配置\.json/);
   assert.match(storeTs, /defaultPromptConfig\.prompts/);

@@ -7,6 +7,7 @@ const {
   buildWorldbookContent,
   buildInteractionMacros,
   convertPresetToOrderedPrompts,
+  collectSendableInteractionHistory,
   normalizePresetLike,
   parseInteractionPresetJson,
   stringifyInteractionPreset,
@@ -215,6 +216,65 @@ test('trims worldbook macro output without appending records outside the templat
   const content = buildWorldbookContent('Before\n\n{{ii_interaction_records}}\n\n', 'AI：回应');
 
   assert.equal(content, 'Before\n\nAI：回应');
+});
+
+test('collects only manually marked earlier pending interactions in creation order', () => {
+  const sessions = [
+    {
+      id: 'current',
+      createdAt: 300,
+      merged: false,
+      sendToContext: false,
+      messages: [{ role: 'user', content: '执行操作' }],
+    },
+    {
+      id: 'unmarked',
+      createdAt: 100,
+      merged: false,
+      sendToContext: false,
+      messages: [{ role: 'assistant', content: '不要带上' }],
+    },
+    {
+      id: 'marked-later-than-current',
+      createdAt: 400,
+      merged: false,
+      sendToContext: true,
+      messages: [{ role: 'assistant', content: '未来互动' }],
+    },
+    {
+      id: 'marked-second',
+      createdAt: 200,
+      merged: false,
+      sendToContext: true,
+      messages: [{ role: 'assistant', content: '角色B建议先谈判' }],
+    },
+    {
+      id: 'marked-first',
+      createdAt: 50,
+      merged: false,
+      sendToContext: true,
+      messages: [{ role: 'user', content: '是否杀死角色A' }],
+    },
+    {
+      id: 'merged',
+      createdAt: 25,
+      merged: true,
+      sendToContext: true,
+      messages: [{ role: 'assistant', content: '已合并不要带上' }],
+    },
+  ];
+
+  const history = collectSendableInteractionHistory(sessions, sessions[0], {
+    historyLimit: 20,
+    labelMessage: message => `${message.role}:${message.content}`,
+  });
+
+  assert.deepEqual(history, [
+    { role: 'system', content: '以下是玩家手动标记要带入本轮生成的待合并互动记录，按创建时间从早到晚排列。' },
+    { role: 'user', content: '[前置互动 1]\nuser:是否杀死角色A' },
+    { role: 'user', content: '[前置互动 2]\nassistant:角色B建议先谈判' },
+    { role: 'user', content: '[当前互动]\nuser:执行操作' },
+  ]);
 });
 
 test('parses and preserves real SillyTavern preset shape', () => {

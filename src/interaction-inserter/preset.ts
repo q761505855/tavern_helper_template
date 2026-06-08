@@ -67,6 +67,19 @@ export type WorldbookMacroInput = {
   interactionRecords: string;
 };
 
+export type InteractionHistoryMessage = {
+  role: 'user' | 'assistant' | 'system';
+  content: string;
+};
+
+export type SendableInteractionSession = {
+  id: string;
+  createdAt: number;
+  merged: boolean;
+  sendToContext?: boolean;
+  messages: InteractionHistoryMessage[];
+};
+
 const PLACEHOLDER_IDENTIFIER_MAP: Record<string, InteractionPlaceholderPrompt> = {
   worldInfoBefore: 'world_info_before',
   personaDescription: 'persona_description',
@@ -95,6 +108,49 @@ export function buildWorldbookMacros(input: WorldbookMacroInput): Record<string,
 
 export function buildWorldbookContent(template: string, interactionRecords: string): string {
   return expandInteractionMacros(template, buildWorldbookMacros({ interactionRecords })).trim();
+}
+
+export function collectSendableInteractionHistory(
+  sessions: SendableInteractionSession[],
+  currentSession: SendableInteractionSession,
+  options: {
+    historyLimit: number;
+    labelMessage: (message: InteractionHistoryMessage, session: SendableInteractionSession) => string;
+  },
+): InteractionRolePrompt[] {
+  const earlierSessions = sessions
+    .filter(
+      session =>
+        session.id !== currentSession.id &&
+        session.sendToContext === true &&
+        session.merged !== true &&
+        session.messages.length > 0 &&
+        session.createdAt < currentSession.createdAt,
+    )
+    .sort((left, right) => left.createdAt - right.createdAt);
+  const currentMessages = currentSession.messages.slice(-options.historyLimit);
+
+  const history: InteractionRolePrompt[] = [];
+  if (earlierSessions.length > 0) {
+    history.push({
+      role: 'system',
+      content: '以下是玩家手动标记要带入本轮生成的待合并互动记录，按创建时间从早到晚排列。',
+    });
+  }
+
+  earlierSessions.forEach((session, index) => {
+    history.push({
+      role: 'user',
+      content: [`[前置互动 ${index + 1}]`, ...session.messages.map(message => options.labelMessage(message, session))].join('\n'),
+    });
+  });
+
+  history.push({
+    role: 'user',
+    content: ['[当前互动]', ...currentMessages.map(message => options.labelMessage(message, currentSession))].join('\n'),
+  });
+
+  return history.filter(item => item.content.trim().length > 0);
 }
 
 export function convertPresetToOrderedPrompts(
