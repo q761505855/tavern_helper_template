@@ -56,26 +56,91 @@
       "injection_depth": 4,
       "injection_order": 100,
       "role": "system",
-      "content": "---\n输出格式:\n  默认格式: |-\n    角色名:\n    (短动作、表情、语气或可选心理)“角色台词。”\n  格式要求:\n    - 每个说话人单独成块。\n    - 角色名后使用中文冒号或英文冒号均可，但同一回复内保持一致。\n    - 台词使用引号，动作、表情、语气、心理使用括号。\n    - 不输出 Markdown 代码块、标题、列表、旁注、元信息或“以下是回复”。\n    - 不输出“AI:”或“助手:”这类非角色名。\n  篇幅控制:\n    - 通常输出 1 到 3 个角色块。\n    - 每个角色块以 1 到 3 句台词为宜。\n    - 当下场景可稍多角色，一对一聚焦单一角色，远程通信优先简洁。\n    - 不为凑字数增加无意义的环境描写。\n  示例:\n    - |-\n      角色A:\n      (脸色一红)“你突然这么说，我会不知道怎么接的。”\n    - |-\n      角色B:\n      “等等，这件事我也听见了。” \n      (他把杯子放下，语气压低了一点)“你最好从头说。”",
+      "content": "---\n输出格式:\n  默认格式: |-\n    (短动作、表情、语气或可选心理)“角色台词。”\n  格式要求:\n    - 当下场景模式允许多人回应；每个说话人单独成块，并在块首保留“角色名:”以区分说话人。\n    - 一对一模式和远程通信模式不要输出“角色名:”“角色名：”这类块首前缀；界面已经显示当前角色名。\n    - 台词使用引号，动作、表情、语气、心理使用括号。\n    - 不输出 Markdown 代码块、标题、列表、旁注、元信息或“以下是回复”。\n    - 不输出“AI:”或“助手:”这类非角色名；一对一/远程通信也不输出当前角色名作为独立行。\n  篇幅控制:\n    - 通常输出 1 到 3 个角色块。\n    - 每个角色块以 1 到 3 句台词为宜。\n    - 当下场景可稍多角色，一对一聚焦单一角色，远程通信优先简洁。\n    - 不为凑字数增加无意义的环境描写。\n  示例:\n    当下场景: |-\n      角色A:\n      (脸色一红)“你突然这么说，我会不知道怎么接的。”\n      角色B:\n      “等等，这件事我也听见了。” \n      (把杯子放下，语气压低了一点)“你最好从头说。”\n    一对一或远程通信: |-\n      (脸色一红，视线短暂移开)“你突然这么说，我会不知道怎么接的。”",
       "system_prompt": false,
       "marker": false,
       "forbid_overrides": false
     },
     {
       "identifier": "3",
-      "name": "🧭人称与控制权",
+      "name": "🧭旁白人称：跟随主剧情",
       "enabled": true,
       "injection_position": 0,
       "injection_depth": 4,
       "injection_order": 100,
       "role": "system",
-      "content": "---\n人称与控制权:\n  玩家控制权:\n    - <user>的台词、决定、动作选择、内心活动、感官体验完全归用户所有。\n    - 禁止替<user>说话。\n    - 禁止替<user>决定下一步行动。\n    - 禁止描写<user>没有输入过的心理、欲望、疼痛、感受或态度。\n  允许的玩家引用:\n    - 角色对白中可以自然称呼玩家为“你”。\n    - 可以承接玩家刚刚明确输入的动作或台词。\n    - 可以写角色对玩家可见行为的即时反应。\n    - 可以写角色造成的即时结果，但不能把结果扩展成玩家的新选择。\n  人称纪律:\n    - 输出以角色名分块，不使用长篇旁白视角。\n    - 非对白描写尽量写成括号内的舞台提示，不强行使用“我/你/他/她”叙事。\n    - 角色在对白里自称应符合角色设定和当前语言习惯。\n    - 多角色出现时，每个角色的说话人必须清楚。\n  禁止混乱:\n    - 不要一会儿把玩家称作“你”，一会儿又把玩家写成“他/她”。\n    - 不要把角色心理误写成玩家心理。\n    - 不要把旁白写成玩家第一人称。\n    - 不要让非玩家角色突然知道他们不可能从现场、通信或已有记录中知道的信息，除非该信息来自用户侧允许的心理开关。",
+      "content": "{{setvar::互动插入器旁白人称::\n  旁白人称设定:\n    模式: 跟随主剧情\n    核心要求: 互动插入器中的动作、表情、心理等括号旁白，应沿用主剧情最近稳定使用的叙事视角和玩家指代方式。\n    适用场景: 默认选项。主剧情使用第一人称就写“我”，主剧情使用第二人称就写“你”，主剧情使用第三人称就写<user>名或合适第三人称。\n    注意: 这只约束括号旁白中对<user>的指代；角色对白仍按现场关系和说话对象自然称呼。\n}}\n",
       "system_prompt": false,
       "marker": false,
       "forbid_overrides": false
     },
     {
       "identifier": "4",
+      "name": "🕐旁白人称：第一人称",
+      "enabled": false,
+      "injection_position": 0,
+      "injection_depth": 4,
+      "injection_order": 100,
+      "role": "system",
+      "content": "{{setvar::互动插入器旁白人称::\n  旁白人称设定:\n    模式: 第一人称\n    核心要求: 互动插入器中的动作、表情、心理等括号旁白，以<user>作为第一人称观察点，使用“我”指代<user>。\n    参考示例: “(红肿的眼睛湿漉漉地看着我)” / “(声音很轻，像是在向我确认最后一点勇气)”\n    注意: 这只约束括号旁白中对<user>的指代；角色对白仍按现场关系和说话对象自然称呼。\n}}\n",
+      "system_prompt": false,
+      "marker": false,
+      "forbid_overrides": false
+    },
+    {
+      "identifier": "5",
+      "name": "🕑旁白人称：第二人称",
+      "enabled": false,
+      "injection_position": 0,
+      "injection_depth": 4,
+      "injection_order": 100,
+      "role": "system",
+      "content": "{{setvar::互动插入器旁白人称::\n  旁白人称设定:\n    模式: 第二人称\n    核心要求: 互动插入器中的动作、表情、心理等括号旁白，使用“你”指代<user>。\n    参考示例: “(红肿的眼睛湿漉漉地看着你)” / “(声音很轻，像是在向你确认最后一点勇气)”\n    注意: 这只约束括号旁白中对<user>的指代；角色对白仍按现场关系和说话对象自然称呼。\n}}\n",
+      "system_prompt": false,
+      "marker": false,
+      "forbid_overrides": false
+    },
+    {
+      "identifier": "6",
+      "name": "🕒旁白人称：第三人称",
+      "enabled": false,
+      "injection_position": 0,
+      "injection_depth": 4,
+      "injection_order": 100,
+      "role": "system",
+      "content": "{{setvar::互动插入器旁白人称::\n  旁白人称设定:\n    模式: 第三人称\n    核心要求: 互动插入器中的动作、表情、心理等括号旁白，使用<user>名、玩家角色名或合适第三人称指代<user>。\n    参考示例: “(红肿的眼睛湿漉漉地看着他)” / “(声音很轻，像是在向<user>确认最后一点勇气)”\n    注意: 这只约束括号旁白中对<user>的指代；角色对白仍按现场关系和说话对象自然称呼。\n}}\n",
+      "system_prompt": false,
+      "marker": false,
+      "forbid_overrides": false
+    },
+    {
+      "identifier": "7",
+      "name": "🧭旁白人称设定",
+      "enabled": true,
+      "injection_position": 0,
+      "injection_depth": 4,
+      "injection_order": 100,
+      "role": "system",
+      "content": "---\n旁白人称设定:\n  当前设定: |-\n    {{getvar::互动插入器旁白人称}}\n  使用方式:\n    - 上方“🧭旁白人称：跟随主剧情 / 🕐旁白人称：第一人称 / 🕑旁白人称：第二人称 / 🕒旁白人称：第三人称”是单选开关项。\n    - 默认启用“跟随主剧情”。如果需要固定人称，请只启用其中一个具体人称条目。\n    - 该设定只控制括号旁白中如何指代<user>，不改变角色对白中的自然称呼。\n  旁白边界:\n    - 即使旁白使用第一人称或第二人称，也不能替<user>新增台词、决定、动作选择、心理、欲望、疼痛、感受或态度。\n    - 可以描写角色看向<user>、靠近<user>、回应<user>已经输入的动作或话语。\n    - 不要为了套用人称而把角色动作写成<user>动作。",
+      "system_prompt": false,
+      "marker": false,
+      "forbid_overrides": false
+    },
+    {
+      "identifier": "8",
+      "name": "🧭人称与控制权",
+      "enabled": true,
+      "injection_position": 0,
+      "injection_depth": 4,
+      "injection_order": 100,
+      "role": "system",
+      "content": "---\n人称与控制权:\n  玩家控制权:\n    - <user>的台词、决定、动作选择、内心活动、感官体验完全归用户所有。\n    - 禁止替<user>说话。\n    - 禁止替<user>决定下一步行动。\n    - 禁止描写<user>没有输入过的心理、欲望、疼痛、感受或态度。\n  允许的玩家引用:\n    - 角色对白中对玩家的称呼必须依照角色目前所在场景、关系和说话对象决定。\n    - 一对一或明显面对<user>说话时，角色对白通常应自然称呼玩家为“你”。\n    - 多人对话中，角色可能转向第三方谈及<user>；此时可以根据语境使用“他/她”、<user>名或其他当前合理称呼。\n    - 可以承接玩家刚刚明确输入的动作或台词。\n    - 可以写角色对玩家可见行为的即时反应。\n    - 可以写角色造成的即时结果，但不能把结果扩展成玩家的新选择。\n  人称纪律:\n    - 当下场景多人回应时，以角色名分块；一对一和远程通信不输出当前角色名块首。\n    - 非对白描写尽量写成括号内的舞台提示，不使用长篇旁白视角。\n    - 描写当前说话角色的动作、表情、声音、心理时，避免使用“他/她/角色名”作为主语；应写成当前角色主位的短句。\n    - 例如写“(缓缓抬起头，红肿的眼睛湿漉漉地看着我)”和“(声音很轻，带着一丝无法置信的颤抖)”，不要写“(她缓缓抬起头)”或“(她的声音很轻)”。\n    - 角色在对白里自称应符合角色设定和当前语言习惯。\n    - 多角色出现时，每个角色的说话人必须清楚。\n  禁止混乱:\n    - 不要一会儿把玩家称作“你”，一会儿又把玩家写成“他/她”。\n    - 不要把角色心理误写成玩家心理。\n    - 旁白中对玩家的人称必须遵守“旁白人称设定”条目；未开启具体人称时跟随主剧情。\n    - 不要让非玩家角色突然知道他们不可能从现场、通信或已有记录中知道的信息，除非该信息来自用户侧允许的心理开关。",
+      "system_prompt": false,
+      "marker": false,
+      "forbid_overrides": false
+    },
+    {
+      "identifier": "9",
       "name": "💬对白质感",
       "enabled": true,
       "injection_position": 0,
@@ -88,7 +153,7 @@
       "forbid_overrides": false
     },
     {
-      "identifier": "5",
+      "identifier": "10",
       "name": "🎭动作表情控制",
       "enabled": true,
       "injection_position": 0,
@@ -101,7 +166,7 @@
       "forbid_overrides": false
     },
     {
-      "identifier": "6",
+      "identifier": "11",
       "name": "🧠角色心理开关",
       "enabled": false,
       "injection_position": 0,
@@ -114,7 +179,7 @@
       "forbid_overrides": false
     },
     {
-      "identifier": "7",
+      "identifier": "12",
       "name": "🧩模式协同规则",
       "enabled": true,
       "injection_position": 0,
@@ -187,7 +252,7 @@
       "forbid_overrides": false
     },
     {
-      "identifier": "8",
+      "identifier": "13",
       "name": "增强角色定义",
       "enabled": false,
       "injection_position": 0,
@@ -200,7 +265,7 @@
       "forbid_overrides": false
     },
     {
-      "identifier": "9",
+      "identifier": "14",
       "name": "辅助提示词",
       "enabled": true,
       "injection_position": 0,
@@ -243,7 +308,7 @@
       "forbid_overrides": false
     },
     {
-      "identifier": "10",
+      "identifier": "15",
       "name": "互动插入器：当前模式提示词",
       "enabled": true,
       "injection_position": 0,
@@ -256,7 +321,7 @@
       "forbid_overrides": false
     },
     {
-      "identifier": "11",
+      "identifier": "16",
       "name": "互动插入器：上下文提示词",
       "enabled": true,
       "injection_position": 0,
@@ -269,7 +334,7 @@
       "forbid_overrides": false
     },
     {
-      "identifier": "12",
+      "identifier": "17",
       "name": "互动插入器：互动记录",
       "enabled": true,
       "injection_position": 0,
@@ -287,7 +352,7 @@
       "forbid_overrides": false
     },
     {
-      "identifier": "13",
+      "identifier": "18",
       "name": "互动插入器：用户输入",
       "enabled": true,
       "injection_position": 0,
@@ -305,7 +370,7 @@
       "forbid_overrides": false
     },
     {
-      "identifier": "14",
+      "identifier": "19",
       "name": "🛑后置约束",
       "enabled": true,
       "injection_position": 0,
@@ -340,11 +405,11 @@
         },
         {
           "identifier": "4",
-          "enabled": true
+          "enabled": false
         },
         {
           "identifier": "5",
-          "enabled": true
+          "enabled": false
         },
         {
           "identifier": "6",
@@ -352,6 +417,26 @@
         },
         {
           "identifier": "7",
+          "enabled": true
+        },
+        {
+          "identifier": "8",
+          "enabled": true
+        },
+        {
+          "identifier": "9",
+          "enabled": true
+        },
+        {
+          "identifier": "10",
+          "enabled": true
+        },
+        {
+          "identifier": "11",
+          "enabled": false
+        },
+        {
+          "identifier": "12",
           "enabled": true
         },
         {
@@ -375,11 +460,11 @@
           "enabled": true
         },
         {
-          "identifier": "8",
+          "identifier": "13",
           "enabled": false
         },
         {
-          "identifier": "9",
+          "identifier": "14",
           "enabled": true
         },
         {
@@ -395,23 +480,23 @@
           "enabled": true
         },
         {
-          "identifier": "10",
+          "identifier": "15",
           "enabled": true
         },
         {
-          "identifier": "11",
+          "identifier": "16",
           "enabled": true
         },
         {
-          "identifier": "12",
+          "identifier": "17",
           "enabled": true
         },
         {
-          "identifier": "13",
+          "identifier": "18",
           "enabled": true
         },
         {
-          "identifier": "14",
+          "identifier": "19",
           "enabled": true
         }
       ]
