@@ -105,5 +105,19 @@
     "vue3-pixi": "1.0.0-beta.3",
     "yaml": "^2.9.0",
     "zod": "^4.4.3"
+<<<<<<< HEAD
+=======
+  },
+  "pnpm": {
+    "onlyBuiltDependencies": [
+      "@parcel/watcher",
+      "@tailwindcss/oxide",
+      "electron",
+      "esbuild",
+      "javascript-obfuscator",
+      "unrs-resolver",
+      "vue-demi"
+    ]
+>>>>>>> fdfcbc5386747889d0b011123d4dde6612c67d1b
   }
 }

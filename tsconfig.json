@@ -12,6 +12,10 @@
     "target": "ESNext",
     "module": "ESNext",
     "outDir": "dist",
+<<<<<<< HEAD
+=======
+    "baseUrl": ".",
+>>>>>>> fdfcbc5386747889d0b011123d4dde6612c67d1b
     "paths": {
       "@util/*": [
         "./util/*"
@@ -22,7 +26,10 @@
     },
     "moduleDetection": "auto",
     "moduleResolution": "bundler",
+<<<<<<< HEAD
     "resolveJsonModule": true,
+=======
+>>>>>>> fdfcbc5386747889d0b011123d4dde6612c67d1b
     "allowUmdGlobalAccess": true,
     "allowSyntheticDefaultImports": true,
     "strictBindCallApply": true,
@@ -43,7 +50,10 @@
     "初始模板",
     "示例",
     "src",
+<<<<<<< HEAD
     "tavern_sync",
+=======
+>>>>>>> fdfcbc5386747889d0b011123d4dde6612c67d1b
     "util",
     "*.d.ts",
   ],
