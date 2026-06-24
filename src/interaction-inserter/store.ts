@@ -16,6 +16,9 @@ import defaultPromptConfig from '../../tavern_sync/互动插入器预设/默认�
 type MessageRole = 'user' | 'assistant' | 'system';
 
 const FIXED_ENTRY_NAME = '本轮互动内容';
+// 条目名中包含该标识符(大小写不敏感)的世界书条目, 在向 AI 发送互动消息时会被临时禁用, 生成结束后恢复.
+// 用法: 在酒馆世界书面板把要过滤的条目标题改成包含 [ii-skip] 即可, 例如 "场景设定 [ii-skip]".
+const WORLDBOOK_SKIP_MARKER = '[ii-skip]';
 const SCRIPT_VARIABLE_KEY = 'interactionInserterSettings';
 const CHAT_VARIABLE_KEY = 'interactionInserter';
 const DEFAULT_PRESET_CONFIG_ID = 'default-preset';
@@ -944,7 +947,9 @@ export const useInteractionStore = defineStore('interaction-inserter', () => {
       applyStreamText(text);
     });
 
+    let suppressedWorldbookEntries: { worldbookName: string; uids: number[] }[] = [];
     try {
+      suppressedWorldbookEntries = await suppressSkippedWorldbookEntries();
       const result = await generateRaw({
         generation_id: generationId,
         user_input: input,
@@ -961,6 +966,7 @@ export const useInteractionStore = defineStore('interaction-inserter', () => {
       persistState();
       throw error;
     } finally {
+      await restoreSuppressedWorldbookEntries(suppressedWorldbookEntries);
       incrementalStreamListener.stop();
       fullStreamListener.stop();
       isGenerating.value = false;
@@ -1004,6 +1010,82 @@ export const useInteractionStore = defineStore('interaction-inserter', () => {
 
   function makeWorldbookContent(rawInteraction: string): string {
     return buildWorldbookContent(activePromptConfig.value.worldbookTemplate, rawInteraction.trim());
+  }
+
+  // 收集本次生成会生效的所有世界书 (角色 primary + additional、全局、当前聊天), 去重.
+  function collectActiveWorldbookNames(): string[] {
+    const names = new Set<string>();
+    try {
+      const charWorldbooks = getCharWorldbookNames('current');
+      if (charWorldbooks.primary) names.add(charWorldbooks.primary);
+      charWorldbooks.additional?.forEach(name => name && names.add(name));
+    } catch {
+      /* 角色未绑定世界书时忽略 */
+    }
+    try {
+      getGlobalWorldbookNames().forEach(name => name && names.add(name));
+    } catch {
+      /* 无全局世界书时忽略 */
+    }
+    try {
+      const chatWorldbook = getChatWorldbookName('current');
+      if (chatWorldbook) names.add(chatWorldbook);
+    } catch {
+      /* 无聊天世界书时忽略 */
+    }
+    return [...names];
+  }
+
+  function hasSkipMarker(name: string): boolean {
+    return name.toLowerCase().includes(WORLDBOOK_SKIP_MARKER);
+  }
+
+  // 临时禁用所有带 WORLDBOOK_SKIP_MARKER 标识的已启用条目, 返回被禁用条目的句柄, 供生成结束后恢复.
+  async function suppressSkippedWorldbookEntries(): Promise<{ worldbookName: string; uids: number[] }[]> {
+    const suppressed: { worldbookName: string; uids: number[] }[] = [];
+    for (const worldbookName of collectActiveWorldbookNames()) {
+      const uids: number[] = [];
+      try {
+        await updateWorldbookWith(
+          worldbookName,
+          worldbook => {
+            for (const entry of worldbook) {
+              if (entry.enabled && hasSkipMarker(entry.name)) {
+                entry.enabled = false;
+                uids.push(entry.uid);
+              }
+            }
+            return worldbook;
+          },
+          { render: 'debounced' },
+        );
+      } catch {
+        /* 某本世界书读取/更新失败时跳过, 不阻塞生成 */
+      }
+      if (uids.length > 0) suppressed.push({ worldbookName, uids });
+    }
+    return suppressed;
+  }
+
+  // 恢复 suppressSkippedWorldbookEntries 临时禁用的条目. 必须在生成的 finally ��调用, 防止中断导致条目被永久禁用.
+  async function restoreSuppressedWorldbookEntries(suppressed: { worldbookName: string; uids: number[] }[]): Promise<void> {
+    for (const { worldbookName, uids } of suppressed) {
+      const uidSet = new Set(uids);
+      try {
+        await updateWorldbookWith(
+          worldbookName,
+          worldbook => {
+            for (const entry of worldbook) {
+              if (uidSet.has(entry.uid)) entry.enabled = true;
+            }
+            return worldbook;
+          },
+          { render: 'debounced' },
+        );
+      } catch {
+        /* 恢复失败仅记录, 不再抛出 */
+      }
+    }
   }
 
   async function upsertInteractionEntry(content: string): Promise<boolean> {
