@@ -1,5 +1,6 @@
 import { createScriptIdDiv, teleportStyle } from '@util/script';
 import App from './App.vue';
+import { ensureInteractionRecordsDisplayRegex, removeInteractionRecordsDisplayRegex } from './regex';
 import './style.scss';
 
 const BUTTON_NAME = '打开互动工作台';
@@ -52,6 +53,7 @@ function appendExtensionsMenuItem(): number | undefined {
 
 function init() {
   appendInexistentScriptButtons([{ name: BUTTON_NAME, visible: true }]);
+  void ensureInteractionRecordsDisplayRegex();
   const menuRetryTimeout = appendExtensionsMenuItem();
 
   const $host = createScriptIdDiv().appendTo('body');
@@ -68,6 +70,7 @@ function init() {
     if (menuRetryTimeout !== undefined) {
       window.clearTimeout(menuRetryTimeout);
     }
+    void removeInteractionRecordsDisplayRegex();
     $(`#${MENU_ITEM_ID}`).off(MENU_EVENT_NAMESPACE);
     $(`#${MENU_ITEM_CONTAINER_ID}`).remove();
     app.unmount();
