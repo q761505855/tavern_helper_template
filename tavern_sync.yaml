@@ -1,7 +1,11 @@
 # yaml-language-server: $schema=https://testingcf.jsdelivr.net/gh/StageDog/tavern_sync/dist/schema/settings.zh.json
 
 # 在此填入 user 名称, 提示词中如果有这个名字则会被替换成 <user> 宏
+<<<<<<< HEAD
 user名称: 冷阳
+=======
+user名称: 青空黎
+>>>>>>> 554b225f1325def871e7754811cd8f71ba9a8169
 
 # 在此填入新的"角色卡"、"世界书"或"预设"配置
 配置:
@@ -25,6 +29,7 @@ user名称: 冷阳
     # 当使用打包功能 `node tavern_sync.mjs bundle 配置名称` 直接生成"角色卡"、"世界书"或"预设"文件时, 要将它存放在哪个文件中
     # 你也可以直接删去下面一行不填, 则默认会导出到本地文件路径的同目录下
     导出文件路径: 示例/角色卡示例/角色卡示例
+<<<<<<< HEAD
   互动插入器预设:
     类型: 预设
     酒馆中的名称: 互动插入器预设
@@ -35,3 +40,5 @@ user名称: 冷阳
     酒馆中的名称: 双人成行小米特供—谁他妈玩小米啊
     本地文件路径: tavern_sync/双人成行预设/双人成行预设
     导出文件路径: tavern_sync/双人成行预设/双人成行预设
+=======
+>>>>>>> 554b225f1325def871e7754811cd8f71ba9a8169
