@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 # Dependencies
 node_modules/
 .pnpm-store/
@@ -15,12 +16,20 @@ coverage/
 Thumbs.db
 
 # Logs
+=======
+node_modules
+
+.DS_Store
+Thumbs.db
+
+>>>>>>> b6c722413d8cfdaf014bbb3f87518fd8c19754be
 *.log
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
 pnpm-debug.log*
 
+<<<<<<< HEAD
 # Generated declarations
 auto-imports.d.ts
 components.d.ts
@@ -43,3 +52,7 @@ openspec/**/build/
 .kilocode/workflows/
 .roo/commands/
 .roo/skills/
+=======
+auto-imports.d.ts
+components.d.ts
+>>>>>>> b6c722413d8cfdaf014bbb3f87518fd8c19754be
