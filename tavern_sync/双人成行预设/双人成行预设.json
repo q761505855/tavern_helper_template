@@ -3893,7 +3893,7 @@
               "groups": [
                 {
                   "id": "c7291bee-ff0e-4493-ae80-bdb453e4c981",
-                  "name": "思维链",
+                  "name": "reasoning",
                   "enabled": true,
                   "collapsed": false,
                   "linkedPromptIds": [],
@@ -4047,7 +4047,7 @@
                 "groups": [
                   {
                     "id": "c7291bee-ff0e-4493-ae80-bdb453e4c981",
-                    "name": "思维链",
+                    "name": "reasoning",
                     "enabled": true,
                     "collapsed": false,
                     "linkedPromptIds": [],
@@ -4205,7 +4205,7 @@
                 "groups": [
                   {
                     "id": "c7291bee-ff0e-4493-ae80-bdb453e4c981",
-                    "name": "思维链",
+                    "name": "reasoning",
                     "enabled": true,
                     "collapsed": false,
                     "linkedPromptIds": [],
@@ -4360,7 +4360,7 @@
                 "groups": [
                   {
                     "id": "c7291bee-ff0e-4493-ae80-bdb453e4c981",
-                    "name": "思维链",
+                    "name": "reasoning",
                     "enabled": true,
                     "collapsed": false,
                     "linkedPromptIds": [],
@@ -4515,7 +4515,7 @@
                 "groups": [
                   {
                     "id": "c7291bee-ff0e-4493-ae80-bdb453e4c981",
-                    "name": "思维链",
+                    "name": "reasoning",
                     "enabled": true,
                     "collapsed": false,
                     "linkedPromptIds": [],
@@ -4670,7 +4670,7 @@
                 "groups": [
                   {
                     "id": "c7291bee-ff0e-4493-ae80-bdb453e4c981",
-                    "name": "思维链",
+                    "name": "reasoning",
                     "enabled": true,
                     "collapsed": false,
                     "linkedPromptIds": [],
