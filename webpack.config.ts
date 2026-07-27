@@ -525,6 +525,8 @@ function parse_configuration(entry: Entry): (_env: any, argv: any) => webpack.Co
       }
 
       if (
+        request === 'pinia' ||
+        request.startsWith('pinia/') ||
         request.startsWith('-') ||
         request.startsWith('.') ||
         request.startsWith('/') ||
