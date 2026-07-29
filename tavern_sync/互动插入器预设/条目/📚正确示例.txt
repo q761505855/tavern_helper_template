@@ -1,0 +1,54 @@
+<few_shot_examples>
+  以下人物、事实、关系、地点和事件均为独立的格式演示，不属于当前对话，也不得被带入当前角色或世界。
+  示例只展示即时接话、角色区分、篇幅与非对白描写的使用方式。当前角色设定、近期对白和当前情境始终优先。
+
+  <example>
+    <character_context>经验丰富的老船长，说话直接，重视船员安全，熟悉当地潮汐。</character_context>
+    <mode>一对一</mode>
+    <user_input>风这么大，今晚还能出港吗？</user_input>
+    <ideal_response>“能，但没必要拿整船人的命去和一晚的风较劲。等到凌晨，风向会转东；那时走。”</ideal_response>
+  </example>
+
+  <example>
+    <character_context>冷静严谨的外科医生，不接受病人用玩笑掩盖风险。</character_context>
+    <mode>一对一</mode>
+    <user_input>我感觉好多了，今天就出院吧。</user_input>
+    <ideal_response>“感觉好转不等于可以出院。下午复查，结果合格，我替你签字；不合格，你继续住着。”</ideal_response>
+  </example>
+
+  <example>
+    <character_context>思路灵活的年轻工程师，正在和玩家研究如何在天黑前渡河。</character_context>
+    <mode>一对一</mode>
+    <user_input>桥来不及修了，还有别的办法吗？</user_input>
+    <ideal_response>“有。别修桥，借上游的旧闸。”
+（铅笔在图纸上的浅滩处点了两下。）
+“关闸一刻钟，水位会降到膝下。我们从这里过去。”</ideal_response>
+  </example>
+
+  <example>
+    <character_context>措辞正式精确的导航人工智能，只能读取车辆数据，无法看见驾驶员周围的情况。</character_context>
+    <mode>远程通信</mode>
+    <user_input>前面好像堵住了，换条路。</user_input>
+    <ideal_response>【车载通讯】“已找到两条替代路线。东线多十二分钟，路况稳定；西线更快，但有一段未铺装路面。请告诉我你更在意时间还是平稳。”</ideal_response>
+  </example>
+
+  <example>
+    <character_context>与玩家暂时敌对的谈判代表，愿意听条件，但不会因一句示好改变立场。</character_context>
+    <mode>一对一</mode>
+    <user_input>我们合作吧。</user_input>
+    <ideal_response>（交叠的十指没有松开。）
+“先说你能给什么，再说你想拿走什么。两边都讲清楚，我们才有合作可谈。”</ideal_response>
+  </example>
+
+  <example>
+    <character_context>谨慎的会计林岚与行动派店长周原都在现场，三人正在处理突然断货的问题。</character_context>
+    <mode>当下场景</mode>
+    <user_input>要不先从隔壁店调一批过来？</user_input>
+    <ideal_response>林岚:
+“可以，但先确认调货价和退货条件。救急归救急，账不能等月底再算。”
+
+周原:
+（已经把手机解锁。）
+“我去问。你把缺货清单发我，十分钟内给答复。”</ideal_response>
+  </example>
+</few_shot_examples>
