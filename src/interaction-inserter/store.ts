@@ -10,6 +10,7 @@ import {
   type PresetLike,
 } from './preset';
 import { makeInteractionSessionTitle, readTavernUserName, roleDisplayName } from './labels';
+import { createStreamDisplayState } from './stream-display';
 import defaultInteractionPreset from '../../tavern_sync/互动插入器预设/互动插入器预设.json';
 import defaultPromptConfig from '../../tavern_sync/互动插入器预设/默认提示词配置.json';
 
@@ -255,7 +256,8 @@ export const useInteractionStore = defineStore('interaction-inserter', () => {
   const selectedMode = ref<InteractionMode>('scene');
   const isGenerating = ref(false);
   const activeGenerationId = ref<string | null>(null);
-  const generationBuffer = ref('');
+  const activeGenerationSessionId = ref<string | null>(null);
+  const streamDisplay = createStreamDisplayState();
   const currentTavernModel = ref(readCurrentTavernModel());
   const customApiModels = ref<string[]>([]);
   const customApiModelsLoading = ref(false);
@@ -734,7 +736,7 @@ export const useInteractionStore = defineStore('interaction-inserter', () => {
     session.messages.push(message);
     session.updatedAt = Date.now();
     session.merged = false;
-    return message;
+    return session.messages[session.messages.length - 1];
   }
 
   function findActiveMessage(messageId: string): InteractionMessage | null {
@@ -923,7 +925,8 @@ export const useInteractionStore = defineStore('interaction-inserter', () => {
     const assistantMessage = appendMessage(session, 'assistant', '');
     const generationId = makeId('generation');
     activeGenerationId.value = generationId;
-    generationBuffer.value = '';
+    activeGenerationSessionId.value = session.id;
+    streamDisplay.start(generationId, assistantMessage.id);
     isGenerating.value = true;
     persistState();
 
@@ -931,9 +934,7 @@ export const useInteractionStore = defineStore('interaction-inserter', () => {
     const applyStreamText = (text: string) => {
       rawStreamText = text;
       const sanitizedText = sanitizeInteractionReplyContent(rawStreamText);
-      assistantMessage.content = sanitizedText;
-      generationBuffer.value = sanitizedText;
-      session.updatedAt = Date.now();
+      streamDisplay.update(generationId, sanitizedText);
     };
     const incrementalStreamListener = eventOn(
       iframe_events.STREAM_TOKEN_RECEIVED_INCREMENTALLY,
@@ -969,9 +970,12 @@ export const useInteractionStore = defineStore('interaction-inserter', () => {
       await restoreSuppressedWorldbookEntries(suppressedWorldbookEntries);
       incrementalStreamListener.stop();
       fullStreamListener.stop();
-      isGenerating.value = false;
-      activeGenerationId.value = null;
-      generationBuffer.value = '';
+      streamDisplay.clear(generationId);
+      if (activeGenerationId.value === generationId) {
+        isGenerating.value = false;
+        activeGenerationId.value = null;
+        activeGenerationSessionId.value = null;
+      }
     }
   }
 
@@ -981,6 +985,7 @@ export const useInteractionStore = defineStore('interaction-inserter', () => {
     }
     isGenerating.value = false;
     activeGenerationId.value = null;
+    activeGenerationSessionId.value = null;
   }
 
   function formatUnmergedMessages(): string {
@@ -1210,6 +1215,7 @@ export const useInteractionStore = defineStore('interaction-inserter', () => {
     characterDraft,
     selectedMode,
     isGenerating,
+    activeGenerationSessionId,
     currentTavernModel,
     customApiModels,
     customApiModelsLoading,
@@ -1252,6 +1258,7 @@ export const useInteractionStore = defineStore('interaction-inserter', () => {
     cancelEditingMessage,
     saveEditingMessage,
     deleteMessage,
+    messageContent: streamDisplay.contentFor,
     sendMessage,
     stopGeneration,
     clearAll,
