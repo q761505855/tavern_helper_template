@@ -76,7 +76,7 @@
           </aside>
 
           <section class="ii-chat">
-            <div ref="messagesElement" class="ii-messages" @scroll.passive="handleMessagesScroll">
+            <div ref="messagesElement" class="ii-messages">
               <div class="ii-system">
                 当前模式：{{ store.activeSession ? store.sessionModeLabel(store.activeSession.mode) : '无' }}
                 <template v-if="store.activeCharacter"> · 角色：{{ store.activeCharacter.label }}</template>
@@ -297,66 +297,25 @@
 
 <script setup lang="ts">
 import { nextTick, ref, watch } from 'vue';
-import {
-  isNearChatBottom,
-  scrollChatToBottom,
-  shouldForceGenerationCompletionScroll,
-  shouldForceWorkbenchScroll,
-} from './chat-scroll';
+import { scrollChatToBottom, shouldForceWorkbenchScroll } from './chat-scroll';
 import { useInteractionStore } from './store';
 
 const store = useInteractionStore();
 const messagesElement = ref<HTMLElement | null>(null);
-const followsLatestMessage = ref(true);
-const generationSessionId = ref<string | null>(null);
 
-function handleMessagesScroll() {
-  const element = messagesElement.value;
-  if (!element) return;
-  followsLatestMessage.value = isNearChatBottom(element);
-}
-
-async function scrollMessagesToBottom(force: boolean) {
+async function scrollMessagesToBottom() {
   await nextTick();
   const element = messagesElement.value;
-  if (!element || (!force && !followsLatestMessage.value)) return;
+  if (!element) return;
   scrollChatToBottom(element);
-  if (force) followsLatestMessage.value = true;
 }
 
 watch(
   () => [store.isOpen, store.view, store.state.activeSessionId, store.activeSession?.messages.length ?? 0] as const,
   ([isOpen, view]) => {
-    if (shouldForceWorkbenchScroll(isOpen, view)) void scrollMessagesToBottom(true);
+    if (shouldForceWorkbenchScroll(isOpen, view)) void scrollMessagesToBottom();
   },
   { flush: 'post' },
-);
-
-watch(
-  () => {
-    const messages = store.activeSession?.messages;
-    return messages && messages.length > 0 ? store.messageContent(messages[messages.length - 1]) : '';
-  },
-  () => {
-    void scrollMessagesToBottom(false);
-  },
-  { flush: 'post' },
-);
-
-watch(
-  () => store.isGenerating,
-  generating => {
-    if (generating) {
-      generationSessionId.value = store.activeGenerationSessionId;
-      return;
-    }
-    const completedSessionId = generationSessionId.value;
-    generationSessionId.value = null;
-    if (shouldForceGenerationCompletionScroll(completedSessionId, store.state.activeSessionId)) {
-      void scrollMessagesToBottom(true);
-    }
-  },
-  { flush: 'sync' },
 );
 
 function handleComposerKeydown(event: KeyboardEvent) {
