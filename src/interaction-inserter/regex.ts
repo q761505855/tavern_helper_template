@@ -26,6 +26,21 @@ const FIND_REGEX = String.raw`<interaction_records_context>[\s\S]*?<records>\s*(
 // 仅保留 records 内部正文, 丢弃包裹结构.
 const REPLACE_STRING = '$1';
 
+const INTERACTION_RECORDS_CONTEXT_REGEX =
+  /<interaction_records_context\b[^>]*>[\s\S]*?<\/interaction_records_context\s*>/gi;
+
+export function removeInteractionRecordContexts(message: string): { message: string; removedCount: number } {
+  let removedCount = 0;
+  const nextMessage = message.replace(INTERACTION_RECORDS_CONTEXT_REGEX, () => {
+    removedCount += 1;
+    return '';
+  });
+  return {
+    message: removedCount > 0 ? nextMessage.trimEnd() : message,
+    removedCount,
+  };
+}
+
 function makeRegexId(): string {
   // 用固定字符串派生稳定 id, 避免每次加载生成新随机 id 造成重复.
   return `interaction-inserter-hide-policy-v${REGEX_VERSION}`;

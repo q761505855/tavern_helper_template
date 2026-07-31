@@ -287,6 +287,7 @@
             <button v-if="store.view === 'settings'" class="ii-btn" @click="store.resetSettings">恢复默认</button>
             <button v-if="store.view === 'workbench'" class="ii-btn" @click="store.clearAll">清空</button>
             <button v-if="store.view === 'workbench'" class="ii-btn" @click="store.copyInteractionRecords">复制</button>
+            <button v-if="store.view === 'workbench'" class="ii-btn" @click="store.cancelMessageMerge">取消合并</button>
             <button v-if="store.view === 'workbench'" class="ii-btn ii-primary" @click="store.mergeAndExit">合并并退出</button>
             <button v-else class="ii-btn ii-primary" @click="store.view = 'workbench'">保存并返回</button>
           </div>

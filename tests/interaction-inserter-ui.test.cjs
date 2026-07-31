@@ -106,3 +106,12 @@ test('interaction content can be inserted into worldbook or current message body
   assert.match(appVue, /当前楼层正文/);
   assert.match(appVue, /插入模板/);
 });
+
+test('cancel merge appears immediately before merge and exit', () => {
+  const cancelIndex = appVue.indexOf('@click="store.cancelMessageMerge"');
+  const mergeIndex = appVue.indexOf('@click="store.mergeAndExit"');
+
+  assert.notEqual(cancelIndex, -1);
+  assert.ok(cancelIndex < mergeIndex);
+  assert.match(appVue.slice(appVue.lastIndexOf('<button', cancelIndex), cancelIndex), /class="ii-btn"/);
+});

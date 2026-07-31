@@ -10,6 +10,7 @@ import {
   type PresetLike,
 } from './preset';
 import { makeInteractionSessionTitle, readTavernUserName, roleDisplayName } from './labels';
+import { removeInteractionRecordContexts } from './regex';
 import { createStreamDisplayState } from './stream-display';
 import defaultInteractionPreset from '../../tavern_sync/互动插入器预设/互动插入器预设.json';
 import defaultPromptConfig from '../../tavern_sync/互动插入器预设/默认提示词配置.json';
@@ -1194,6 +1195,33 @@ export const useInteractionStore = defineStore('interaction-inserter', () => {
     toastr.success(settings.value.insertTarget === 'message' ? '已插入当前楼层正文' : '已合并到世界书');
   }
 
+  async function cancelMessageMerge() {
+    const currentMessage = getChatMessages(-1)[0];
+    if (!currentMessage) {
+      toastr.warning('当前没有可取消合并的楼层消息');
+      return;
+    }
+    const result = removeInteractionRecordContexts(currentMessage.message);
+    if (result.removedCount === 0) {
+      toastr.warning('当前楼层没有已合并的互动内容');
+      return;
+    }
+    await setChatMessages(
+      [
+        {
+          message_id: currentMessage.message_id,
+          message: result.message,
+        },
+      ],
+      { refresh: 'affected' },
+    );
+    for (const session of state.value.sessions) {
+      if (session.merged) session.merged = false;
+    }
+    persistState();
+    toastr.success(`已取消合并 ${result.removedCount} 段互动内容`);
+  }
+
   async function copyInteractionRecords() {
     await navigator.clipboard.writeText(formatUnmergedMessages());
     toastr.success('已复制互动记录');
@@ -1263,6 +1291,7 @@ export const useInteractionStore = defineStore('interaction-inserter', () => {
     stopGeneration,
     clearAll,
     mergeAndExit,
+    cancelMessageMerge,
     copyInteractionRecords,
     persistSettings,
     persistState,
