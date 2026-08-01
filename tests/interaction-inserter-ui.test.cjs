@@ -85,8 +85,8 @@ test('default mode and worldbook prompts come from bundled prompt config JSON', 
   assert.match(defaultPromptConfig.prompts.scene, /<scene_mode>/);
   assert.match(defaultPromptConfig.prompts.private, /<private_mode>/);
   assert.match(defaultPromptConfig.prompts.remote, /<remote_mode>/);
-  assert.match(defaultPromptConfig.worldbookTemplate, /来自互动插入器/);
-  assert.match(defaultPromptConfig.worldbookTemplate, /不是新的主剧情楼层/);
+  assert.match(defaultPromptConfig.worldbookTemplate, /<interaction_records_context>/);
+  assert.match(defaultPromptConfig.worldbookTemplate, /{{ii_interaction_records}}/);
 });
 
 test('interaction worldbook entry is cleared on next user message, not after received or reroll events', () => {

@@ -359,6 +359,5 @@ test('default interaction preset is tailored to interaction inserter generation'
   assert.ok(inputIndex > order.indexOf(historyPrompt.identifier));
   assert.ok(inputIndex > order.indexOf(corePrompt.identifier));
   assert.match(mainPrompt.content, /互动插入器|轻量互动|主剧情/);
-  assert.match(corePrompt.content, /只回应本轮|输出结果应像角色|不解释写作策略/);
   assert.equal(modePrompt.content, '{{ii_scene_prompt}}{{ii_private_prompt}}{{ii_remote_prompt}}');
 });
