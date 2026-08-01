@@ -31,7 +31,7 @@
               </button>
             </div>
 
-            <div class="ii-panel">
+            <div class="ii-panel ii-characters">
               <div class="ii-panel-head">角色列表</div>
               <form class="ii-add-row" @submit.prevent="store.addCharacter">
                 <input v-model="store.characterDraft" placeholder="添加角色名或身份" />
@@ -51,27 +51,29 @@
 
             <div class="ii-panel ii-sessions">
               <div class="ii-panel-head">互动列表</div>
-              <div
-                v-for="session in store.state.sessions"
-                :key="session.id"
-                class="ii-session"
-                :class="{ active: session.id === store.state.activeSessionId }"
-              >
-                <button class="ii-session-main" @click="store.switchSession(session.id)">
-                  <b>{{ session.title }}</b>
-                  <span>
-                    {{ store.sessionModeLabel(session.mode) }} · {{ session.messages.length }} 条 ·
-                    {{ session.sendToContext ? '带入' : '不带入' }} ·
-                    <i :class="['ii-merge-state', session.merged ? 'merged' : 'pending']">{{ session.merged ? '已合并' : '待合并' }}</i>
-                  </span>
-                </button>
-                <div class="ii-session-actions">
-                  <button class="ii-mini" @click.stop="store.toggleSessionSendToContext(session.id)">{{ session.sendToContext ? '取消带入' : '带入' }}</button>
-                  <button class="ii-mini" @click.stop="store.toggleSessionMerged(session.id)">{{ session.merged ? '改待合并' : '标已合并' }}</button>
-                  <button class="ii-mini ii-danger-text" @click.stop="store.deleteSession(session.id)">删</button>
+              <div class="ii-session-list">
+                <div
+                  v-for="session in store.state.sessions"
+                  :key="session.id"
+                  class="ii-session"
+                  :class="{ active: session.id === store.state.activeSessionId }"
+                >
+                  <button class="ii-session-main" @click="store.switchSession(session.id)">
+                    <b>{{ session.title }}</b>
+                    <span>
+                      {{ store.sessionModeLabel(session.mode) }} · {{ session.messages.length }} 条 ·
+                      {{ session.sendToContext ? '带入' : '不带入' }} ·
+                      <i :class="['ii-merge-state', session.merged ? 'merged' : 'pending']">{{ session.merged ? '已合并' : '待合并' }}</i>
+                    </span>
+                  </button>
+                  <div class="ii-session-actions">
+                    <button class="ii-mini" @click.stop="store.toggleSessionSendToContext(session.id)">{{ session.sendToContext ? '取消带入' : '带入' }}</button>
+                    <button class="ii-mini" @click.stop="store.toggleSessionMerged(session.id)">{{ session.merged ? '改待合并' : '标已合并' }}</button>
+                    <button class="ii-mini ii-danger-text" @click.stop="store.deleteSession(session.id)">删</button>
+                  </div>
                 </div>
+                <p v-if="store.state.sessions.length === 0" class="ii-empty">暂无互动记录。点击“当下场景”，或选择一对一/远程通信后点击角色创建互动。</p>
               </div>
-              <p v-if="store.state.sessions.length === 0" class="ii-empty">暂无互动记录。点击“当下场景”，或选择一对一/远程通信后点击角色创建互动。</p>
             </div>
           </aside>
 

@@ -144,8 +144,9 @@
 .ii-sidebar {
   display: grid;
   min-height: 0;
-  grid-template-rows: auto auto 1fr;
+  grid-template-rows: auto minmax(164px, 1fr) minmax(140px, 1fr);
   gap: 12px;
+  overflow-y: auto;
   border-right: 1px solid #d8dee8;
   background: #fbfcfe;
   padding: 12px;
@@ -191,6 +192,9 @@
 }
 
 .ii-panel {
+  display: flex;
+  min-height: 0;
+  flex-direction: column;
   overflow: hidden;
   border: 1px solid #d8dee8;
   border-radius: 8px;
@@ -228,10 +232,23 @@
   padding: 9px 10px;
 }
 
+.ii-character-list,
+.ii-session-list {
+  min-height: 0;
+  overflow-x: hidden;
+  overflow-y: auto;
+}
+
 .ii-character-list {
   display: grid;
+  flex: 1;
+  align-content: start;
   gap: 8px;
   padding: 0 10px 10px;
+}
+
+.ii-session-list {
+  flex: 1;
 }
 
 .ii-character,
@@ -297,8 +314,7 @@
 
 .ii-sessions {
   min-height: 0;
-  overflow-x: hidden;
-  overflow-y: auto;
+  overflow: hidden;
 }
 
 .ii-session {
