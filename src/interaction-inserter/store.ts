@@ -85,7 +85,7 @@ const SettingsSchema = z
     worldbookTemplate: z.string().optional(),
     promptConfigs: z.array(PromptConfigSchema).catch([]).prefault([]),
     activePromptConfigId: z.string().prefault(''),
-    insertTarget: z.enum(['worldbook', 'message']).prefault('message'),
+    insertTarget: z.enum(['worldbook', 'message', 'user_input']).prefault('message'),
     historyLimit: z.coerce.number().transform(value => _.clamp(Math.trunc(value), 1, 50)).prefault(50),
     stream: z.boolean().prefault(true),
     clearAfterMerge: z.boolean().prefault(true),
@@ -1144,6 +1144,18 @@ export const useInteractionStore = defineStore('interaction-inserter', () => {
     return true;
   }
 
+  function appendInteractionToUserInput(content: string): boolean {
+    const $userInput = $('#send_textarea');
+    if ($userInput.length === 0) {
+      toastr.warning('未找到用户输入框');
+      return false;
+    }
+    const currentInput = String($userInput.val() ?? '');
+    const nextInput = [currentInput.trimEnd(), content.trim()].filter(Boolean).join('\n\n');
+    $userInput.val(nextInput).trigger('input');
+    return true;
+  }
+
   async function clearWorldbookEntry() {
     const worldbookName = getCharacterWorldbookName();
     if (!worldbookName) return;
@@ -1183,7 +1195,9 @@ export const useInteractionStore = defineStore('interaction-inserter', () => {
     const merged =
       settings.value.insertTarget === 'message'
         ? await appendInteractionToCurrentMessage(content)
-        : await upsertInteractionEntry(content);
+        : settings.value.insertTarget === 'user_input'
+          ? appendInteractionToUserInput(content)
+          : await upsertInteractionEntry(content);
     if (!merged) return;
     for (const session of state.value.sessions) {
       if (session.messages.length > 0) {
@@ -1192,10 +1206,35 @@ export const useInteractionStore = defineStore('interaction-inserter', () => {
     }
     persistState();
     closeWorkbench();
-    toastr.success(settings.value.insertTarget === 'message' ? '已插入当前楼层正文' : '已合并到世界书');
+    const successMessage = {
+      message: '已插入当前楼层正文',
+      user_input: '已插入用户输入',
+      worldbook: '已合并到世界书',
+    }[settings.value.insertTarget];
+    toastr.success(successMessage);
   }
 
   async function cancelMessageMerge() {
+    if (settings.value.insertTarget === 'user_input') {
+      const $userInput = $('#send_textarea');
+      if ($userInput.length === 0) {
+        toastr.warning('未找到用户输入框');
+        return;
+      }
+      const result = removeInteractionRecordContexts(String($userInput.val() ?? ''));
+      if (result.removedCount === 0) {
+        toastr.warning('用户输入中没有已合并的互动内容');
+        return;
+      }
+      $userInput.val(result.message).trigger('input');
+      for (const session of state.value.sessions) {
+        if (session.merged) session.merged = false;
+      }
+      persistState();
+      toastr.success(`已从用户输入取消合并 ${result.removedCount} 段互动内容`);
+      return;
+    }
+
     const currentMessage = getChatMessages(-1)[0];
     if (!currentMessage) {
       toastr.warning('当前没有可取消合并的楼层消息');

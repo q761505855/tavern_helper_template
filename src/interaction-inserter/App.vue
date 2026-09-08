@@ -252,6 +252,7 @@
                 <select v-model="store.settings.insertTarget">
                   <option value="worldbook">世界书</option>
                   <option value="message">当前楼层正文</option>
+                  <option value="user_input">用户输入</option>
                 </select>
               </label>
             </div>
@@ -283,6 +284,7 @@
 
         <footer class="ii-footer">
           <span v-if="store.view === 'workbench' && store.settings.insertTarget === 'message'">未合并内容会按插入模板追加到当前楼层正文末尾。</span>
+          <span v-else-if="store.view === 'workbench' && store.settings.insertTarget === 'user_input'">未合并内容会按插入模板追加到用户输入。</span>
           <span v-else-if="store.view === 'workbench'">未合并内容会全量写入当前角色世界书条目“{{ store.FIXED_ENTRY_NAME }}”。</span>
           <span v-else>设置保存到脚本变量；互动记录保存到聊天变量。</span>
           <div class="ii-footer-actions">

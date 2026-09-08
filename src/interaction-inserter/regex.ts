@@ -17,7 +17,7 @@
 // 固定的脚本名, 作为全局正则里的幂等键. 修改正则规则时请同步提升版本号,
 // 这样插件下次加载会自动用新版本覆盖旧的那一条.
 const REGEX_SCRIPT_NAME = '互动插入器-隐藏吸收规则';
-const REGEX_VERSION = 1;
+const REGEX_VERSION = 2;
 const REGEX_SCRIPT_NAME_WITH_VERSION = `${REGEX_SCRIPT_NAME} v${REGEX_VERSION}`;
 
 // 匹配整个 <interaction_records_context> 包裹块, 捕获 <records> 内部正文.
@@ -55,7 +55,8 @@ function buildHidePolicyRegex(): TavernRegex {
     replace_string: REPLACE_STRING,
     trim_strings: [],
     source: {
-      user_input: false,
+      // 插入目标为用户输入时, 发送后的用户楼层也应只显示 records 正文.
+      user_input: true,
       // 互动内容是拼进 AI 楼层正文的, 作用范围选 ai_output.
       ai_output: true,
       slash_command: false,
