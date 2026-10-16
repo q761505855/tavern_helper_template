@@ -111,10 +111,73 @@ export function buildWorldbookContent(template: string, interactionRecords: stri
 }
 
 export function sanitizeInteractionReplyContent(input: string): string {
-  return input
-    .replace(/(^|\n)[ \t]*<([A-Za-z][\w:-]*)(?:\s[^>]*)?>[\s\S]*?<\/\2>[ \t]*(?=\n|$)/g, '$1')
-    .replace(/(^|\n)[ \t]*<([A-Za-z][\w:-]*)(?:\s[^>]*)?>[\s\S]*$/g, '$1')
+  // game 块是正文唯一载体: 无论前面有没有 <think> 之类的块, 只要存在就只取其正文.
+  // 流式输出时 </game> 可能还没到, 此时取 <game> 之后已到达的部分.
+  const primaryGameBlock = input.match(/<game\b[^>]*>([\s\S]*?)(?:<\/game\s*>|$)/i);
+  const content = primaryGameBlock ? primaryGameBlock[1] : input;
+
+  // 标签名允许 . 和 ~, 以覆盖 <think_nya~> 这类自定义标签.
+  return content
+    .replace(/(^|\n)[ \t]*<([A-Za-z][\w:.~-]*)(?:[ \t][^>]*)?>[\s\S]*?<\/\2>[ \t]*(?=\n|$)/g, '$1')
+    .replace(/(^|\n)[ \t]*<([A-Za-z][\w:.~-]*)(?:[ \t][^>]*)?>[\s\S]*$/g, '$1')
     .trim();
+}
+
+type InteractionToolCall = {
+  function?: {
+    name?: unknown;
+    arguments?: unknown;
+  };
+  name?: unknown;
+  arguments?: unknown;
+  parameters?: unknown;
+};
+
+function isRecord(value: unknown): value is Record<string, unknown> {
+  return typeof value === 'object' && value !== null;
+}
+
+function parseToolArguments(value: unknown): Record<string, unknown> | null {
+  if (isRecord(value)) return value;
+  if (typeof value !== 'string' || value.trim().length === 0) return null;
+
+  try {
+    const parsed: unknown = JSON.parse(value);
+    return isRecord(parsed) ? parsed : null;
+  } catch {
+    return null;
+  }
+}
+
+/**
+ * 从 generate/generateRaw 的结果中提取互动正文.
+ *
+ * 工具调用模式下, 正文位于 tool_calls[].function.arguments 中的 content 字段;
+ * 普通聊天模式下则回退到结果本身或结果的 content 字段. 工具参数优先于普通文本,
+ * 这样开启了 game_content 工具的预设不会因 result.content 为空而丢失正文.
+ */
+export function extractInteractionReplyContent(result: unknown): string {
+  if (isRecord(result) && Array.isArray(result.tool_calls)) {
+    const toolCalls = result.tool_calls.filter(isRecord) as InteractionToolCall[];
+    const prioritizedCalls = [
+      ...toolCalls.filter(call => call.function?.name === 'game_content' || call.name === 'game_content'),
+      ...toolCalls.filter(call => call.function?.name !== 'game_content' && call.name !== 'game_content'),
+    ];
+
+    for (const call of prioritizedCalls) {
+      const argumentsValue = isRecord(call.function)
+        ? call.function.arguments
+        : (call.parameters ?? call.arguments);
+      const parameters = parseToolArguments(argumentsValue);
+      if (typeof parameters?.content === 'string' && parameters.content.trim().length > 0) {
+        return parameters.content;
+      }
+    }
+  }
+
+  if (typeof result === 'string') return result;
+  if (isRecord(result) && typeof result.content === 'string') return result.content;
+  return '';
 }
 
 export function collectSendableInteractionHistory(

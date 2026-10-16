@@ -2,6 +2,7 @@ import {
   buildWorldbookContent,
   collectSendableInteractionHistory,
   convertPresetToOrderedPrompts,
+  extractInteractionReplyContent,
   normalizePresetLike,
   parseInteractionPresetJson,
   sanitizeInteractionReplyContent,
@@ -25,6 +26,24 @@ const SCRIPT_VARIABLE_KEY = 'interactionInserterSettings';
 const CHAT_VARIABLE_KEY = 'interactionInserter';
 const DEFAULT_PRESET_CONFIG_ID = 'default-preset';
 const DEFAULT_PROMPT_CONFIG_ID = 'default-prompt-config';
+
+// generateRaw 只有在调用方显式传入 tools 时，才会把工具调用聚合到
+// GenerateToolCallResult。酒馆当前预设的函数工具仍会被自动附加到请求，
+// 因此这里提供同名的最小声明，让互动插入器同时拿到普通文本和 tool_calls。
+const INTERACTION_GAME_CONTENT_TOOL: ToolDefinition = {
+  type: 'function',
+  function: {
+    name: 'game_content',
+    description: '# 你的全部输出应当在此工具内。',
+    parameters: {
+      type: 'object',
+      properties: {
+        content: { type: 'string' },
+      },
+      required: ['content'],
+    },
+  },
+};
 
 const DEFAULT_PROMPT_CONFIG_NAME = defaultPromptConfig.name;
 const DEFAULT_PROMPTS = {
@@ -875,6 +894,14 @@ export const useInteractionStore = defineStore('interaction-inserter', () => {
     };
   }
 
+  function shouldRequestInteractionToolResult(): boolean {
+    try {
+      return getPreset('in_use')?.settings?.enable_function_calling === true;
+    } catch {
+      return false;
+    }
+  }
+
   function buildContextPrompt(session: InteractionSession): string {
     const lines = [
       `当前互动模式：${sessionModeLabel(session.mode)}`,
@@ -959,8 +986,14 @@ export const useInteractionStore = defineStore('interaction-inserter', () => {
         should_silence: true,
         ordered_prompts: orderedPrompts,
         custom_api: buildCustomApi(),
+        ...(shouldRequestInteractionToolResult()
+          ? {
+              tools: [INTERACTION_GAME_CONTENT_TOOL],
+              tool_choice: 'auto' as const,
+            }
+          : {}),
       });
-      assistantMessage.content = sanitizeInteractionReplyContent(typeof result === 'string' ? result : result.content);
+      assistantMessage.content = sanitizeInteractionReplyContent(extractInteractionReplyContent(result));
       session.updatedAt = Date.now();
       persistState();
     } catch (error) {

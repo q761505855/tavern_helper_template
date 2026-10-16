@@ -7,6 +7,7 @@ const {
   buildWorldbookContent,
   buildInteractionMacros,
   convertPresetToOrderedPrompts,
+  extractInteractionReplyContent,
   collectSendableInteractionHistory,
   sanitizeInteractionReplyContent,
   normalizePresetLike,
@@ -230,6 +231,34 @@ test('removes XML-style tagged blocks from interaction replies', () => {
   assert.equal(content, '女班长:\n(担忧地看向你)“冷阳君……？”');
 });
 
+test('unwraps the primary game block while hiding trailing structured blocks', () => {
+  const content = sanitizeInteractionReplyContent(
+    '<game>工具正文</game>\n\n<summary>仅供模型吸收的摘要</summary>\n\n<options><option>选项</option></options>',
+  );
+
+  assert.equal(content, '工具正文');
+});
+
+test('unwraps a game block that follows a thinking block with non-word tag characters', () => {
+  const content = sanitizeInteractionReplyContent(
+    '<think_nya~>\n内心独白\n</think_nya~>\n<game>\n夜雨敲窗。\n</game>\n<summary>\n摘要\n</summary>\n<details><summary>留言</summary>\n喵\n</details>\n<options>\n<option>A</option>\n</options>',
+  );
+
+  assert.equal(content, '夜雨敲窗。');
+});
+
+test('shows streamed game content before the closing game tag arrives', () => {
+  const content = sanitizeInteractionReplyContent('<think_nya~>\n内心独白\n</think_nya~>\n<game>\n夜雨敲窗，林照');
+
+  assert.equal(content, '夜雨敲窗，林照');
+});
+
+test('removes a closed tagged block in the middle while keeping text after it', () => {
+  const content = sanitizeInteractionReplyContent('正文一\n<think_nya~>噪音</think_nya~>\n正文二');
+
+  assert.equal(content, '正文一\n\n正文二');
+});
+
 test('hides incomplete XML-style tagged blocks while streaming interaction replies', () => {
   const content = sanitizeInteractionReplyContent(`白娅:
 (攥紧裙摆)“……”
@@ -238,6 +267,41 @@ test('hides incomplete XML-style tagged blocks while streaming interaction repli
 still streaming`);
 
   assert.equal(content, '白娅:\n(攥紧裙摆)“……”');
+});
+
+test('prefers content from game_content tool calls over an empty normal response', () => {
+  const content = extractInteractionReplyContent({
+    content: '',
+    tool_calls: [
+      {
+        id: 'call_game_content',
+        type: 'function',
+        function: {
+          name: 'game_content',
+          arguments: JSON.stringify({ content: '<game>工具正文</game>' }),
+        },
+      },
+    ],
+  });
+
+  assert.equal(content, '<game>工具正文</game>');
+});
+
+test('falls back to ordinary response content when no tool content exists', () => {
+  assert.equal(extractInteractionReplyContent('普通文本回复'), '普通文本回复');
+  assert.equal(extractInteractionReplyContent({ content: '普通对象回复', tool_calls: [] }), '普通对象回复');
+});
+
+test('supports tool arguments supplied as an object and ignores tools without content', () => {
+  const content = extractInteractionReplyContent({
+    content: '不应优先使用',
+    tool_calls: [
+      { function: { name: 'other_tool', arguments: JSON.stringify({ value: 1 }) } },
+      { function: { name: 'game_content', arguments: { content: '对象参数正文' } } },
+    ],
+  });
+
+  assert.equal(content, '对象参数正文');
 });
 
 test('collects only manually marked earlier pending interactions in creation order', () => {
