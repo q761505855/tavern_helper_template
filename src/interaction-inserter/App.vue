@@ -3,7 +3,7 @@
     <section class="ii-workbench">
       <header class="ii-topbar">
         <div class="ii-title">
-          <strong>{{ store.view === 'settings' ? '设置' : '互动工作台-0.0.49' }}</strong>
+          <strong>{{ store.view === 'settings' ? '设置' : '互动工作台-0.0.50' }}</strong>
           <span>{{
             store.view === 'settings' ? '核心配置：API / 模式提示词 / 世界书插入' : '临时互动不会创建主聊天楼层'
           }}</span>
