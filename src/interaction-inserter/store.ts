@@ -166,6 +166,8 @@ const InteractionMessageSchema = z.object({
   id: z.string(),
   role: z.enum(['user', 'assistant', 'system']),
   content: z.string(),
+  // Preserve the unfiltered response for debugging/editing; old records fall back to content.
+  rawContent: z.string().optional(),
   createdAt: z.coerce.number(),
 });
 
@@ -752,7 +754,7 @@ export const useInteractionStore = defineStore('interaction-inserter', () => {
   }
 
   function appendMessage(session: InteractionSession, role: MessageRole, content: string): InteractionMessage {
-    const message = { id: makeId('message'), role, content, createdAt: Date.now() };
+    const message = { id: makeId('message'), role, content, rawContent: content, createdAt: Date.now() };
     session.messages.push(message);
     session.updatedAt = Date.now();
     session.merged = false;
@@ -767,7 +769,7 @@ export const useInteractionStore = defineStore('interaction-inserter', () => {
     const message = findActiveMessage(messageId);
     if (!message) return;
     editingMessageId.value = message.id;
-    editingMessageDraft.value = message.content;
+    editingMessageDraft.value = message.rawContent ?? message.content;
   }
 
   function cancelEditingMessage() {
@@ -784,7 +786,8 @@ export const useInteractionStore = defineStore('interaction-inserter', () => {
       cancelEditingMessage();
       return;
     }
-    message.content = editingMessageDraft.value;
+    message.rawContent = editingMessageDraft.value;
+    message.content = sanitizeInteractionReplyContent(editingMessageDraft.value);
     session.updatedAt = Date.now();
     session.merged = false;
     cancelEditingMessage();
@@ -993,11 +996,15 @@ export const useInteractionStore = defineStore('interaction-inserter', () => {
             }
           : {}),
       });
-      assistantMessage.content = sanitizeInteractionReplyContent(extractInteractionReplyContent(result));
+      const rawContent = extractInteractionReplyContent(result);
+      assistantMessage.rawContent = rawContent;
+      assistantMessage.content = sanitizeInteractionReplyContent(rawContent);
       session.updatedAt = Date.now();
       persistState();
     } catch (error) {
-      assistantMessage.content = `生成失败：${error instanceof Error ? error.message : String(error)}`;
+      const errorContent = `生成失败：${error instanceof Error ? error.message : String(error)}`;
+      assistantMessage.rawContent = errorContent;
+      assistantMessage.content = errorContent;
       persistState();
       throw error;
     } finally {

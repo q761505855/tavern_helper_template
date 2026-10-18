@@ -3,7 +3,7 @@
     <section class="ii-workbench">
       <header class="ii-topbar">
         <div class="ii-title">
-          <strong>{{ store.view === 'settings' ? '设置' : '互动工作台-0.0.51' }}</strong>
+          <strong>{{ store.view === 'settings' ? '设置' : '互动工作台-0.0.52' }}</strong>
           <span>{{
             store.view === 'settings' ? '核心配置：API / 模式提示词 / 世界书插入' : '临时互动不会创建主聊天楼层'
           }}</span>
@@ -122,7 +122,12 @@
             >
               <div class="ii-role">{{ store.roleLabel(message.role) }}</div>
               <template v-if="store.editingMessageId === message.id">
-                <textarea v-model="store.editingMessageDraft" class="ii-message-edit" />
+                <textarea
+                  v-model="store.editingMessageDraft"
+                  class="ii-message-edit"
+                  aria-label="原始文本（调试）"
+                  placeholder="原始文本（调试用）"
+                />
                 <div class="ii-message-actions">
                   <button class="ii-mini ii-primary" type="button" @click="store.saveEditingMessage">保存</button>
                   <button class="ii-mini" type="button" @click="store.cancelEditingMessage">取消</button>

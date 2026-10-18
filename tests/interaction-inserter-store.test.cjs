@@ -125,3 +125,17 @@ test('cancel merge warns without changing sessions when there is no current mess
   assert.equal(store.state.sessions[0].merged, true);
   assert.deepEqual(runtime.warnings, ['当前没有可取消合并的楼层消息']);
 });
+
+test('message editing exposes raw text but persists the processed body', () => {
+  const store = createStore();
+  const message = store.state.sessions[0].messages[0];
+  message.content = '处理后的正文';
+  message.rawContent = '<think>调试信息</think>\n<game>处理后的正文</game>\n<summary>摘要</summary>';
+
+  store.startEditingMessage(message.id);
+  assert.equal(store.editingMessageDraft, message.rawContent);
+  store.saveEditingMessage();
+
+  assert.equal(message.rawContent, '<think>调试信息</think>\n<game>处理后的正文</game>\n<summary>摘要</summary>');
+  assert.equal(message.content, '处理后的正文');
+});
