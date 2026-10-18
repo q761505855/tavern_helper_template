@@ -253,6 +253,20 @@ test('shows streamed game content before the closing game tag arrives', () => {
   assert.equal(content, '夜雨敲窗，林照');
 });
 
+test('unwraps a content block while hiding trailing structured blocks', () => {
+  const content = sanitizeInteractionReplyContent(
+    '<content>正文内容</content>\n\n<summary>仅供模型吸收的摘要</summary>\n\n<options><option>选项</option></options>',
+  );
+
+  assert.equal(content, '正文内容');
+});
+
+test('shows streamed content before the closing content tag arrives', () => {
+  const content = sanitizeInteractionReplyContent('<think_nya~>\n内心独白\n</think_nya~>\n<content>\n夜雨敲窗，林照');
+
+  assert.equal(content, '夜雨敲窗，林照');
+});
+
 test('removes a closed tagged block in the middle while keeping text after it', () => {
   const content = sanitizeInteractionReplyContent('正文一\n<think_nya~>噪音</think_nya~>\n正文二');
 

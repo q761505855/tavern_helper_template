@@ -111,10 +111,10 @@ export function buildWorldbookContent(template: string, interactionRecords: stri
 }
 
 export function sanitizeInteractionReplyContent(input: string): string {
-  // game 块是正文唯一载体: 无论前面有没有 <think> 之类的块, 只要存在就只取其正文.
-  // 流式输出时 </game> 可能还没到, 此时取 <game> 之后已到达的部分.
-  const primaryGameBlock = input.match(/<game\b[^>]*>([\s\S]*?)(?:<\/game\s*>|$)/i);
-  const content = primaryGameBlock ? primaryGameBlock[1] : input;
+  // game/content 块是正文唯一载体: 无论前面有没有 <think> 之类的块,
+  // 只要存在就只取其正文. 流式输出时结束标签可能还没到, 此时取已到达的部分.
+  const primaryContentBlock = input.match(/<(game|content)\b[^>]*>([\s\S]*?)(?:<\/\1\s*>|$)/i);
+  const content = primaryContentBlock ? primaryContentBlock[2] : input;
 
   // 标签名允许 . 和 ~, 以覆盖 <think_nya~> 这类自定义标签.
   return content
