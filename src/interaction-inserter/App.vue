@@ -3,7 +3,7 @@
     <section class="ii-workbench">
       <header class="ii-topbar">
         <div class="ii-title">
-          <strong>{{ store.view === 'settings' ? '设置' : '互动工作台-0.0.52' }}</strong>
+          <strong>{{ store.view === 'settings' ? '设置' : '互动工作台-0.0.53' }}</strong>
           <span>{{
             store.view === 'settings' ? '核心配置：API / 模式提示词 / 世界书插入' : '临时互动不会创建主聊天楼层'
           }}</span>
@@ -118,7 +118,7 @@
               v-for="message in store.activeSession?.messages ?? []"
               :key="message.id"
               class="ii-bubble"
-              :class="[`role-${message.role}`]"
+              :class="[`role-${message.role}`, { 'is-editing': store.editingMessageId === message.id }]"
             >
               <div class="ii-role">{{ store.roleLabel(message.role) }}</div>
               <template v-if="store.editingMessageId === message.id">
@@ -127,6 +127,7 @@
                   class="ii-message-edit"
                   aria-label="原始文本（调试）"
                   placeholder="原始文本（调试用）"
+                  @input="resizeEditingTextarea"
                 />
                 <div class="ii-message-actions">
                   <button class="ii-mini ii-primary" type="button" @click="store.saveEditingMessage">保存</button>
@@ -134,8 +135,21 @@
                 </div>
               </template>
               <template v-else>
+                <details v-if="store.messageThinking(message)" class="ii-thinking">
+                  <summary>思考内容</summary>
+                  <div class="ii-thinking-content">{{ store.messageThinking(message) }}</div>
+                </details>
                 <div class="ii-content">{{ store.messageContent(message) || '...' }}</div>
                 <div class="ii-message-actions">
+                  <button
+                    v-if="store.isLastUserMessage(message.id)"
+                    class="ii-mini"
+                    type="button"
+                    :disabled="store.isGenerating"
+                    @click="store.retryLastUserMessage"
+                  >
+                    重试
+                  </button>
                   <button class="ii-mini" type="button" @click="store.startEditingMessage(message.id)">改</button>
                   <button class="ii-mini ii-danger-text" type="button" @click="store.deleteMessage(message.id)">
                     删
@@ -422,6 +436,17 @@ import { useInteractionStore } from './store';
 const store = useInteractionStore();
 const messagesElement = ref<HTMLElement | null>(null);
 
+function resizeEditingTextarea() {
+  void nextTick(() => {
+    requestAnimationFrame(() => {
+      const textarea = document.querySelector<HTMLTextAreaElement>('.ii-message-edit');
+      if (!textarea) return;
+      textarea.style.height = 'auto';
+      textarea.style.height = `${textarea.scrollHeight}px`;
+    });
+  });
+}
+
 async function scrollMessagesToBottom() {
   await nextTick();
   const element = messagesElement.value;
@@ -434,6 +459,12 @@ watch(
   ([isOpen, view]) => {
     if (shouldForceWorkbenchScroll(isOpen, view)) void scrollMessagesToBottom();
   },
+  { flush: 'post' },
+);
+
+watch(
+  () => [store.editingMessageId, store.editingMessageDraft] as const,
+  resizeEditingTextarea,
   { flush: 'post' },
 );
 

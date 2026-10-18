@@ -135,6 +135,14 @@ export function sanitizeInteractionReplyContent(input: string): string {
     .trim();
 }
 
+/** Extract the optional internal thinking block from the original response. */
+export function extractInteractionThinking(input: string): string {
+  const match = String(input ?? '').match(
+    /<(think[A-Za-z0-9_.:~-]*)(?=[\s>])[^>]*>([\s\S]*?)(?:<\/\1\s*>|$)/i,
+  );
+  return match?.[2]?.trim() ?? '';
+}
+
 type InteractionToolCall = {
   function?: {
     name?: unknown;

@@ -68,6 +68,14 @@ test('interaction messages expose edit and delete actions', () => {
   assert.match(appVue, /v-if="store\.editingMessageId === message\.id"/);
 });
 
+test('interaction messages expose thinking disclosure and last-user retry actions', () => {
+  assert.match(appVue, /class="ii-thinking"/);
+  assert.match(appVue, /store\.messageThinking\(message\)/);
+  assert.match(appVue, /store\.isLastUserMessage\(message\.id\)/);
+  assert.match(appVue, /@click="store\.retryLastUserMessage"/);
+  assert.match(storeTs, /function retryLastUserMessage\(\)/);
+});
+
 test('interaction list starts empty and sessions can be manually marked for context sending', () => {
   assert.doesNotMatch(storeTs, /const session = makeSession\('scene'\);\s*state\.sessions\.push\(session\)/);
   assert.match(storeTs, /sendToContext: z\.boolean\(\)\.prefault\(false\)/);

@@ -252,6 +252,16 @@ test('removes XML-style tagged blocks from interaction replies', () => {
   assert.equal(content, '女班长:\n(担忧地看向你)“冷阳君……？”');
 });
 
+test('extracts an optional think block without exposing it in the display body', () => {
+  const { extractInteractionThinking, sanitizeInteractionReplyContent } = require('../src/interaction-inserter/preset.ts');
+  const raw = '<think_lingxi>先整理上下文\n再决定回应</think_lingxi>\n<game>正文内容</game>';
+
+  assert.equal(extractInteractionThinking(raw), '先整理上下文\n再决定回应');
+  assert.equal(extractInteractionThinking('<think_nya~>变体思考</think_nya~>'), '变体思考');
+  assert.equal(extractInteractionThinking('<game>没有思考</game>'), '');
+  assert.equal(sanitizeInteractionReplyContent(raw), '正文内容');
+});
+
 test('unwraps the primary game block while hiding trailing structured blocks', () => {
   const content = sanitizeInteractionReplyContent(
     '<game>工具正文</game>\n\n<summary>仅供模型吸收的摘要</summary>\n\n<options><option>选项</option></options>',

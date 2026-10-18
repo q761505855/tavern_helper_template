@@ -56,3 +56,32 @@ test('a stale generation cannot update or clear a newer generation display', () 
   streamDisplay.clear('generation-b');
   assert.equal(streamDisplay.contentFor(assistantB), 'canonical-b');
 });
+
+test('stream display exposes thinking from raw response while content stays sanitized', () => {
+  const { createStreamDisplayState } = require('../src/interaction-inserter/stream-display.ts');
+  const streamDisplay = createStreamDisplayState();
+  const message = { id: 'assistant-thinking', content: '正文', rawContent: '<think>历史思考</think>\n正文' };
+
+  streamDisplay.start('generation-thinking', message.id);
+  streamDisplay.update('generation-thinking', '流式正文', '<think>当前思考</think>\n流式正文');
+  assert.equal(streamDisplay.contentFor(message), '流式正文');
+  assert.equal(streamDisplay.thinkingFor(message), '当前思考');
+
+  streamDisplay.clear('generation-thinking');
+  assert.equal(streamDisplay.thinkingFor(message), '历史思考');
+});
+
+test('stream display exposes an unfinished thinking block immediately', () => {
+  const { createStreamDisplayState } = require('../src/interaction-inserter/stream-display.ts');
+  const streamDisplay = createStreamDisplayState();
+  const message = { id: 'assistant-partial-thinking', content: '' };
+
+  streamDisplay.start('generation-partial-thinking', message.id);
+  streamDisplay.update(
+    'generation-partial-thinking',
+    '',
+    '<think_lingxi>正在分析当前场景，等待后续 token',
+  );
+
+  assert.equal(streamDisplay.thinkingFor(message), '正在分析当前场景，等待后续 token');
+});

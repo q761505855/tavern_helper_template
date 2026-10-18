@@ -765,6 +765,15 @@ export const useInteractionStore = defineStore('interaction-inserter', () => {
     return activeSession.value?.messages.find(message => message.id === messageId) ?? null;
   }
 
+  function lastUserMessage(): InteractionMessage | null {
+    const messages = activeSession.value?.messages ?? [];
+    return [...messages].reverse().find(message => message.role === 'user') ?? null;
+  }
+
+  function isLastUserMessage(messageId: string): boolean {
+    return lastUserMessage()?.id === messageId;
+  }
+
   function startEditingMessage(messageId: string) {
     const message = findActiveMessage(messageId);
     if (!message) return;
@@ -931,19 +940,7 @@ export const useInteractionStore = defineStore('interaction-inserter', () => {
     }) as (PlaceholderPrompt | RolePrompt)[];
   }
 
-  async function sendMessage() {
-    const session = activeSession.value;
-    const input = draft.value.trim();
-    if (!session) {
-      toastr.warning('请先创建一个互动');
-      return;
-    }
-    if (!input || isGenerating.value) return;
-    if (session.mode !== 'scene' && !session.characterId) {
-      toastr.warning('请先为该会话选择角色');
-      return;
-    }
-
+  async function generateAssistantReply(session: InteractionSession, input: string, assistantMessage: InteractionMessage) {
     let orderedPrompts: (PlaceholderPrompt | RolePrompt)[];
     try {
       orderedPrompts = buildOrderedPrompts(session);
@@ -951,9 +948,7 @@ export const useInteractionStore = defineStore('interaction-inserter', () => {
       toastr.error(`互动预设读取失败：${error instanceof Error ? error.message : String(error)}`);
       return;
     }
-    draft.value = '';
-    appendMessage(session, 'user', input);
-    const assistantMessage = appendMessage(session, 'assistant', '');
+
     const generationId = makeId('generation');
     activeGenerationId.value = generationId;
     activeGenerationSessionId.value = session.id;
@@ -965,7 +960,7 @@ export const useInteractionStore = defineStore('interaction-inserter', () => {
     const applyStreamText = (text: string) => {
       rawStreamText = text;
       const sanitizedText = sanitizeInteractionReplyContent(rawStreamText);
-      streamDisplay.update(generationId, sanitizedText);
+      streamDisplay.update(generationId, sanitizedText, rawStreamText);
     };
     const incrementalStreamListener = eventOn(
       iframe_events.STREAM_TOKEN_RECEIVED_INCREMENTALLY,
@@ -1018,6 +1013,38 @@ export const useInteractionStore = defineStore('interaction-inserter', () => {
         activeGenerationSessionId.value = null;
       }
     }
+  }
+
+  async function sendMessage() {
+    const session = activeSession.value;
+    const input = draft.value.trim();
+    if (!session) {
+      toastr.warning('请先创建一个互动');
+      return;
+    }
+    if (!input || isGenerating.value) return;
+    if (session.mode !== 'scene' && !session.characterId) {
+      toastr.warning('请先为该会话选择角色');
+      return;
+    }
+    draft.value = '';
+    appendMessage(session, 'user', input);
+    const assistantMessage = appendMessage(session, 'assistant', '');
+    persistState();
+    await generateAssistantReply(session, input, assistantMessage);
+  }
+
+  async function retryLastUserMessage() {
+    const session = activeSession.value;
+    const userMessage = lastUserMessage();
+    if (!session || !userMessage || isGenerating.value) return;
+
+    const userIndex = session.messages.findIndex(message => message.id === userMessage.id);
+    if (userIndex < 0) return;
+    session.messages.splice(userIndex + 1);
+    const assistantMessage = appendMessage(session, 'assistant', '');
+    persistState();
+    await generateAssistantReply(session, userMessage.content, assistantMessage);
   }
 
   function stopGeneration() {
@@ -1365,7 +1392,10 @@ export const useInteractionStore = defineStore('interaction-inserter', () => {
     cancelEditingMessage,
     saveEditingMessage,
     deleteMessage,
+    isLastUserMessage,
+    retryLastUserMessage,
     messageContent: streamDisplay.contentFor,
+    messageThinking: streamDisplay.thinkingFor,
     sendMessage,
     stopGeneration,
     clearAll,
