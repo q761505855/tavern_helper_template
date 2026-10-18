@@ -236,6 +236,9 @@ export function convertPresetToOrderedPrompts(
       ? activeOrder.filter(entry => entry.enabled !== false)
       : normalizedPreset.prompts.map(prompt => ({ identifier: prompt.identifier, enabled: prompt.enabled !== false }));
   const ordered: OrderedInteractionPrompt[] = [];
+  const hasInteractionHistoryPrompt = normalizedPreset.prompts.some(
+    prompt => getInteractionExtensionType(prompt.identifier, prompt) === 'interaction_history',
+  );
 
   for (const ref of promptRefs) {
     const prompt = promptByIdentifier.get(ref.identifier);
@@ -261,6 +264,14 @@ export function convertPresetToOrderedPrompts(
     const content = expandInteractionMacros(prompt.content ?? '', macros).trim();
     if (!content) continue;
     ordered.push({ role: normalizeRole(prompt.role), content });
+  }
+
+  // 普通 SillyTavern 预设通常没有互动插入器专用节点. 在这种情况下,
+  // 兼容性回退到 user_input 之前注入互动历史; 显式配置了该节点的预设仍完全按其顺序和启用状态处理.
+  if (!hasInteractionHistoryPrompt && options.interactionHistory.length > 0) {
+    const userInputIndex = ordered.indexOf('user_input');
+    if (userInputIndex >= 0) ordered.splice(userInputIndex, 0, ...options.interactionHistory);
+    else ordered.push(...options.interactionHistory);
   }
 
   if (!ordered.includes('user_input')) {

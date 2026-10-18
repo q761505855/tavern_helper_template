@@ -199,6 +199,27 @@ test('appends user_input when imported SillyTavern preset does not include inter
   assert.deepEqual(ordered, [{ role: 'system', content: 'Main prompt' }, 'user_input']);
 });
 
+test('falls back to injecting interaction history when an imported preset has no history node', () => {
+  const ordered = convertPresetToOrderedPrompts(
+    tavernPreset({
+      prompts: [{ identifier: 'main', name: 'Main Prompt', system_prompt: true, role: 'system', content: 'Main prompt' }],
+      prompt_order: [{ character_id: 100001, order: [{ identifier: 'main', enabled: true }] }],
+    }),
+    {
+      mode: 'scene',
+      prompts,
+      contextPrompt: 'context rules',
+      interactionHistory: [{ role: 'user', content: '[当前互动]\nuser:之前的消息' }],
+    },
+  );
+
+  assert.deepEqual(ordered, [
+    { role: 'system', content: 'Main prompt' },
+    { role: 'user', content: '[当前互动]\nuser:之前的消息' },
+    'user_input',
+  ]);
+});
+
 test('mode prompt macros are mutually exclusive', () => {
   assert.deepEqual(buildInteractionMacros({ mode: 'remote', prompts, contextPrompt: 'context rules' }), {
     '{{ii_scene_prompt}}': '',
