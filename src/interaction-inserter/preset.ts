@@ -122,11 +122,19 @@ export function buildWorldbookContent(template: string, interactionRecords: stri
   return expandInteractionMacros(template, buildWorldbookMacros({ interactionRecords })).trim();
 }
 
+const THINKING_BLOCK_PATTERN =
+  /<(think[A-Za-z0-9_.:~-]*)(?=[\s>])[^>]*>([\s\S]*?)(?:<\/\1\s*>|$)/gi;
+const THINKING_BLOCK_EXTRACT_PATTERN =
+  /<(think[A-Za-z0-9_.:~-]*)(?=[\s>])[^>]*>([\s\S]*?)(?:<\/\1\s*>|$)/i;
+
 export function sanitizeInteractionReplyContent(input: string): string {
-  // game/content 块是正文唯一载体: 无论前面有没有 <think> 之类的块,
-  // 只要存在就只取其正文. 流式输出时结束标签可能还没到, 此时取已到达的部分.
-  const primaryContentBlock = input.match(/<(game|content)\b[^>]*>([\s\S]*?)(?:<\/\1\s*>|$)/i);
-  const content = primaryContentBlock ? primaryContentBlock[2] : input;
+  // 先移除 think 前缀块，再提取正文，避免 think 内容里的示例 <game> 被误认为正文。
+  // 流式输出时 think 或正文的结束标签可能还没到，此时只取已经到达的部分。
+  const contentWithoutThinking = String(input ?? '').replace(THINKING_BLOCK_PATTERN, '');
+  const primaryContentBlock = contentWithoutThinking.match(
+    /<(game|content)\b[^>]*>([\s\S]*?)(?:<\/\1\s*>|$)/i,
+  );
+  const content = primaryContentBlock ? primaryContentBlock[2] : contentWithoutThinking;
 
   // 标签名允许 . 和 ~, 以覆盖 <think_nya~> 这类自定义标签.
   return content
@@ -137,9 +145,7 @@ export function sanitizeInteractionReplyContent(input: string): string {
 
 /** Extract the optional internal thinking block from the original response. */
 export function extractInteractionThinking(input: string): string {
-  const match = String(input ?? '').match(
-    /<(think[A-Za-z0-9_.:~-]*)(?=[\s>])[^>]*>([\s\S]*?)(?:<\/\1\s*>|$)/i,
-  );
+  const match = String(input ?? '').match(THINKING_BLOCK_EXTRACT_PATTERN);
   return match?.[2]?.trim() ?? '';
 }
 

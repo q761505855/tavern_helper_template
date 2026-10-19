@@ -262,6 +262,15 @@ test('extracts an optional think block without exposing it in the display body',
   assert.equal(sanitizeInteractionReplyContent(raw), '正文内容');
 });
 
+test('matches game content outside a think block when think contains game examples', () => {
+  const content = sanitizeInteractionReplyContent(
+    '<think_lingxi>格式要求：正文包裹在<game></game>标签中。</think_lingxi>\n'
+      + '<game>真正的正文</game>',
+  );
+
+  assert.equal(content, '真正的正文');
+});
+
 test('unwraps the primary game block while hiding trailing structured blocks', () => {
   const content = sanitizeInteractionReplyContent(
     '<game>工具正文</game>\n\n<summary>仅供模型吸收的摘要</summary>\n\n<options><option>选项</option></options>',
