@@ -29,13 +29,19 @@ function tavernPreset(overrides = {}) {
     temperature: 1,
     stream_openai: true,
     prompts: [
-      { identifier: 'main', name: 'Main Prompt', system_prompt: true, role: 'system', content: 'Main prompt' },
+      {
+        identifier: 'main',
+        name: '[ii_auto] Main Prompt',
+        system_prompt: true,
+        role: 'system',
+        content: 'Main prompt',
+      },
       { identifier: 'worldInfoBefore', name: 'World Info before', system_prompt: true, marker: true },
       { identifier: 'personaDescription', name: 'Persona Description', system_prompt: true, marker: true },
       { identifier: 'charDescription', name: 'Char Description', system_prompt: true, marker: true },
       {
         identifier: 'iiModePrompt',
-        name: 'Interaction mode prompt',
+        name: '[ii_auto] Interaction mode prompt',
         system_prompt: true,
         role: 'system',
         content: '{{ii_scene_prompt}}{{ii_private_prompt}}{{ii_remote_prompt}}',
@@ -56,7 +62,7 @@ function tavernPreset(overrides = {}) {
       },
       {
         identifier: 'disabledPrompt',
-        name: 'Disabled Prompt',
+        name: '[ii_auto] Disabled Prompt',
         system_prompt: true,
         role: 'system',
         content: 'must not appear',
@@ -134,9 +140,21 @@ test('converts Tavern Helper preset objects returned by getPreset', () => {
   const ordered = convertPresetToOrderedPrompts(
     {
       prompts: [
-        { id: 'main', name: 'Main Prompt', enabled: true, role: 'system', content: 'Main prompt' },
-        { id: 'disabled', name: 'Disabled Prompt', enabled: false, role: 'system', content: 'must not appear' },
-        { id: 'iiModePrompt', name: 'Mode Prompt', enabled: true, role: 'system', content: '{{ii_remote_prompt}}' },
+        { id: 'main', name: '[ii_auto] Main Prompt', enabled: true, role: 'system', content: 'Main prompt' },
+        {
+          id: 'disabled',
+          name: '[ii_auto] Disabled Prompt',
+          enabled: false,
+          role: 'system',
+          content: 'must not appear',
+        },
+        {
+          id: 'iiModePrompt',
+          name: '[ii_auto] Mode Prompt',
+          enabled: true,
+          role: 'system',
+          content: '{{ii_remote_prompt}}',
+        },
         { id: 'iiInteractionHistory', name: 'Interaction history', enabled: true, role: 'user', content: '' },
         { id: 'iiUserInput', name: 'User input', enabled: true, role: 'user', content: '' },
       ],
@@ -185,7 +203,15 @@ test('exports Tavern Helper preset objects as SillyTavern preset JSON', () => {
 test('appends user_input when imported SillyTavern preset does not include interaction user input node', () => {
   const ordered = convertPresetToOrderedPrompts(
     tavernPreset({
-      prompts: [{ identifier: 'main', name: 'Main Prompt', system_prompt: true, role: 'system', content: 'Main prompt' }],
+      prompts: [
+        {
+          identifier: 'main',
+          name: '[ii_auto] Main Prompt',
+          system_prompt: true,
+          role: 'system',
+          content: 'Main prompt',
+        },
+      ],
       prompt_order: [{ character_id: 100001, order: [{ identifier: 'main', enabled: true }] }],
     }),
     {
@@ -202,7 +228,15 @@ test('appends user_input when imported SillyTavern preset does not include inter
 test('falls back to injecting interaction history when an imported preset has no history node', () => {
   const ordered = convertPresetToOrderedPrompts(
     tavernPreset({
-      prompts: [{ identifier: 'main', name: 'Main Prompt', system_prompt: true, role: 'system', content: 'Main prompt' }],
+      prompts: [
+        {
+          identifier: 'main',
+          name: '[ii_auto] Main Prompt',
+          system_prompt: true,
+          role: 'system',
+          content: 'Main prompt',
+        },
+      ],
       prompt_order: [{ character_id: 100001, order: [{ identifier: 'main', enabled: true }] }],
     }),
     {
@@ -218,6 +252,105 @@ test('falls back to injecting interaction history when an imported preset has no
     { role: 'user', content: '[当前互动]\nuser:之前的消息' },
     'user_input',
   ]);
+});
+
+test('[ii_auto] follows the active prompt_order toggle over prompt.enabled', () => {
+  const ordered = convertPresetToOrderedPrompts(
+    tavernPreset({
+      prompts: [
+        { identifier: 'on', name: '规则 [ii_auto]', enabled: false, role: 'system', content: 'enabled by order' },
+        { identifier: 'off', name: '[ii_auto] 规则', enabled: true, role: 'system', content: 'disabled by order' },
+        { identifier: 'unmarked', name: '普通规则', enabled: true, role: 'system', content: 'unmarked' },
+        { identifier: 'contentOnly', name: '内容中的标签', role: 'system', content: '[ii_auto]' },
+      ],
+      prompt_order: [
+        { character_id: 100000, order: [{ identifier: 'off', enabled: true }] },
+        {
+          character_id: 100001,
+          order: [
+            { identifier: 'personaDescription', enabled: true },
+            { identifier: 'off', enabled: false },
+            { identifier: 'on', enabled: true },
+            { identifier: 'unmarked', enabled: true },
+            { identifier: 'contentOnly', enabled: true },
+          ],
+        },
+      ],
+    }),
+    { mode: 'scene', prompts, contextPrompt: '', interactionHistory: [] },
+  );
+
+  assert.deepEqual(ordered, ['persona_description', { role: 'system', content: 'enabled by order' }, 'user_input']);
+});
+
+test('[ii_auto] follows prompt.enabled when prompt_order is missing', () => {
+  const ordered = convertPresetToOrderedPrompts(
+    tavernPreset({
+      prompts: [
+        { identifier: 'off', name: '[ii_auto] 关闭', enabled: false, role: 'system', content: 'disabled' },
+        { identifier: 'on', name: '[ii_auto] 开启', enabled: true, role: 'user', content: '{{ii_private_prompt}}' },
+        { identifier: 'default', name: '[ii_auto] 默认', role: 'assistant', content: 'enabled by default' },
+        { identifier: 'unmarked', name: '普通规则', enabled: true, role: 'system', content: 'unmarked' },
+      ],
+      prompt_order: [],
+    }),
+    { mode: 'private', prompts, contextPrompt: '', interactionHistory: [] },
+  );
+
+  assert.deepEqual(ordered, [
+    { role: 'user', content: 'private rules' },
+    { role: 'assistant', content: 'enabled by default' },
+    'user_input',
+  ]);
+});
+
+test('[ii_on] keeps its existing behavior alongside [ii_auto]', () => {
+  const markedPrompts = [
+    { identifier: 'force', name: '[ii_on] 规则', enabled: false, role: 'system', content: 'forced on' },
+    { identifier: 'both', name: '[ii_on][ii_auto] 规则', enabled: false, role: 'system', content: 'both markers' },
+    { identifier: 'unmarked', name: '普通规则', enabled: true, role: 'system', content: 'unmarked' },
+  ];
+  const options = { mode: 'scene', prompts, contextPrompt: '', interactionHistory: [] };
+  const enabledOrdered = [
+    { role: 'system', content: 'forced on' },
+    { role: 'system', content: 'both markers' },
+    'user_input',
+  ];
+
+  assert.deepEqual(
+    convertPresetToOrderedPrompts(tavernPreset({ prompts: markedPrompts, prompt_order: [] }), options),
+    enabledOrdered,
+  );
+  assert.deepEqual(
+    convertPresetToOrderedPrompts(
+      tavernPreset({
+        prompts: markedPrompts,
+        prompt_order: [
+          {
+            character_id: 100001,
+            order: markedPrompts.map(prompt => ({ identifier: prompt.identifier, enabled: true })),
+          },
+        ],
+      }),
+      options,
+    ),
+    enabledOrdered,
+  );
+  assert.deepEqual(
+    convertPresetToOrderedPrompts(
+      tavernPreset({
+        prompts: markedPrompts,
+        prompt_order: [
+          {
+            character_id: 100001,
+            order: markedPrompts.map(prompt => ({ identifier: prompt.identifier, enabled: false })),
+          },
+        ],
+      }),
+      options,
+    ),
+    ['user_input'],
+  );
 });
 
 test('mode prompt macros are mutually exclusive', () => {

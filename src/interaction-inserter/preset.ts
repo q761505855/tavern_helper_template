@@ -81,15 +81,17 @@ export type SendableInteractionSession = {
 };
 
 const INTERACTION_FORCE_ON_MARKER = '[ii_on]';
+const INTERACTION_AUTO_MARKER = '[ii_auto]';
 
 /**
  * Resolve a prompt's enabled state when a Tavern preset is used by the
- * interaction inserter. Only explicitly marked prompts are enabled; unmarked
+ * interaction inserter. [ii_on] enables a prompt, while [ii_auto] follows its
+ * preset toggle (prompt_order takes precedence over prompt.enabled). Unmarked
  * prompts are disabled by default.
  */
-export function isPromptEnabledForInteraction(prompt: TavernPresetPrompt): boolean {
+export function isPromptEnabledForInteraction(prompt: TavernPresetPrompt, enabled = prompt.enabled !== false): boolean {
   const name = String(prompt.name ?? '');
-  return name.includes(INTERACTION_FORCE_ON_MARKER);
+  return name.includes(INTERACTION_FORCE_ON_MARKER) || (name.includes(INTERACTION_AUTO_MARKER) && enabled);
 }
 
 const PLACEHOLDER_IDENTIFIER_MAP: Record<string, InteractionPlaceholderPrompt> = {
@@ -286,7 +288,7 @@ export function convertPresetToOrderedPrompts(
     }
 
     if (!prompt) continue;
-    if (!isPromptEnabledForInteraction(prompt)) continue;
+    if (!isPromptEnabledForInteraction(prompt, ref.enabled)) continue;
     const content = expandInteractionMacros(prompt.content ?? '', macros).trim();
     if (!content) continue;
     ordered.push({ role: normalizeRole(prompt.role), content });
